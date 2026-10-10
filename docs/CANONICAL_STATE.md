@@ -12,9 +12,16 @@
 - Testes locais da V0.3 em host Canvas **simulado** (desktop e mobile), sintaxe e ciclo mount/unmount passaram. CI remoto prova contrato e geração reproduzível, **não** instalação no servidor real.
 - Dados de VIGIAFAST/Wandora/ELUS/OpenHands Lab são **ilustrativos**, não um inventário real.
 
+## INSTALAÇÃO REAL E DEFEITO VISUAL CONFIRMADOS PELO USUÁRIO
+- A V0.3.0 foi instalada com Ref fixo \`c9e43d10bcd77c874ddb09aaef512707e9d310c0\`, inicialmente desabilitada, depois ativada pelo usuário no Canvas protegido por Cloudflare Access (screenshots de 2026-10-10).
+- O menu do Observatório abriu e a visualização do sistema VIGIAFAST renderizou planetas em 3D no navegador do usuário. Não demonstra conexão com agentes reais.
+- **Defeito**: a barra lateral nativa do OpenHands ficou visualmente vazia, mas seus links ainda reagiam ao mouse. O CSS compilado continha \`.ob-wrap:before{...position:fixed...}\`, cuja camada decorativa cobria o viewport em vez do painel.
+- **Correção V0.3.1 proposta nesta PR**: \`position:absolute\` para o fundo pseudo-elemento, dentro do contêiner relativo e isolado do app. Adicionado teste de regressão. Reprodução local via Canvas simulado mostrou antes \`fixed\` e depois \`absolute\`, com os links da barra visíveis; navegação/lifecycle passaram localmente.
+- **A revisão nova NÃO está aplicada no Canvas real**: a instalação ativa continua pinada em SHA anterior. CI do novo commit precisa ser verificada; não assumir resultado anterior.
+
 ## GAPS E GATES
-- A extensão **NÃO foi instalada nem habilitada** no OpenHands/Canvas da VPS.
-- Compatibilidade com a instalação Canvas real, segurança/CSP no servidor, renderização 3D GPU real e dados de agentes reais não foram demonstrados.
-- Próximo gate: revisão final e autorização explícita para instalar **desabilitado**, fixando SHA; só então teste visual no navegador autenticado.
+- A compatibilidade visual corrigida ainda precisa ser verificada no Canvas real após atualizar explicitamente o aplicativo para novo SHA.
+- A política de CSP/segurança do servidor, desempenho GPU real completo e dados de agentes reais ainda exigem verificações específicas.
+- Integração com agentes reais requer inventário autoritativo, BFF somente leitura, RBAC por projeto/tenant, minimização e auditoria.
 - Integração com agentes reais requer inventário autoritativo, BFF somente leitura, RBAC por projeto/tenant, minimização e auditoria.
 - Não modificar VIGIAFAST, ELUS, Wandora, Agent Mesh, brokers, volumes, credenciais ou VPS sem autorização específica. Não realizar merge/deploy automáticos.
