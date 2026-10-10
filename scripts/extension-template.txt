@@ -1,0 +1,38 @@
+// Gerado por scripts/build.mjs. Edite source/observatorio-v02.html e regenere.
+// Extensão demonstrativa, sem chamadas a APIs autenticadas ou ações operacionais.
+const STYLE = __STYLE__;
+const MARKUP = __MARKUP__;
+
+function mountObservatorio({container}) {
+  const wrapper=document.createElement('section');
+  wrapper.className='ob-wrap';
+  wrapper.setAttribute('aria-label','Observatório de Agentes — demonstração');
+  const shadow=wrapper.attachShadow({mode:'open'});
+  const style=document.createElement('style');
+  style.textContent=STYLE;
+  shadow.append(style);
+  const stage=document.createElement('div');
+  stage.className='ob-wrap';
+  stage.innerHTML=MARKUP;
+  shadow.append(stage);
+  container.append(wrapper);
+  let destroyed=false,rafId=0;
+  const resizeCallbacks=[];
+  const resize=()=>{if(destroyed)return;for(const cb of resizeCallbacks)cb();};
+  const observer=typeof ResizeObserver==='function'?new ResizeObserver(resize):null;
+  if(observer)observer.observe(wrapper);
+  else window.addEventListener('resize',resize);
+  // Código visual herdado da V0.2, agora isolado no mount.
+__CODE__
+  return () => {
+    destroyed=true;
+    cancelAnimationFrame(rafId);
+    observer?.disconnect();
+    if(!observer)window.removeEventListener('resize',resize);
+    try {const gl=engine3d?.canvas?.getContext('webgl2');gl?.getExtension('WEBGL_lose_context')?.loseContext();}catch(_){}
+    wrapper.remove();
+  };
+}
+export function activate(host) {
+  return host.registerPage('observatorio', ({container}) => mountObservatorio({container}));
+}
