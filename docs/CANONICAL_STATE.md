@@ -204,3 +204,20 @@ intencionalmente não instala SDK/Pydantic. Ajustado import de
 Revalidar o HEAD posterior antes de merge. Contexto:
 `docs/handoffs/OBS-EXPLORER-SDK-REAL-OFFLINE-001.md`.
 **NO-GO operacional**.
+
+## PR #18 — reconciliação de resposta fictícia bem-sucedida (2026-10-11)
+
+Main confirmada em `a21eb4e2250cf935de783b305f3d32d643bd0b1a`
+(PR #17 integrada). Branch
+`test/explorer-sdk-success-settlement-offline-v1` acrescenta
+provas estritamente **offline** de sucesso nas quatro rotas SDK LLM
+1.53.0 com stubs LiteLLM, namespace de rede negado, preço fictício,
+métricas geradas pelo SDK e liquidação `BudgetBook` após verificação
+independente em `Decimal`. Cobertura proposta: acumulação, ausência
+de uso/custo, sobrecobrança e teto de tokens. **Cálculo sintético** no
+teste substitui a função de tarifação LiteLLM; nenhuma tarifa real
+ou limite efetivo de provedor foi certificado.
+Handoff: `docs/handoffs/OBS-EXPLORER-SDK-SUCCESS-SETTLEMENT-001.md`.
+CI no HEAD desta PR precisa ser conferida antes de qualquer parecer.
+**NO-GO operacional**, sem inferência, merge automático, deploy,
+registro/delegação, alteração de VPS, Canvas ou OpenHands Core.
