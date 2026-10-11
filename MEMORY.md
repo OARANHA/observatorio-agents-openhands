@@ -298,3 +298,39 @@ Oito testes novos: RED inicial (contrato ausente), GREEN após implementação.
 em CI. Sem persistência, assinatura, credenciais ou payload livre.
 Ver docs/SYNTHETIC_EVIDENCE_SCHEMA.md. CI deste incremento por conferir; G10
 continua parcial, G11 não provado e NO-GO operacional mantido.
+
+
+## Fechamento documental noturno — 2026-10-11
+
+REAL NOW: main b95ea8c44f9fe95ee24fdec6e32c2bea00c8451a confirmada após PR #28.
+PR #10 permanece aberta HEAD f52b635290ba9e542e2bbb01a9d5a657fed11452;
+PR #11 integrada; #7 aberta/draft, HEAD 48f898d99a8979ef2c794513131506b028772666.
+Nenhum handoff foi removido. ADR-0001 continua Proposto. Observatório horizontal.
+PROVEN EVIDENCE: seis PRs offline integradas, duas CIs GREEN no HEAD exato,
+logs examinados e autorrevisões favoráveis registradas antes de cada merge.
+| PR | HEAD exato | Merge confirmado | CI Observatorio | Canary Worker Inert SDK |
+|---|---|---|---|---|
+| [#23](https://github.com/OARANHA/observatorio-agents-openhands/pull/23) | `9c089f60b54c12b11a9397b82118093a9a9a9803` | `abc1997e7999a91e9a8c71933bb581437097ad51` | [38120273244](https://github.com/OARANHA/observatorio-agents-openhands/actions/runs/38120273244) | [38120273294](https://github.com/OARANHA/observatorio-agents-openhands/actions/runs/38120273294) |
+| [#24](https://github.com/OARANHA/observatorio-agents-openhands/pull/24) | `37b75fcbf98e7e1408967bca61de33479cd49a4a` | `05f88c1790b13c19e23a74fadc80cbaa22f0de23` | [38120541286](https://github.com/OARANHA/observatorio-agents-openhands/actions/runs/38120541286) | [38120541272](https://github.com/OARANHA/observatorio-agents-openhands/actions/runs/38120541272) |
+| [#25](https://github.com/OARANHA/observatorio-agents-openhands/pull/25) | `5bc943516af3faacd52d56ee6f0fccef51c7226f` | `2329f85123f04667bbd39ce1ce4a4021e3cbb9c2` | [38120804684](https://github.com/OARANHA/observatorio-agents-openhands/actions/runs/38120804684) | [38120804699](https://github.com/OARANHA/observatorio-agents-openhands/actions/runs/38120804699) |
+| [#26](https://github.com/OARANHA/observatorio-agents-openhands/pull/26) | `c596aea62ff200e7025eaa9b0ac681ae23080cf8` | `d32483da5300c17d4e556c7f3b7d7166e196a32a` | [38121045562](https://github.com/OARANHA/observatorio-agents-openhands/actions/runs/38121045562) | [38121045552](https://github.com/OARANHA/observatorio-agents-openhands/actions/runs/38121045552) |
+| [#27](https://github.com/OARANHA/observatorio-agents-openhands/pull/27) | `ab157d165c8eeb998d10b79b9b50df056ff7e836` | `dd441990b72fed8917a8bf9ec279ddb0a5f688ca` | [38121276910](https://github.com/OARANHA/observatorio-agents-openhands/actions/runs/38121276910) | [38121276933](https://github.com/OARANHA/observatorio-agents-openhands/actions/runs/38121276933) |
+| [#28](https://github.com/OARANHA/observatorio-agents-openhands/pull/28) | `b4774202dad4a49c9bcacdaaf18a969a104cd69b` | `b95ea8c44f9fe95ee24fdec6e32c2bea00c8451a` | [38121795712](https://github.com/OARANHA/observatorio-agents-openhands/actions/runs/38121795712) | [38121795824](https://github.com/OARANHA/observatorio-agents-openhands/actions/runs/38121795824) |
+
+PR #24 tem também Sandbox Probe [38120541278](https://github.com/OARANHA/observatorio-agents-openhands/actions/runs/38120541278), GREEN.
+Suite atual: 157 testes, 136 PASS/21 opcionais SDK skip no Python sem SDK.
+No runner SDK, 81 testes dedicados PASS, dez probes reais de isolamento PASS,
+worker inerte com zero chamadas LLM, zero registros e zero dispatches reais.
+Geração determinística/node --check/diagnóstico estático passam.
+
+GAPS: G05/G06/G07/G10 permanecem PARCIAIS operacionalmente; G08 passa de
+NÃO PROVADO a PARCIAL DOCUMENTAL, sem homologação de modelo/rota/conta.
+G09/G11 não provados; G12 bloqueado. Dossiê público em
+`docs/PUBLIC_PROVIDER_DOSSIER.md` e revisão estática em
+`docs/GRAPH_PR7_REVIEW.md`. REUSE GATE: BudgetBook, Guard, supervisor e SDK/Tools oficiais preservados;
+não recriar OpenHands nem transformar mocks em agentes operacionais.
+DECISION: finalizar este ciclo com PR documental única para G/H/consolidação,
+não criar oitava PR artificial. Seu próprio HEAD/CI/merge serão registrados
+na revisão e descrição GitHub após verificação, sem antecipar resultados.
+**NO-GO operacional permanece.** Próximos gates exigem ambiente autorizado,
+modelo/rota/conta segregados, revisão distinta e autorização expressa da missão.
