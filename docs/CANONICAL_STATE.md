@@ -113,3 +113,16 @@ de qualquer conclusão. Limites e procedimento em
 `docs/handoffs/OBS-EXPLORER-WORKER-INERT-001.md`.
 **NO-GO** para registro de agentes, delegação real e qualquer LLM;
 modelo, tarifas, orçamento preventivo e autorização continuam ausentes.
+
+## Reserva preventiva offline do canário — 2026-10-11
+
+Após o merge da PR #13, main foi conferida em `cf4a429fde6e8b4aecd7c1001166ee13f2d755c4`.
+Branch `feat/explorer-offline-budget-gate-v1` prepara cálculo preventivo
+com `Decimal`, exigência de fonte tarifária revisada, limites de tokens,
+exatidão do modelo SDK e bloqueio de gasto de pior caso antes da chamada.
+Testes usam exclusivamente tarifas fictícias e nenhum LLM. Documentação:
+`docs/handoffs/OBS-EXPLORER-BUDGET-OFFLINE-001.md`.
+**O novo `BudgetBook` ainda não foi conectado ao `guarded_llm`**; só provas
+offline podem ser reivindicadas até a CI do HEAD exato. Modelo/provedor
+autorizados, preços oficiais e limites do provedor ainda estão pendentes.
+NO-GO operacional; sem merge, deploy, VPS ou Canvas nesta preparação.
