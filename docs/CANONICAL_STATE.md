@@ -159,3 +159,22 @@ A CI desta branch ainda precisa ser validada por logs do HEAD exato.
 **NO-GO operacional** até controle independente de rede, teste SDK com
 transporte stubado, modelo/tarifas/tokens e autorização específica.
 Nenhuma chamada LLM, merge, deploy ou alteração na VPS/Canvas/Core.
+
+## SDK 1.53.0 real com transporte fictício e egress negado — 2026-10-11
+
+Base reconciliada: main `7a6fdc2faa1fc41ff8d4c1d5696c4b65b0ca641d`
+(PR #16 integrada). Branch `test/explorer-sdk-real-offline-egress-v1`
+propõe PR #17: invocar métodos públicos reais da classe SDK LLM 1.53.0
+com quatro aliases LiteLLM stubados, compartilhando reserva preventiva
+`SyntheticTransportGate`/`BudgetBook`. CI do runner SDK executará
+os testes dentro de Bubblewrap com `--unshare-all` e verificará
+namespace de rede separado, sem segredos, chamada a provedor ou LLM.
+Falha ao tentar sem reserva e ao retornar para transporte em fallback
+de cache/refresh (cenários induzidos). O modelo nominal nos testes é
+identificador público com credencial artificial não válida; não executa
+inferência. O namespace não é sandbox multi-tenant, e os testes
+não cobrem todos os egress internos/HTTP de dependências nem validam
+tarifas/tetos. Critérios e limites em
+`docs/handoffs/OBS-EXPLORER-SDK-REAL-OFFLINE-001.md`.
+**CI por comprovar no HEAD; NO-GO operacional**. Sem merge, deploy
+ou alteração de VPS/Canvas/OpenHands Core nesta preparação.
