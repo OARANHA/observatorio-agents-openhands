@@ -6,7 +6,8 @@
 (PR #9 integrada). PR #10 permanece aberta, branch `docs/explorer-canary-plan-v1`,
 HEAD `f52b635290ba9e542e2bbb01a9d5a657fed11452`. Seu handoff
 `OBS-EXPLORER-CANARY-PLAN-001.md` foi lido; esta implementação é independente,
-na branch `feat/explorer-canary-gates-v1`. Não incorpora nem altera a PR #10.
+na branch `feat/explorer-canary-gates-v1`. Na revisão subsequente, preserva uma cópia exata do handoff e das notas
+históricas da PR #10; não altera sua branch nem seu estado.
 Observatório permanece ferramenta horizontal; nenhum projeto atendido foi alterado.
 
 ## PROVEN EVIDENCE
@@ -130,3 +131,69 @@ atualização de SDK e não protege código que contorne essas APIs; concorrênc
 faz parte do canário. Snapshot deve vir de checkout público congelado, sem modificações
 concorrentes durante a cópia. Estado/logs devem ser eliminados após revisão autorizada.
 Não tratar esse harness como plataforma geral de execução.
+
+
+## Correção da revisão 5481809830 — 2026-10-11
+
+Main permanece `789d442e586466ee7085a1724028d7e1edba7ec0`; #10 aberta em
+`f52b635290ba9e542e2bbb01a9d5a657fed11452`; #11 aberta, antes da correção,
+em `a193711f3ede631fd6344680679215e84ac009dd`. Nenhum SHA foi presumido atual.
+
+A distribuição oficial SDK/Tools 1.53.0 confirma que
+`TaskManager._run_until_finished` recebe False, chama reject_pending_actions
+e chama conversation.run novamente. Isso nega a ação, mas continua a missão.
+`_run_task` captura Exception e retorna um erro recuperável ao pai; por isso
+uma exceção comum também não é um sinal suficiente para encerrar todo o worker.
+
+`task_spec` agora exige o Guard compartilhado como argumento. Seu callback
+chama `mission_confirmation`: qualquer recusa, ausência/erro de aprovação,
+comando proibido ou missão já cancelada cancela o Guard e lança
+`MissionCancelled`, derivada diretamente de BaseException. O callback não
+retorna False ao manager. O sinal sai do handler recuperável do SDK; o finally
+de atualização de métricas/eviction permanece executado. O executor terminal
+usa a mesma política, inclusive quando chamado diretamente. `confirm` continua
+sendo apenas um predicado booleano interno, não o callback operacional.
+
+O futuro worker deve compartilhar **o mesmo Guard** entre task_spec,
+guarded_llm e terminal_tools, tratar MissionCancelled como término definitivo,
+nunca retomar o loop após capturá-la e manter supervisão externa sobre toda a
+vida do processo. Não há worker operacional nesta PR. Supervisor existente
+encerra o grupo se a comunicação for interrompida e não faz retries/fallback.
+Cancelamento cooperativo não interrompe retroativamente chamadas concorrentes
+em voo: concorrência permanece fora do escopo e o supervisor externo é obrigatório.
+
+Testes adicionados verificam manager simulado sem segundo run; nenhuma chamada
+nas quatro rotas LLM simuladas após recusa; nenhuma ação terminal adicional;
+recusa direta do terminal cancela todo o Guard; aprovação ausente, inválida e
+com exceção; aprovação positiva preserva a missão; interrupção do supervisor.
+Dois testes opcionais executam os métodos oficiais do TaskManager com conversas
+mockadas: False causa dois runs; MissionCancelled causa um run, escapa do
+handler de Exception e chama ambos os pontos de limpeza do finally. Não criam
+Agent/Conversation, registry, start_task, delegação ou inferência.
+
+Verificação final: **52 testes descobertos, 50 aprovados e 2 ignorados** no Python
+sem SDK; os dois testes opcionais **aprovados** no virtualenv SDK/Tools 1.53.0,
+com ambiente limpo e somente mocks. Diagnóstico estático, build/sintaxe JS e
+extension.js sem diferenças. Proteções de comandos, retries, contador, prazo,
+custo e sandbox sem fallback permanecem. A CI será consultada uma vez no novo HEAD;
+o resultado externo é entregue na PR, não confundido com estes testes locais.
+
+### Reconciliação documental #10 / #11
+
+A PR #11 conserva o handoff PLAN-001 da #10 byte a byte e suas duas seções
+históricas em MEMORY/CANONICAL_STATE antes das evidências GATES-001. Os 27/45
+testes nas notas anteriores são históricos, não resultados desta correção.
+As limitações do plano original também são históricas; não sobrescrever seus
+achados com o estado novo. Ambos os handoffs seguem disponíveis nesta branch.
+Nenhuma alteração foi enviada à branch da #10 e nenhum merge foi realizado.
+
+Ordem recomendada para decisão humana: revisar a #11 com os dois handoffs;
+se #10 for integrada primeiro, reconciliar a #11 contra a nova main, preservando
+as seções já incorporadas; se #11 for integrada primeiro, comparar #10 com a
+nova main (seu conteúdo documental já está preservado) antes de qualquer decisão.
+Não declarar antecipadamente ausência de conflitos no merge futuro.
+
+**Decisão permanece NO-GO operacional.** A política de recusa está comprovada
+no fluxo oficial com mocks, não em agente real. Sandbox, herança efetiva do
+executor, supervisor do worker completo e orçamento preventivo/modelo/tarifas
+continuam gates; autorização humana para LLM permanece necessária.

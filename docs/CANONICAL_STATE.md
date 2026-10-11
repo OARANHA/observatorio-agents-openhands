@@ -56,6 +56,20 @@ diagnóstico estático e loader local SDK/Tools 1.53.0 aprovados, build/sintaxe 
 preservados. Formato e limites em `team/SDK_DIAGNOSTIC.md`.
 Não houve registro/delegação, mudança no runtime, merge ou deploy.
 
+## Preparação do primeiro canário Explorer — 2026-10-11
+
+PR #9 integrada à main `789d442e586466ee7085a1724028d7e1edba7ec0`,
+confirmada por Git e metadados GitHub. Snapshot local separado/limpo preparado
+nesse SHA. SDK/Tools 1.53.0: descoberta oficial code-explorer (terminal),
+registry vazio antes/depois, 27 testes e diagnóstico estático aprovados.
+**Nenhum registro, delegação ou tarefa LLM foi iniciado.**
+Plano: `docs/handoffs/OBS-EXPLORER-CANARY-PLAN-001.md`.
+Execução bloqueada até definir modelo/tarifas/credencial autorizada e homologar
+isolamento, callback de confirmação e limite global. bwrap falhou localmente;
+worktree não é sandbox. Orçamento/iterações do SDK têm limites documentados.
+Aguardará autorização explícita após apresentar condições concretas.
+Nenhuma mudança no Canvas/VPS/Core ou projetos atendidos; sem merge/deploy.
+
 ## Gates do primeiro Explorador — 2026-10-11
 
 Main reconciliada em `789d442e586466ee7085a1724028d7e1edba7ec0` (PR #9 integrada).
@@ -65,4 +79,19 @@ locais e construção inerte de specs. Nenhum agente, registro ou delegação
 operacional, LLM, merge ou deploy. **NO-GO operacional**: bwrap e unshare
 falham neste ambiente; sandbox efetivo, wiring completo do worker e tarifas/modelo
 com orçamento preventivo ainda exigem prova. Evidências e critérios cumulativos:
+`docs/handoffs/OBS-EXPLORER-CANARY-GATES-001.md`.
+
+## PR #11 — parar a missão na primeira recusa (2026-10-11)
+
+Revisão `5481809830`: False no TaskManager 1.53.0 rejeita a ação e chama run
+novamente. Callback oficial e executor agora cancelam o Guard compartilhado
+e lançam MissionCancelled, que sai do fluxo recuperável do SDK. Testes com
+manager oficial/conversas mockadas comprovam um único run e limpeza no finally;
+nenhuma chamada LLM ou ação adicional após recusa nos testes simulados.
+52 testes descobertos: 50 aprovados e 2 opcionais ignorados sem SDK; os dois
+opcionais aprovados no SDK/Tools 1.53.0 isolado. Não houve execução operacional.
+As notas e o handoff PLAN-001 da PR #10 foram preservados nesta branch antes
+de GATES-001; a branch #10 permanece intacta. Main continua `789d442`.
+NO-GO mantido pelos gates de sandbox, worker completo e orçamento preventivo.
+Detalhes, limites e ordem de integração humana em
 `docs/handoffs/OBS-EXPLORER-CANARY-GATES-001.md`.
