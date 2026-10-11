@@ -63,6 +63,11 @@ class SyntheticAstAudit(unittest.TestCase):
         with self.assertRaisesRegex(GateError,"sdk_transport_calls_changed"):
             check_source(code)
 
+    def test_new_call_outside_sdk_llm_class_is_detected(self):
+        code=synthetic_sdk_source()+"\ndef shadow_transport():\n    return litellm_completion()\n"
+        with self.assertRaisesRegex(GateError,"sdk_unreviewed_litellm_sink_call"):
+            check_source(code)
+
     def test_new_direct_litellm_call_fails(self):
         code=synthetic_sdk_source().replace(
             "return litellm_responses()", "return litellm.completion()")
