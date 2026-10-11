@@ -154,7 +154,7 @@ class Contract(unittest.TestCase):
         self.assertIn('ChatGPT planeja e valida', source)
         self.assertIn('não prova', source)
         self.assertIn('não prova armazenamento/recuperação', source)
-        self.assertIn('não alterar OpenHands Core', source)
+        self.assertIn('Não alterar OpenHands Core', source)
 
     def test_sintaxe(self):
         subprocess.run(['node', '--check', str(ROOT / 'extension.js')], check=True)
