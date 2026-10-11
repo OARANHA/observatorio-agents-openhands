@@ -105,3 +105,16 @@ operacionais. Nenhum responsável substitui permissões reais da plataforma.
 Um merge offline exige ambos workflows GREEN no HEAD exato, inspeção de logs,
 revisão registrada, ausência de conflitos, proteção preservada e lease de SHA.
 Os registros das novas PRs são anexados ao handoff do ciclo após confirmação.
+
+
+### G05 — provas propostas neste incremento
+
+Teste: scripts/probe_canary_sandbox.py, dez probes obrigatórios. O executor
+real/supervisor existente é reutilizado; só o harness de prova substitui
+argv final por Python. DNS usa domínio .invalid; TCP e Unix tentam somente
+listeners sintéticos locais. Marcadores de ambiente/arquivo são fictícios.
+CI ainda por comprovar; G05 continua PARCIAL, sem validação do ambiente futuro.
+Limites: não testa evasão do kernel, processos hostis que criam nova sessão
+fora do PID namespace, canais pela própria stdout ou isolamento multi-tenant.
+A prova SDK que monta / inteiro RO continua sendo apenas isolamento de rede
+de um runner sem credenciais de produção; não é o filesystem mínimo do terminal.

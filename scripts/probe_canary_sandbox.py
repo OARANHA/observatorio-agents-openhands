@@ -56,6 +56,7 @@ class SandboxRunnerProbe(unittest.TestCase):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
+            close_fds=True,
             timeout=15,
             check=False,
         )
@@ -146,6 +147,86 @@ class SandboxRunnerProbe(unittest.TestCase):
         for command in ("cat /etc/passwd", "env", "cat ../segredo", "curl x"):
             with self.subTest(command=command), self.assertRaises(GateError):
                 sandbox_argv(self.root, command)
+
+    def test_07_dns_sem_resolver_do_host(self):
+        code = (
+            "import socket\n"
+            "from pathlib import Path\n"
+            "assert not Path('/etc/resolv.conf').exists()\n"
+            "assert not Path('/etc/hosts').exists()\n"
+            "assert set(Path('/sys/class/net').glob('*')) == set()\n"
+            "socket.setdefaulttimeout(.6)\n"
+            "try:\n"
+            "  socket.getaddrinfo('obs-canary-probe.invalid',443)\n"
+            "except socket.gaierror:\n"
+            "  pass\n"
+            "else:\n"
+            "  raise AssertionError('DNS externo resolvido')\n"
+        )
+        self.assert_sandbox_passed(self.run_protected(code), 'dns')
+
+    def test_08_socket_unix_abstrato_do_host_negado(self):
+        # Abstract Unix sockets belong to a network namespace on Linux.
+        address = '\0obs-canary-' + str(os.getpid())
+        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as listener:
+            listener.bind(address)
+            listener.listen(1)
+            code = (
+                "import socket,sys\n"
+                "s=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)\n"
+                "s.settimeout(.6)\n"
+                "assert s.connect_ex('\\0'+sys.argv[1])!=0\n"
+                "s.close()\n"
+            )
+            self.assert_sandbox_passed(
+                self.run_protected(code, (address[1:],)), 'unix-host-socket')
+
+    def test_09_fd_herdavel_fechado_pelo_supervisor(self):
+        import fcntl
+        with self.host_marker.open('rb') as marker:
+            fd = fcntl.fcntl(marker.fileno(), fcntl.F_DUPFD, 80)
+            try:
+                os.set_inheritable(fd, True)
+                code = "import os,sys; assert not os.path.exists('/proc/self/fd/'+sys.argv[1])"
+                argv = sandbox_argv(self.root, 'pwd')[:-1] + [
+                    '/usr/bin/python3', '-I', '-c', code, str(fd)]
+                self.assertEqual('', supervise(argv, 10))
+            finally:
+                os.close(fd)
+
+    def test_10_descendente_herda_isolamento_e_estado_tmp_separado(self):
+        child = (
+            "import os,socket,sys\n"
+            "from pathlib import Path\n"
+            "assert os.getenv('CANARY_PROBE_MARKER') is None\n"
+            "assert not Path(sys.argv[1]).exists()\n"
+            "assert not Path('/workspace/.git').exists()\n"
+            "Path('/tmp/synthetic-state').write_text('SYNTHETIC')\n"
+            "assert Path('/tmp/synthetic-state').read_text() == 'SYNTHETIC'\n"
+            "try:\n"
+            "  Path('/workspace/AGENTS.md').write_text('FORBIDDEN')\n"
+            "except OSError:\n"
+            "  pass\n"
+            "else:\n"
+            "  raise AssertionError('descendente escreveu no snapshot')\n"
+            "socket.setdefaulttimeout(.6)\n"
+            "try:\n"
+            "  socket.getaddrinfo('obs-canary-probe.invalid',443)\n"
+            "except socket.gaierror:\n"
+            "  pass\n"
+            "else:\n"
+            "  raise AssertionError('DNS no descendente')\n"
+        )
+        parent = (
+            "import subprocess,sys\n"
+            "subprocess.run(['/usr/bin/python3','-I','-c',sys.argv[1],sys.argv[2]],"
+            "check=True,timeout=5,close_fds=True)\n"
+        )
+        self.assert_sandbox_passed(self.run_protected(
+            parent, (child, str(self.host_marker)),
+            inherited_env={'CANARY_PROBE_MARKER':'SYNTHETIC'}), 'descendant')
+        self.assertEqual('CONTEUDO_PUBLICO_SINTETICO\n',
+                         (self.root / 'AGENTS.md').read_text())
 
     def test_06_supervisor_encerra_grupo_e_descendente(self):
         # Processo sintético sem LLM; valida killpg no supervisor do código real.

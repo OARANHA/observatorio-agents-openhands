@@ -274,3 +274,15 @@ delegação/provedor/infra/deploy. NO-GO operacional mantido.
 Workflow SDK inclui docs/memória/testes canary para evitar que PR documental
 seja considerada elegível sem a segunda CI; testes existentes não removidos.
 CI deste incremento ainda precisa ser comprovada no HEAD.
+
+
+## Provas negativas de isolamento — preparação noturna (2026-10-11)
+
+PR #23 integrada abc1997e7999a91e9a8c71933bb581437097ad51; CIs 38120273244
+e 38120273294 GREEN, logs sem skips no SDK e autorrevisão registrada.
+Suite de sandbox ampliada de seis para dez probes: DNS sem resolver do host,
+socket Unix abstrato do host negado, FD herdável fechado pelo supervisor,
+descendente com ambiente limpo/RO/DNS negado e tmpfs separado. Não muda
+sandbox_argv nem allowlist. CI efêmera é obrigatória, sem skip/fallback.
+Local: bwrap indisponível para namespaces; resultado RED não certifica
+isolamento. Provas do novo HEAD ainda dependem do runner. NO-GO mantido.
