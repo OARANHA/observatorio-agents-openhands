@@ -591,3 +591,8 @@ Main pré-consolidação96ed4a3c5ce659aa55a4841716e7623d30aaeb64.
 ## Ciclo 005 — acabamento textual após CI A1–A5 (2026-10-11)
 - HEAD `0b6ccf879f92cc4691cacbe977db67fb58f07a6f`: runs `38173719969`, `38173719965` (15/15 DOM) e `38173719983` GREEN, SDK inerte sem chamadas reais. Captura visual identificou instrução residual `CONSULTA DE MISSÃO REAL` apesar de formulário já renomeado.
 - Patch mínimo de rótulos de conversa/estado, atributo acessível e teste DOM adicional; **CI do novo HEAD ainda por validar**. Próximo passo revisão separada Codex do SHA final; G11 não provado, G12 bloqueado, P02/P03 não provados; NO-GO.
+
+## Ciclo 005 — segunda revisão Codex e patch R1/R2/R3 (2026-10-11)
+- O Codex reportou R1 P2 (digest fora do timeout), R2 P2 (rollback GPU fora Shadow DOM), R3 P3 (termos missão/execução no manifesto e na UI) no HEAD `83957b69dfe3e35e87e4ba6a12b7768004187012`; sem P0/P1 demonstrados. JEV consultivo priorizou `deep_review` com confiança 0,12; nenhum gate foi promovido.
+- Remediação em PR #43: timeout local passa a cobrir GET+proveniência assíncrona, com `pending.valid` contra atualização tardia; rollback alcança canvas no `shadow`; textos residuais passam a referir conversa. Três novos testes Chromium de digest pendente, GPU simulada e manifesto/indicadores (19 esperados, **CI pendente**).
+- Detalhes no `docs/handoffs/OBS-CYCLE-005-VISUAL-CANDIDATE.md`. G11 NÃO PROVADO, G12 BLOQUEADO, P01 PARCIAL, P02/P03 NÃO PROVADOS; sem merge/Canvas/deploy, sem polling CI.

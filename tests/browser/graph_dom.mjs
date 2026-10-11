@@ -13,6 +13,24 @@ window.fixtureReads=[];window.fixtureObservation={id:'00000000-0000-4000-8000-00
 const host={registerPage(_id,mount){window.fixtureMount=()=>mount({container:document.getElementById('fixture')});window.fixtureDispose=window.fixtureMount();return ()=>{};},agentServer:{async request(request){window.fixtureReads.push(request);if(window.fixturePending)await new Promise(resolve=>window.fixtureFinishRead=resolve);if(window.fixtureError)throw Error('synthetic denied');return window.fixtureObservation;}}};
 if(window.fixtureFault==='crypto')Object.defineProperty(Crypto.prototype,'randomUUID',{configurable:true,value(){throw Error('synthetic nonce failure');}});
 if(window.fixtureFault==='resize')window.ResizeObserver=class{constructor(){throw Error('synthetic resize failure');}};
+if(window.fixtureFault==='digest'){
+  const nativeDigest=crypto.subtle.digest.bind(crypto.subtle);
+  Object.defineProperty(SubtleCrypto.prototype,'digest',{configurable:true,value:function(...args){
+    if(!window.fixtureDigestHeld){
+      window.fixtureDigestHeld=true;
+      return new Promise(resolve=>{window.fixtureReleaseDigest=()=>resolve(nativeDigest(...args));});
+    }
+    return nativeDigest(...args);
+  }});
+}
+if(window.fixtureFault==='shadow-gpu')window.ResizeObserver=class{
+  constructor(){
+    const canvas=document.createElement('canvas');canvas.dataset.syntheticGpu='1';
+    document.querySelector('section.ob-wrap')?.shadowRoot?.querySelector('#solar-stage')?.append(canvas);
+    canvas.getContext('webgl2');
+    throw Error('synthetic shadow GPU mount failure');
+  }
+};
 try{activate(host);}catch(error){window.fixtureMountFailure=String(error);}window.fixtureReady=true;</script></body></html>`;
 const artifacts='test-artifacts/graph';mkdirSync(artifacts,{recursive:true});
 let browser;
@@ -30,7 +48,14 @@ async function fixture({mobile=false,reduced=false,fault=null}={}){
  const page=await context.newPage();page.setDefaultTimeout(5000);
  await page.addInitScript(()=>{
    const get=HTMLCanvasElement.prototype.getContext;
-   HTMLCanvasElement.prototype.getContext=function(type,...args){return type==='webgl2'?null:get.call(this,type,...args);};
+   window.fixtureGpuAcquisitions=0;window.fixtureGpuLosses=0;
+   HTMLCanvasElement.prototype.getContext=function(type,...args){
+     if(type==='webgl2'&&this.dataset.syntheticGpu==='1'){
+       window.fixtureGpuAcquisitions++;
+       return {getExtension(name){return name==='WEBGL_lose_context'?{loseContext(){window.fixtureGpuLosses++;}}:null;}};
+     }
+     return type==='webgl2'?null:get.call(this,type,...args);
+   };
    const request=window.requestAnimationFrame.bind(window),cancel=window.cancelAnimationFrame.bind(window);
    window.fixtureFrames=new Set();window.requestAnimationFrame=fn=>{let id=request(time=>{window.fixtureFrames.delete(id);fn(time);});window.fixtureFrames.add(id);return id;};
    window.cancelAnimationFrame=id=>{window.fixtureFrames.delete(id);cancel(id);};
@@ -187,5 +212,51 @@ test('graph instructional copy does not claim verified execution',async()=>{
   assert.ok(panel.includes('estado de conversa consultado no OpenHands'));
   assert.ok(panel.includes('CONSULTA DE CONVERSA'));
   assert.doesNotMatch(panel,/CONSULTA DE MISSÃO REAL|execução verificada|consulta real do OpenHands/i);
+ }finally{await close(f);}
+});
+test('digest stays hung after GET but entire read times out and late identity is ignored',async()=>{
+ const f=await fixture({fault:'digest'});try{
+  const p=f.page;await p.clock.install();
+  await p.locator('details.ob-real summary').click();
+  await p.locator('details.ob-real input.id').fill('00000000-0000-4000-8000-000000000001');
+  await p.getByText('Consultar estado no OpenHands',{exact:true}).click();
+  await p.waitForFunction(()=>typeof window.fixtureReleaseDigest==='function');
+  assert.equal(await p.getByText('Consultar estado no OpenHands',{exact:true}).isEnabled(),false);
+  await p.clock.fastForward(10010);
+  await p.locator('details.ob-real output').filter({hasText:'prazo local excedido'}).waitFor();
+  assert.equal(await p.getByText('Consultar estado no OpenHands',{exact:true}).isEnabled(),true);
+  await p.evaluate(()=>window.fixtureReleaseDigest());
+  await p.waitForTimeout(50);
+  assert.equal(await p.locator('#source-banner').innerText(),'◌ PROTÓTIPO · DADOS ILUSTRATIVOS');
+  assert.equal(await p.locator('details.ob-real .moon').count(),0);
+  assert.equal(await p.evaluate(()=>fixtureReads.length),1);
+ }finally{await close(f);}
+});
+test('rollback releases a synthetic GPU context inside shadow root',async()=>{
+ const f=await fixture({fault:'shadow-gpu'});try{
+  const p=f.page;
+  assert.match(await p.evaluate(()=>window.fixtureMountFailure||''),/synthetic shadow GPU mount failure/);
+  assert.ok(await p.evaluate(()=>window.fixtureGpuAcquisitions>=2));
+  assert.equal(await p.evaluate(()=>window.fixtureGpuLosses),1);
+  assert.equal(await p.locator('section.ob-wrap').count(),0);
+  assert.deepEqual(await p.evaluate(()=>[fixtureFrames.size,fixtureObservers.size]),[0,0]);
+ }finally{await close(f);}
+});
+test('manifest and universe metrics describe a consulted conversation, not executed mission',async()=>{
+ const manifest=JSON.parse(readFileSync(new URL('../../canvas-extension.json',import.meta.url),'utf8'));
+ assert.match(manifest.contributes.pages[0].description,/conversas OpenHands consultadas/);
+ assert.doesNotMatch(manifest.contributes.pages[0].description,/execu(?:ç|c)ão OpenHands consultada/i);
+ const f=await fixture();try{
+  const p=f.page;await consult(p);
+  await p.locator('#top-universe').click();
+  const info=await p.locator('#metrics').innerText();
+  assert.match(info,/1 conversa consultada/i);
+  assert.doesNotMatch(info,/missão consultada/i);
+  await p.locator('#top-graph').click();
+  await p.locator('#graph-scope').selectOption('verified');
+  await p.locator('#graph-search').fill('nao-encontra-nada');
+  const empty=await p.locator('.graph-empty').innerText();
+  assert.match(empty,/estado de uma conversa/);
+  assert.doesNotMatch(empty,/consulte uma missão/i);
  }finally{await close(f);}
 });

@@ -41,17 +41,25 @@ function mountRealRead(stage,host,onVerified,onReset) {
     if(!host?.agentServer?.request){say('Indisponível: ','API de leitura do Canvas ausente');return;}
     button.disabled=true;say('Consulta: ','em andamento');
     let expired=false;
-    const pending={timer:null,cancel:null};
+    const pending={timer:null,cancel:null,valid:true};
+    const current=()=>active&&pending.valid;
+    // O prazo cobre o GET e o cálculo assíncrono de proveniência. Não cancela o host.
     const deadline=new Promise((_,reject)=>{
-      pending.cancel=()=>reject(new Error('montagem encerrada'));
-      pending.timer=setTimeout(()=>{expired=true;reject(new Error('prazo local excedido'));},GET_TIMEOUT_MS);
+      pending.cancel=()=>{pending.valid=false;reject(new Error('montagem encerrada'));};
+      pending.timer=setTimeout(()=>{expired=true;pending.valid=false;reject(new Error('prazo local excedido'));},GET_TIMEOUT_MS);
     });
     inFlight.add(pending);
     try {
-      const request=host.agentServer.request({method:'GET',path:'/api/conversations/'+id});
-      const item=await Promise.race([request,deadline]);
-      clearTimeout(pending.timer);
-      if(!active)return;
+      const processing=(async()=>{
+        const item=await host.agentServer.request({method:'GET',path:'/api/conversations/'+id});
+        if(!current())return null;
+        if(item&&item.id===id&&typeof item.execution_status==='string'){
+          await onVerified({conversationId:id,status:item.execution_status,project,updatedAt:typeof item.updated_at==='string'?item.updated_at:null,observedAt:new Date().toISOString()},current);
+        }
+        return item;
+      })();
+      const item=await Promise.race([processing,deadline]);
+      if(!current())return;
       output.replaceChildren();
       if(!item||item.id!==id||typeof item.execution_status!=='string'){say('Erro: ','contrato não confirmado');return;}
       const moon=document.createElement('span');moon.className='moon';moon.setAttribute('aria-label','Lua: conversa consultada');output.append(moon);
@@ -62,13 +70,11 @@ function mountRealRead(stage,host,onVerified,onReset) {
       if(typeof item.updated_at==='string')say('Atualizado no servidor: ',item.updated_at);
       say('Observado em (hora do navegador): ',new Date().toISOString());
       say('Associação de projeto: ','manual, não atestada pela API');
-      await onVerified({conversationId:id,status:item.execution_status,project,updatedAt:typeof item.updated_at==='string'?item.updated_at:null,observedAt:new Date().toISOString()});
-      if(!active)return;
       detail.open=false; // Não encobrir o universo após consulta; reabrível pelo operador.
     } catch (_error) {
       if(active){output.replaceChildren();say('Consulta: ',expired?'prazo local excedido; resposta tardia ignorada (a requisição no host pode continuar)':'indisponível/não autorizada; estado desconhecido');}
     } finally {
-      clearTimeout(pending.timer);inFlight.delete(pending);
+      pending.valid=false;clearTimeout(pending.timer);inFlight.delete(pending);
       if(active)button.disabled=false;
     }
   });
@@ -100,9 +106,9 @@ function mountObservatorio({container,host}) {
   const resize=()=>{if(destroyed)return;for(const cb of resizeCallbacks)cb();};
   try {
     container.append(wrapper);
-    disposeRead=mountRealRead(stage,host,async observation=>{
+    disposeRead=mountRealRead(stage,host,async (observation,isCurrent)=>{
       const graphIdentity=await graphIdentityForObservation(observationContext,observation.conversationId,observation.project);
-      if(!destroyed)applyVerifiedMission({...observation,graphIdentity});
+      if(!destroyed&&isCurrent())applyVerifiedMission({...observation,graphIdentity});
     },()=>clearConsultedObservation());
     observer=typeof ResizeObserver==='function'?new ResizeObserver(resize):null;
     if(observer)observer.observe(wrapper);
@@ -124,7 +130,7 @@ __CODE__
     cancelAnimationFrame(rafId);
     try{observer?.disconnect();}catch(_){}
     window.removeEventListener('resize',resize);
-    try{wrapper.querySelectorAll('canvas').forEach(c=>c.getContext('webgl2')?.getExtension('WEBGL_lose_context')?.loseContext());}catch(_){}
+    try{shadow.querySelectorAll('canvas').forEach(c=>c.getContext('webgl2')?.getExtension('WEBGL_lose_context')?.loseContext());}catch(_){}
     wrapper.remove();
     throw error;
   }

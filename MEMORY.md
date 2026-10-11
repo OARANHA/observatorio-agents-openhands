@@ -525,3 +525,7 @@ Main base `e06d3b01e60d9a5503e046dc0fe2eeb269f0e403` após #42. Reuso da PR #35 
 
 ## Ciclo 005 — proveniência visual em revisão (2026-10-11)
 - PR #43 HEAD histórico `0b6ccf879f92cc4691cacbe977db67fb58f07a6f`: CI e SDK GREEN; Graph DOM 15/15. Screenshot revelou rótulos residuais de “missão real”; patch de microcopy mais preciso e regressão DOM (16 esperados), a verificar. Em seguida pedir ao Codex reavaliação adversarial do HEAD final; G11 não provado, G12 bloqueado, P02/P03 não provados, sem merge/deploy/Canvas.
+
+## Ciclo 005 — R1/R2/R3 após segunda revisão Codex (2026-10-11)
+- PR #43 histórico `83957b69dfe3e35e87e4ba6a12b7768004187012` foi reavaliado pelo Codex: R1/R2 P2 confirmados, R3 P3, sem P0/P1 demonstrados; revisão IA separada não satisfaz G11 formal.
+- Correção na branch: prazo local para GET+WebCrypto digest com guarda de validade contra resultado tardio; catch usa `shadow.querySelectorAll('canvas')` para GPU; manifesto/UI descrevem conversa, não execução. Três regressões Chromium (19 esperadas). CI novo SHA pendente, sem polling. JEV consultivo, ADR-0001 PROPOSTO, NO-GO operacional G12, RBAC P02 e memória P03 sem prova.
