@@ -47,3 +47,16 @@ Oito testes cobrem roundtrip, identidade, hash, alteração com hash recalculado
 claims operacionais, campos privados, finanças/tipos/estado, JSON duplicado ou
 malformado, tamanho, origem inválida e hold incerto. A matriz G10 continua
 PARCIAL e G11 não provado. Não há evidência operacional nova.
+
+## Consumidor efêmero — obs.synthetic.session.v1
+
+SyntheticEvidenceSession reutiliza o envelope v1. Chamador fixa SHA/janela UTC
+declarados e cap 1–64. Aceitação atribui índice local, serializa concorrência,
+rejeita UUID/digest replay, origem divergente, tempo fora da janela/regressivo,
+orçamento mutante e spent/counters regressivos. Recusa/cap/receipt fechado
+encerram consumidor. Resumo fechado não publica valores/IDs/payloads/exceções;
+GO/authenticity false. Relatos válidos continuam podendo ser forjados.
+Anti-replay só nesta instância/processo; restart perde estado. Timestamps iguais
+admitem índice local, sem prova de ordem externa. Retenção só em memória, até
+64 receipts minimizados; descarte com processo. Sem store/serviço/assinatura,
+autoridade de relógio ou autenticação. Oito testes, inclusive concorrência.
