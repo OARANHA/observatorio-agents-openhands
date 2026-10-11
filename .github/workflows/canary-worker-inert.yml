@@ -3,6 +3,10 @@ name: Canary Worker Inert SDK
 on:
   pull_request:
     paths:
+      - docs/**
+      - MEMORY.md
+      - tests/test_canary_*.py
+      - scripts/probe_canary_sandbox.py
       - .github/workflows/canary-worker-inert.yml
       - scripts/probe_canary_worker.py
       - scripts/canary_sdk.py

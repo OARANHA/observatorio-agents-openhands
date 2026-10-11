@@ -215,3 +215,18 @@ JSON mínima distingue gasto liquidado e hold incerto, sempre operational_go=fal
 133 testes locais: 116 pass/17 opcionais skip; CI deste HEAD por conferir.
 Histórico, runs e critérios NO-GO em handoff OFFLINE-EVIDENCE-001.
 NO-GO operacional preservado; nenhuma integração operacional foi comprovada.
+
+
+## Retomada noturna — matriz verificável (2026-10-11)
+
+Main reconfirmada ba38f1a0dd29110c0b1dbbc7c0c0c51a07887510; PRs #19–#22
+integradas, oito runs reconfirmados success no HEAD exato. PR #7 aberta/draft
+em 48f898d99a8979ef2c794513131506b028772666, não integrar. PR #10 aberta;
+seu handoff preservado. ADR-0001 continua Proposto. Anexo do proprietário
+versionado em docs/GO_NO_GO_MATRIX.md com referências GitHub verificadas.
+Nova autorização: até oito PRs estritamente offline, merges condicionados
+a duas CIs e revisão adversarial registrada; não autoriza LLM/registro/
+delegação/provedor/infra/deploy. NO-GO operacional mantido.
+Workflow SDK inclui docs/memória/testes canary para evitar que PR documental
+seja considerada elegível sem a segunda CI; testes existentes não removidos.
+CI deste incremento ainda precisa ser comprovada no HEAD.
