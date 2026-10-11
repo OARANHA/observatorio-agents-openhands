@@ -1,6 +1,6 @@
 # Arquitetura — Observatório horizontal multiprojeto
 
-**Decisão vinculante:** `docs/decisions/ADR-0002-horizontal-operations.md`.
+**Decisão vinculante:** `docs/PROJECT_SOURCE.md` e `AGENTS.md`.
 
 ## Papéis e fronteiras
 ```text
