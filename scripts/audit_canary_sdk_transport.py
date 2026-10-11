@@ -74,6 +74,16 @@ def check_source(source: str) -> dict:
                 raise GateError("sdk_new_direct_litellm_call")
     if locations != {name:[location] for name,location in EXPECTED.items()}:
         raise GateError("sdk_transport_calls_changed")
+    all_hits={
+        name: sum(
+            1 for node in ast.walk(root)
+            if isinstance(node,ast.Call)
+            and isinstance(node.func,ast.Name) and node.func.id==name
+        )
+        for name in EXPECTED
+    }
+    if all_hits != {name:1 for name in EXPECTED}:
+        raise GateError("sdk_unreviewed_litellm_sink_call")
 
     # Metadata discovery may initiate auxiliary HTTP BEFORE these four sinks.
     metadata_calls={
