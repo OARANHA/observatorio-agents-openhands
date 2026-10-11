@@ -9,11 +9,12 @@ from __future__ import annotations
 from decimal import Decimal
 from types import SimpleNamespace
 
-from canary_budget import MILLION
+from canary_budget import MILLION, exact_money
 from canary_controls import GateError
 from canary_sdk import _metrics
 
 
+@exact_money
 def settle_success_from_sdk_metrics(gate, llm, before, sdk_response):
     """Fail-closed exact synthetic USD calculation from SDK metrics deltas."""
     try:

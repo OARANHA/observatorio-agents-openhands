@@ -12,6 +12,7 @@ on:
       - scripts/canary_transport_probe.py
       - scripts/canary_sdk_success_probe.py
       - scripts/audit_canary_sdk_transport.py
+      - tests/test_canary_accounting_hardening.py
       - tests/test_canary_transport_attempts.py
       - tests/test_canary_sdk_transport_audit.py
       - tests/test_sdk_real_transport_offline.py
@@ -47,6 +48,9 @@ jobs:
           sudo apparmor_parser -r /etc/apparmor.d/bwrap-userns-restrict
           python -m venv "$RUNNER_TEMP/observatorio-canary-sdk"
           "$RUNNER_TEMP/observatorio-canary-sdk/bin/pip" install --disable-pip-version-check --no-input --no-cache-dir 'openhands-sdk==1.53.0' 'openhands-tools==1.53.0'
+      - name: Contabilidade adversarial sintetica sem transporte
+        run: |
+          "$RUNNER_TEMP/observatorio-canary-sdk/bin/python" -B -m unittest discover -s tests -p test_canary_accounting_hardening.py -v
       - name: Compatibilidade do TaskManager oficial sem LLM
         run: |
           "$RUNNER_TEMP/observatorio-canary-sdk/bin/python" -B -m unittest discover -s tests -p test_canary_sdk_manager.py -v
