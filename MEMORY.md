@@ -504,3 +504,28 @@ Mentor somente standaloneDEMO, sem Canvas. Main pré-consolidação96ed4a3... .
 - Próxima etapa proposta: **Ciclo 005 — homologação visual**. Revisar PR #7/#35 sem merge, testar acessibilidade/segurança/compatibilidade, planejar a integração do Mentor DEMO #40 e preparar critérios de aceite; eventual instalação Canvas requer decisão explícita.
 - JEV MCP é *apoio probabilístico* e consultivo (na preparação sugeriu `split_task` com confiança baixa, 0,25); ChatGPT mantém coordenação sujeita a políticas, evidência e autorização do proprietário. Slack pode dar suporte a eventos minimizados/alertas, sem conferir autorização nem garantir gatilho imediato.
 - **NO-GO operacional** preservado: G12 BLOQUEADO; G11 revisão independente, P02 RBAC e P03 memória persistente pendentes. Nenhum agente/LLM real, deploy/Canvas/Core/VPS/MCP, merge #7/#35 ou ação cross-project autorizada por esta nota. Atualização canônica por PR separada, sem merge automático.
+
+## Ciclo 005 — candidata visual offline (2026-10-11)
+
+Main base `e06d3b01e60d9a5503e046dc0fe2eeb269f0e403` após #42. Reuso da PR #35 HEAD `811d5fa4c48aa9eb2cf618174b7d645039a590ac` em nova branch draft, sem merge #7/#35 e sem Canvas. Mobile/pointer lifecycle e testes Chromium sintéticos adicionais. Geração do build pré-validada estaticamente; CI do novo HEAD **a verificar**. Ver `docs/handoffs/OBS-CYCLE-005-VISUAL-CANDIDATE.md`. Mentor DEMO #40 preservado standalone. NO-GO, G11/G12/P02/P03 inalterados.
+
+## Ciclo 005 — JEV adversarial retomado (2026-10-11)
+
+- PR #43 HEAD anterior `a94d269c614d059879b367546a91f1856a312177` com 3 GREEN (CI `38167894448`, DOM `38167894440` 8/8, SDK `38167894511`). JEV `jev-1.13.0` priorizou código GET/proveniência/testes/mobile; consultivo, **não** revisão G11.
+- Confirmado truncamento `SIMULAR` no mobile; patch limitado `SIMULAR:` desktop / `DEMO:` mobile com `aria-label` completo + regressão Chromium. Nova CI pendente. Registro completo em `docs/handoffs/OBS-CYCLE-005-VISUAL-CANDIDATE.md`.
+- Riscos GET in-flight não cancelado, RBAC/memória/Canvas/WebGL2 não provados. NO-GO operacional, sem merge/deploy/LLM/infra.
+
+## Ciclo 005 — Codex revisão independente automatizada e A1/A2 (2026-10-11)
+- PR #43: Codex em sessão separada reportou A1–A5 P2 e A6 P3 (sem P0/P1 demonstrado); JEV consultivo `split_task`. Primeiro commit remedia A1 estado antigo e A2 rótulos de proveniência, com dois novos testes Chromium. A3/A4/A5 continuam pendentes, A6 parcial. Nova CI aguardada sem polling. Sem merge/Canvas/operação real; G11/G12/P02/P03 inalterados.
+
+## Ciclo 005 — A3/A4/A5 corrigidos em branch, CI pendente (2026-10-11)
+
+- HEAD anterior PR #43 `0ebb942c7e13199381966d96ed1e4be4e6f2d77d` com CI `38172263276`, DOM `38172263290` 11/11 e SDK `38172263281` GREEN. Patch seguinte implementa timeout local A3 (sem abort host), rollback montagem A4 e mobile `pan-y pinch-zoom` A5 + quatro testes (15 DOM esperados).
+- JEV consultivo; revisão separada Codex é automatizada e **G11 permanece não provado**. G12 bloqueado, P02/P03 não provados, NO-GO operacional. Novas CIs somente após usuário sinalizar green/red.
+
+## Ciclo 005 — proveniência visual em revisão (2026-10-11)
+- PR #43 HEAD histórico `0b6ccf879f92cc4691cacbe977db67fb58f07a6f`: CI e SDK GREEN; Graph DOM 15/15. Screenshot revelou rótulos residuais de “missão real”; patch de microcopy mais preciso e regressão DOM (16 esperados), a verificar. Em seguida pedir ao Codex reavaliação adversarial do HEAD final; G11 não provado, G12 bloqueado, P02/P03 não provados, sem merge/deploy/Canvas.
+
+## Ciclo 005 — R1/R2/R3 após segunda revisão Codex (2026-10-11)
+- PR #43 histórico `83957b69dfe3e35e87e4ba6a12b7768004187012` foi reavaliado pelo Codex: R1/R2 P2 confirmados, R3 P3, sem P0/P1 demonstrados; revisão IA separada não satisfaz G11 formal.
+- Correção na branch: prazo local para GET+WebCrypto digest com guarda de validade contra resultado tardio; catch usa `shadow.querySelectorAll('canvas')` para GPU; manifesto/UI descrevem conversa, não execução. Três regressões Chromium (19 esperadas). CI novo SHA pendente, sem polling. JEV consultivo, ADR-0001 PROPOSTO, NO-GO operacional G12, RBAC P02 e memória P03 sem prova.

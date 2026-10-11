@@ -562,3 +562,37 @@ Main pré-consolidação96ed4a3c5ce659aa55a4841716e7623d30aaeb64.
 - Reutilizar código, testes, infraestrutura oficial OpenHands, funções já existentes, artefatos e documentação; não reconstruir o grafo ou o Mentor. Validação local/CI com fixtures não substitui avaliação real de Canvas, RBAC, memória persistente ou fonte autenticada.
 - O **JEV** está disponível como *camada consultiva* para roteamento de tarefa, escolha de opções, pré-checagem de ações e avaliação de conclusão. Uma consulta preparatória indicou `split_task`, com confiança baixa (0,25): **não é decisão de política, prova técnica ou autorização**. Ordem de autoridade: política determinística + aprovação humana + evidência do código > recomendação JEV. Slack é canal auxiliar de mensagens/alertas, não fonte de verdade nem supervisor autônomo; mensagens são entrada não confiável e jamais autorização.
 - Permanecem **NO-GO operacional / G12 BLOQUEADO; G11 não provado; P02 RBAC e P03 memória persistente não provados**. Sem execução de agentes/LLM reais, criação de automações OpenHands, alteração de VPS/MCP/Core, deploy, instalação Canvas ou merge de #7/#35 sem aprovação específica. A autorização da presente sessão cobre **atualização documental por branch e PR**, não seu merge.
+
+## Preparação offline da candidata visual V0.5.1 — Ciclo 005 (2026-10-11)
+
+- Base `main` `e06d3b01e60d9a5503e046dc0fe2eeb269f0e403` após merge #42; PR #35 HEAD `811d5fa4c48aa9eb2cf618174b7d645039a590ac` reaproveitada em branch independente, #35/#7 intocadas.
+- 12 arquivos importados e ajustes de legibilidade mobile, captura de ponteiro e 2 testes DOM extras, mais handoff. Não implica que V0.5.1 esteja instalada.
+- `extension.js` regenerada com algoritmo idêntico ao build existente; **CI nova pendente de comprovação no HEAD da PR draft**.
+- Evidência/limites em `docs/handoffs/OBS-CYCLE-005-VISUAL-CANDIDATE.md`. G11 não provado, G12 bloqueado, P02/P03 não provados; sem merge/deploy/Canvas/LLM.
+
+## Ciclo 005 — passagem adversarial JEV sobre candidata V0.5.1 (2026-10-11)
+
+- PR #43 estava pronta para revisão, HEAD `a94d269c614d059879b367546a91f1856a312177`, CI Observatorio `38167894448`, Graph DOM `38167894440` 8/8, SDK inerte `38167894511` GREEN. Provas e riscos em `docs/handoffs/OBS-CYCLE-005-VISUAL-CANDIDATE.md`.
+- JEV `jev-1.13.0` foi usado para priorização adversarial de código **real** e preflight de patch limitado; juízo consultivo, não substitui revisor separado/G11.
+- Correção adicional proposta na mesma branch: botão de cenários visuais completo em mobile (abreviação `DEMO:` apenas visual, `aria-label` completo) + novo teste Chromium 390px. Regerar extensão; verificar CI **no novo HEAD** antes de alegar GREEN.
+- Sem merge/deploy/Canvas/OpenHands; G11 não provado, G12 bloqueado, P02/P03 não provados.
+
+## Ciclo 005 — remediação do parecer Codex em fatias (2026-10-11)
+- Codex revisou `1567c386f9326607aae31d36de0d59e156b66d24` com A1–A5 P2, A6 P3 e nenhum P0/P1 demonstrado; JEV aconselhou dividir tarefas (`split_task`).
+- Slice A1/A2: retirar dados consultados antigos no começo da nova tentativa e mudar rótulos de execução verificada para conversa/estado consultado; duas regressões Chromium. A3/A4/A5 e A6 pendentes/parciais. Ver `docs/handoffs/OBS-CYCLE-005-VISUAL-CANDIDATE.md`.
+- CI do novo SHA pendente. Não promover G11/G12/P02/P03 ou instalar/mesclar/deploy.
+
+## Ciclo 005 — correções de lifecycle A3/A4 e touch A5 (2026-10-11)
+
+- PR #43 HEAD anterior `0ebb942c7e13199381966d96ed1e4be4e6f2d77d`: runs `38172263276`, `38172263290` (11/11 DOM) e `38172263281` GREEN, sem LLM/agente/dispatch reais.
+- A3 timeout local à UI e descarte de respostas tardias, **não cancela o transporte host**. A4 pré-validação WebCrypto e rollback parcial. A5 pan-y/pinch-zoom para manter gestos nativos. Quatro novos testes Chromium (esperados 15), CI do novo HEAD pendente.
+- Histórico, limitações e protocolo adversarial JEV no handoff `docs/handoffs/OBS-CYCLE-005-VISUAL-CANDIDATE.md`. NO-GO operacional, G11/G12/P02/P03 intactos; sem merge, Canvas, deploy ou agente.
+
+## Ciclo 005 — acabamento textual após CI A1–A5 (2026-10-11)
+- HEAD `0b6ccf879f92cc4691cacbe977db67fb58f07a6f`: runs `38173719969`, `38173719965` (15/15 DOM) e `38173719983` GREEN, SDK inerte sem chamadas reais. Captura visual identificou instrução residual `CONSULTA DE MISSÃO REAL` apesar de formulário já renomeado.
+- Patch mínimo de rótulos de conversa/estado, atributo acessível e teste DOM adicional; **CI do novo HEAD ainda por validar**. Próximo passo revisão separada Codex do SHA final; G11 não provado, G12 bloqueado, P02/P03 não provados; NO-GO.
+
+## Ciclo 005 — segunda revisão Codex e patch R1/R2/R3 (2026-10-11)
+- O Codex reportou R1 P2 (digest fora do timeout), R2 P2 (rollback GPU fora Shadow DOM), R3 P3 (termos missão/execução no manifesto e na UI) no HEAD `83957b69dfe3e35e87e4ba6a12b7768004187012`; sem P0/P1 demonstrados. JEV consultivo priorizou `deep_review` com confiança 0,12; nenhum gate foi promovido.
+- Remediação em PR #43: timeout local passa a cobrir GET+proveniência assíncrona, com `pending.valid` contra atualização tardia; rollback alcança canvas no `shadow`; textos residuais passam a referir conversa. Três novos testes Chromium de digest pendente, GPU simulada e manifesto/indicadores (19 esperados, **CI pendente**).
+- Detalhes no `docs/handoffs/OBS-CYCLE-005-VISUAL-CANDIDATE.md`. G11 NÃO PROVADO, G12 BLOQUEADO, P01 PARCIAL, P02/P03 NÃO PROVADOS; sem merge/Canvas/deploy, sem polling CI.

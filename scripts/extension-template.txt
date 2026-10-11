@@ -1,5 +1,5 @@
 // Gerado por scripts/build.mjs. Edite source/observatorio-v02.html e regenere.
-// Demonstração preservada; consulta pontual autenticada de execução, sem operação de escrita.
+// V0.5: Universo + Grafo de relações verificáveis; nenhuma operação de escrita.
 const STYLE = __STYLE__;
 const MARKUP = __MARKUP__;
 
@@ -12,14 +12,16 @@ const REAL_STYLE = `
 .ob-real button{padding:8px;border:1px solid #7bd5ef;background:#174564;color:white;border-radius:6px;cursor:pointer}
 .ob-real output{display:grid;gap:5px;overflow-wrap:anywhere}
 .ob-real output p{margin:0;line-height:1.4}
+.graph-active .ob-real:not([open]){display:none}
+.graph-active .ob-real[open]{top:210px;right:18px;max-height:calc(100% - 230px);overflow:auto}
 .ob-real .moon{display:inline-block;width:15px;height:15px;border-radius:50%;background:radial-gradient(circle at 30% 30%,white,#77d5f3,#23506c);box-shadow:0 0 12px #8edafa}
 `;
-function mountRealRead(stage,host,onVerified) {
+function mountRealRead(stage,host,onVerified,onReset) {
   const scene=stage.querySelector('.scene-column');
   if(!scene)return ()=>{};
   const sheet=document.createElement('style');sheet.textContent=REAL_STYLE;stage.append(sheet);
   const detail=document.createElement('details');detail.className='ob-real';
-  detail.innerHTML=`<summary>☾ CONSULTA DE MISSÃO REAL</summary><div class="form">
+  detail.innerHTML=`<summary>☾ CONSULTA DE CONVERSA</summary><div class="form">
     <label>ID da conversa OpenHands<input class="id" placeholder="UUID" autocomplete="off"></label>
     <label>Projeto associado pelo operador<input class="project" value="OARANHA/observatorio-agents-openhands" autocomplete="off"></label>
     <button type="button">Consultar estado no OpenHands</button><output aria-live="polite"></output></div>`;
@@ -27,20 +29,40 @@ function mountRealRead(stage,host,onVerified) {
   const get=s=>detail.querySelector(s), button=get('button'), output=get('output');
   const say=(label,value)=>{const p=document.createElement('p');p.textContent=label+value;output.append(p);};
   let active=true;
+  const GET_TIMEOUT_MS=10000; // Prazo local da interface. Sem AbortSignal do host comprovado.
+  const inFlight=new Set();
   button.addEventListener('click',async()=>{
     const id=get('.id').value.trim().toLowerCase();
     const project=get('.project').value.trim();
     output.replaceChildren();
+    onReset(); // Nova tentativa não herda observação possivelmente revogada.
     if(!/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(id)){say('Erro: ','UUID inválido');return;}
     if(!/^[A-Za-z0-9._-]+\/[A-Za-z0-9._-]+$/.test(project)){say('Erro: ','projeto inválido');return;}
     if(!host?.agentServer?.request){say('Indisponível: ','API de leitura do Canvas ausente');return;}
     button.disabled=true;say('Consulta: ','em andamento');
+    let expired=false;
+    const pending={timer:null,cancel:null,valid:true};
+    const current=()=>active&&pending.valid;
+    // O prazo cobre o GET e o cálculo assíncrono de proveniência. Não cancela o host.
+    const deadline=new Promise((_,reject)=>{
+      pending.cancel=()=>{pending.valid=false;reject(new Error('montagem encerrada'));};
+      pending.timer=setTimeout(()=>{expired=true;pending.valid=false;reject(new Error('prazo local excedido'));},GET_TIMEOUT_MS);
+    });
+    inFlight.add(pending);
     try {
-      const item=await host.agentServer.request({method:'GET',path:'/api/conversations/'+id});
-      if(!active)return;
+      const processing=(async()=>{
+        const item=await host.agentServer.request({method:'GET',path:'/api/conversations/'+id});
+        if(!current())return null;
+        if(item&&item.id===id&&typeof item.execution_status==='string'){
+          await onVerified({conversationId:id,status:item.execution_status,project,updatedAt:typeof item.updated_at==='string'?item.updated_at:null,observedAt:new Date().toISOString()},current);
+        }
+        return item;
+      })();
+      const item=await Promise.race([processing,deadline]);
+      if(!current())return;
       output.replaceChildren();
       if(!item||item.id!==id||typeof item.execution_status!=='string'){say('Erro: ','contrato não confirmado');return;}
-      const moon=document.createElement('span');moon.className='moon';moon.setAttribute('aria-label','Lua: execução real verificada');output.append(moon);
+      const moon=document.createElement('span');moon.className='moon';moon.setAttribute('aria-label','Lua: conversa consultada');output.append(moon);
       say('Conversa: ',id);
       say('Estado recebido: ',item.execution_status);
       say('Projeto declarado: ',project);
@@ -48,19 +70,26 @@ function mountRealRead(stage,host,onVerified) {
       if(typeof item.updated_at==='string')say('Atualizado no servidor: ',item.updated_at);
       say('Observado em (hora do navegador): ',new Date().toISOString());
       say('Associação de projeto: ','manual, não atestada pela API');
-      onVerified({conversationId:id,status:item.execution_status,project,updatedAt:typeof item.updated_at==='string'?item.updated_at:null,observedAt:new Date().toISOString()});
+      detail.open=false; // Não encobrir o universo após consulta; reabrível pelo operador.
     } catch (_error) {
-      if(active){output.replaceChildren();say('Consulta: ','indisponível/não autorizada; estado desconhecido');}
-    } finally {if(active)button.disabled=false;}
+      if(active){output.replaceChildren();say('Consulta: ',expired?'prazo local excedido; resposta tardia ignorada (a requisição no host pode continuar)':'indisponível/não autorizada; estado desconhecido');}
+    } finally {
+      pending.valid=false;clearTimeout(pending.timer);inFlight.delete(pending);
+      if(active)button.disabled=false;
+    }
   });
-  return ()=>{active=false;detail.remove();sheet.remove();};
+  return ()=>{
+    active=false;
+    for(const pending of inFlight){clearTimeout(pending.timer);pending.cancel();}
+    inFlight.clear();detail.remove();sheet.remove();
+  };
 }
 
 
 function mountObservatorio({container,host}) {
   const wrapper=document.createElement('section');
   wrapper.className='ob-wrap';
-  wrapper.setAttribute('aria-label','Observatório de Agentes — demonstração');
+  wrapper.setAttribute('aria-label','Observatório de Agentes — Universo e Grafo');
   const shadow=wrapper.attachShadow({mode:'open'});
   const style=document.createElement('style');
   style.textContent=STYLE;
@@ -69,17 +98,24 @@ function mountObservatorio({container,host}) {
   stage.className='ob-wrap';
   stage.innerHTML=MARKUP;
   shadow.append(stage);
-  container.append(wrapper);
-  let destroyed=false,rafId=0;
-  const disposeRead=mountRealRead(stage,host,observation=>applyVerifiedMission(observation));
+  // WebCrypto é indispensável para identidade efêmera, nunca autenticação de tenant.
+  if(typeof crypto==='undefined'||typeof crypto.randomUUID!=='function'||!crypto.subtle||typeof crypto.subtle.digest!=='function')throw Error('WebCrypto indisponível');
+  const observationContext=crypto.randomUUID();
+  let destroyed=false,rafId=0,disposeRead=()=>{},observer=null;
   const resizeCallbacks=[];
   const resize=()=>{if(destroyed)return;for(const cb of resizeCallbacks)cb();};
-  const observer=typeof ResizeObserver==='function'?new ResizeObserver(resize):null;
-  if(observer)observer.observe(wrapper);
-  else window.addEventListener('resize',resize);
-  // Código visual herdado da V0.2, agora isolado no mount.
+  try {
+    container.append(wrapper);
+    disposeRead=mountRealRead(stage,host,async (observation,isCurrent)=>{
+      const graphIdentity=await graphIdentityForObservation(observationContext,observation.conversationId,observation.project);
+      if(!destroyed&&isCurrent())applyVerifiedMission({...observation,graphIdentity});
+    },()=>clearConsultedObservation());
+    observer=typeof ResizeObserver==='function'?new ResizeObserver(resize):null;
+    if(observer)observer.observe(wrapper);
+    else window.addEventListener('resize',resize);
+    // Código visual herdado da V0.2, agora isolado no mount.
 __CODE__
-  return () => {
+    return () => {
     destroyed=true;
     disposeRead();
     cancelAnimationFrame(rafId);
@@ -87,7 +123,17 @@ __CODE__
     if(!observer)window.removeEventListener('resize',resize);
     try {const gl=engine3d?.canvas?.getContext('webgl2');gl?.getExtension('WEBGL_lose_context')?.loseContext();}catch(_){}
     wrapper.remove();
-  };
+    };
+  } catch (error) {
+    destroyed=true;
+    try{disposeRead();}catch(_){}
+    cancelAnimationFrame(rafId);
+    try{observer?.disconnect();}catch(_){}
+    window.removeEventListener('resize',resize);
+    try{shadow.querySelectorAll('canvas').forEach(c=>c.getContext('webgl2')?.getExtension('WEBGL_lose_context')?.loseContext());}catch(_){}
+    wrapper.remove();
+    throw error;
+  }
 }
 export function activate(host) {
   return host.registerPage('observatorio', ({container}) => mountObservatorio({container,host}));
