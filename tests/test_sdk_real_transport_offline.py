@@ -200,7 +200,11 @@ class RealSDKOfflineTests(unittest.TestCase):
             # synthetic RuntimeError. The second attempt must be denied at the
             # patched sink before a fake dispatch (zero provider I/O).
             with patch.object(
-                sdk_module,"is_prompt_cache_too_small",return_value=True
+                sdk_module,"is_prompt_cache_too_small",
+                side_effect=lambda error: (
+                    type(error) is RuntimeError
+                    and str(error) == "synthetic transport failure"
+                )
             ), patch.object(
                 LLM,"is_caching_prompt_active",return_value=True
             ):
@@ -219,7 +223,13 @@ class RealSDKOfflineTests(unittest.TestCase):
                 sdk_module,"is_prompt_cache_too_small",return_value=False
             ), patch.object(
                 LLM,"_resolve_refreshed_api_key",
-                return_value="SYNTHETIC_REFRESH_VALUE"
+                autospec=True,
+                side_effect=lambda _self,error: (
+                    "SYNTHETIC_REFRESH_VALUE"
+                    if type(error) is RuntimeError
+                    and str(error) == "synthetic transport failure"
+                    else None
+                )
             ):
                 with self.assertRaises(GateError):
                     with fixture.gate.logical_call():
