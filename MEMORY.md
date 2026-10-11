@@ -494,3 +494,13 @@ intocadas abertas; documentação anterior preservada. SHA final na PR de fecham
 #40 integrada96ed4a3c5ce659aa55a4841716e7623d30aaeb64 após3CIs HEADb3ee40f...
 GREEN/logs reais/QA antesmerge:213Python185PASS28SDKskip;125SDK/9Node/5DOMPASS.
 Mentor somente standaloneDEMO, sem Canvas. Main pré-consolidação96ed4a3... .
+
+## Ponte de continuidade para Ciclo 005 — 2026-10-11 (após o fechamento do Ciclo 004)
+
+- Fonte de verdade para retomar: `docs/PROJECT_SOURCE.md` → `AGENTS.md` → ADRs/status → `docs/CANONICAL_STATE.md` + `MEMORY.md` → arquitetura/README → GitHub/código/testes. Método REAL NOW → PROVEN EVIDENCE → GAPS → REUSE GATE → DECISION.
+- GitHub main verificada em `ecaf214f4b651da916c2195f4b3c56a05addc19b` após #38/#39/#40/#41 integradas. #7 aberta/draft (`48f898d99a8979ef2c794513131506b028772666`) e #35 aberta (`811d5fa4c48aa9eb2cf618174b7d645039a590ac`), **sem merge**. App Canvas v0.4.2 permanece única instalação documentada; Mentor #40 é DEMO independente, não integrado.
+- Slack Wandora: `#observatorio-eventos` e `#observatorio-aprovacoes` presentes; conector lê o canal e comprova `@chatgpt` como membro. Work trigger imediato de novas mensagens continua **BLOCKED** por falso negativo aparente de associação bot/canal (causa não demonstrada); nenhuma tarefa event-driven. Nenhum token/credencial publicado.
+- Tarefa **horária**, independente do Work event-driven, criada no ChatGPT: `Monitoramento Observatório Slack`, filtro `OBS-TEST-V1`. Mensagem fictícia `DEMO-001` enviada e lida com sucesso pelo conector; **entrega de alerta automático ainda não comprovada**. OpenHands Automate mostra zero automações no print do operador; template de Slack não foi habilitado.
+- Próxima etapa proposta: **Ciclo 005 — homologação visual**. Revisar PR #7/#35 sem merge, testar acessibilidade/segurança/compatibilidade, planejar a integração do Mentor DEMO #40 e preparar critérios de aceite; eventual instalação Canvas requer decisão explícita.
+- JEV MCP é *apoio probabilístico* e consultivo (na preparação sugeriu `split_task` com confiança baixa, 0,25); ChatGPT mantém coordenação sujeita a políticas, evidência e autorização do proprietário. Slack pode dar suporte a eventos minimizados/alertas, sem conferir autorização nem garantir gatilho imediato.
+- **NO-GO operacional** preservado: G12 BLOQUEADO; G11 revisão independente, P02 RBAC e P03 memória persistente pendentes. Nenhum agente/LLM real, deploy/Canvas/Core/VPS/MCP, merge #7/#35 ou ação cross-project autorizada por esta nota. Atualização canônica por PR separada, sem merge automático.
