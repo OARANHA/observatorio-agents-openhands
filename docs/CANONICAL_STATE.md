@@ -141,3 +141,21 @@ segunda tentativa não inteiramente cobertos pelo wrapper público; **NO-GO**
 operacional continua, mesmo com CI verde. Testes e escopo:
 `docs/handoffs/OBS-EXPLORER-BUDGET-SDK-MOCK-001.md`.
 Nenhum merge/deploy/chamada LLM nesta preparação.
+
+## Tentativas internas SDK/LiteLLM — preparação da prova sintética (2026-10-11)
+
+Base reconciliada em `main` `8e008325bb59562369b0a0e69a017eda3123eb89`
+(PR #15 integrada). Branch `test/explorer-sdk-transport-attempts-v1`
+investiga os quatro aliases LiteLLM na fonte SDK 1.53.0 e o tráfego
+auxiliar de metadados (`resolve_provider_metadata_sync` /
+`aresolve_provider_metadata`). Testes sintéticos exigem uma única
+tentativa de transporte por escopo lógico, reserva prévia e cancelamento
+ao primeiro retry/fallback/concorrência. Auditoria AST do SDK instalado
+deve falhar se a superfície nominal mudar. Essa prova **não cobre**
+egress real, chamadas dinâmicas ou caminhos internos do LiteLLM; o módulo
+novo recusa o SDK real e não é um mecanismo de produção.
+Handoff: `docs/handoffs/OBS-EXPLORER-SDK-TRANSPORT-ATTEMPTS-001.md`.
+A CI desta branch ainda precisa ser validada por logs do HEAD exato.
+**NO-GO operacional** até controle independente de rede, teste SDK com
+transporte stubado, modelo/tarifas/tokens e autorização específica.
+Nenhuma chamada LLM, merge, deploy ou alteração na VPS/Canvas/Core.
