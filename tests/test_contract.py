@@ -116,6 +116,23 @@ class Contract(unittest.TestCase):
         self.assertNotIn('localStorage', source)
         self.assertNotIn('setInterval(', source)
 
+
+    def test_lua_real_separada_das_simulacoes(self):
+        source = (ROOT / 'extension.js').read_text()
+        self.assertIn('id="real-lua"', source)
+        self.assertIn('function openVerifiedSystem()', source)
+        self.assertIn('function renderVerifiedPanel()', source)
+        self.assertIn('function applyVerifiedMission(observation)', source)
+        self.assertIn("systems.push('observado')", source)
+        self.assertIn('AGENTES COMPROVADOS', source)
+        self.assertIn('Manual', source)
+        self.assertIn('Os demais planetas são demonstrações.', source)
+        self.assertIn('SIMULAÇÃO:', source)
+        self.assertIn("host.agentServer.request({method:'GET',path:'/api/conversations/'+id})", source)
+        self.assertNotIn('fetch(', source)
+        self.assertNotIn('setInterval(', source)
+        self.assertNotIn('document.cookie', source)
+
     def test_sintaxe(self):
         subprocess.run(['node', '--check', str(ROOT / 'extension.js')], check=True)
 
