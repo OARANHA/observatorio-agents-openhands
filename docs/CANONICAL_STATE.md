@@ -247,3 +247,15 @@ contabilizado uma vez antes do encerramento, sem ações seguintes. Erros
 expirados mantêm reserva incerta. Local: 127 testes, 110 pass/17 opcionais skip.
 CI/revisão deste HEAD por conferir. NO-GO operacional mantido.
 Handoff TERMINAL-SETTLEMENT-001 em docs/handoffs.
+
+## Ciclo offline autorizado — quarto incremento (2026-10-11)
+
+PRs #19, #20 e #21 integradas sequencialmente com revisão adversarial
+automatizada favorável e duas CIs GREEN no HEAD exato. Main `7323510`.
+Permissão explícita do proprietário vale somente para os quatro incrementos
+offline; não autoriza agentes/LLM, provedores, deploy ou infraestrutura.
+Configuração nominal SDK comparada antes/depois da resposta fictícia; evidência
+JSON mínima distingue gasto liquidado e hold incerto, sempre operational_go=false.
+133 testes locais: 116 pass/17 opcionais skip; CI deste HEAD por conferir.
+Histórico, runs e critérios NO-GO em handoff OFFLINE-EVIDENCE-001.
+NO-GO operacional preservado; nenhuma integração operacional foi comprovada.
