@@ -18,3 +18,17 @@
 
 ## Retomada
 `docs/PROJECT_SOURCE.md` → `AGENTS.md` → `docs/CANONICAL_STATE.md` → `docs/ARCHITECTURE.md` → estado real do código e integrações.
+
+## Diagnóstico da equipe — integração local em 2026-10-11
+
+Base GitHub reconciliada: `1fb8575bc55778130d8e8c6184e8939c54aa6bab`
+(PR #8 integrada). Branch: `feat/observatorio-team-sdk-diagnostic-v1`.
+O loader oficial SDK/Tools **1.53.0** carregou localmente as definições
+Construtor/Verificador; preset `code-explorer` presente. Registry SDK vazio
+antes/depois. **Nenhum agente registrado, executado ou delegado.**
+20 testes unittest, diagnóstico estático/SDK, build e sintaxe JS aprovados.
+Isso não comprova integração na sessão Canvas nem execução remota.
+Relato histórico de OBS-TEAM-CANARY-001 veio do ZIP; MCP original não relido.
+Evidências e limites: `docs/handoffs/OBS-TEAM-CANARY-001.md` e
+`team/SDK_DIAGNOSTIC.md`. Catálogo segue não ativado; app instalado não atualizado.
+Nenhum merge/deploy realizado. PR #7 do grafo continua separada.
