@@ -551,3 +551,6 @@ Main base `e06d3b01e60d9a5503e046dc0fe2eeb269f0e403` após #42. Reuso da PR #35 
 
 ## CYCLE007 — mais uma correção visual mobile (2026-10-11)
 - Revisão adversarial Codex identificou colisões mínimas em 320/340 após consulta (HEAD `29675a85523b3fb1fd7d7c22c5a03daa6c6a0563`). Implementado mapa móvel estreito com 2 colunas × 4 linhas, 540px de altura e linhas SVG seguindo o modelo, sem mudança de proveniência. Teste de colisões real ampliado 320/340/350/360/390/900 e retorno a 390; 23 DOM esperados, nova CI pendente, sem polling. G11 não provado/G12 bloqueado. Canvas V0.5.1 não alterado.
+
+## CYCLE007 — RED de isolamento de graphModel e resize (2026-10-11)
+- HEAD anterior `1a5e902593e717cf5b27a2fc9dfdf5fa998aa7ee` dupla CI RED: identity contract isolado falhou em `$ is not defined`, DOM mobile computed fontSize/animationName vazios; teste geométrico em 320+ PASS. Separada decisão de layout da função pura `graphModel`, e redraw condicionado à troca de layout para preservar foco/DOM. Acrescentado teste Chromium de estabilidade de foco 390→400→390. Esperados 24 DOM no próximo SHA, ainda sem verificação de CI. Sem merge/Canvas/deploy. G11 não provado; G12 bloqueado.

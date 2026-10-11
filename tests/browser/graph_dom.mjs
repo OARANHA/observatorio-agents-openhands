@@ -334,3 +334,21 @@ test('consulted constellation nodes do not collide from 320px through desktop wi
   }
  }finally{await close(f);}
 });
+test('graph resize within same layout preserves node DOM and keyboard focus',async()=>{
+ const f=await fixture({mobile:true,reduced:true});try{
+  const p=f.page;await p.locator('#rail-graph').click();
+  const node=p.locator('.graph-node').first();
+  const id=await node.getAttribute('data-node');
+  await node.focus();
+  await node.evaluate(el=>{el.dataset.resizeSentinel='retained';});
+  for(const size of [{width:390,height:800},{width:400,height:800},{width:390,height:844}]){
+   await p.setViewportSize(size);
+   await p.waitForTimeout(50);
+   assert.equal(await p.locator('.graph-node').first().getAttribute('data-resize-sentinel'),'retained',
+    'resize without layout transition must not destroy node DOM');
+   assert.equal(await p.evaluate(()=>document.querySelector('.ob-wrap').shadowRoot.activeElement?.dataset.node),id,
+    'resize without layout transition must retain keyboard focus');
+   assert.equal(await p.locator('#graph-map').getAttribute('data-layout'),'default');
+  }
+ }finally{await close(f);}
+});
