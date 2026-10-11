@@ -65,6 +65,9 @@ test('mobile provenance labels and legend are legible at 390px',async()=>{
   const p=f.page;await p.locator('#rail-graph').click();
   const sizes=await p.locator('.graph-node small').evaluateAll(els=>els.map(el=>parseFloat(getComputedStyle(el).fontSize)));
   assert.ok(sizes.length>=5&&sizes.every(n=>n>=10),'mobile provenance labels must be at least 10px');
+  const demo=await p.locator('.graph-node[data-kind="demo"] small').evaluateAll(els=>els.map(el=>({text:el.textContent.trim(),height:el.getBoundingClientRect().height,lineHeight:parseFloat(getComputedStyle(el).lineHeight)})));
+  assert.equal(demo.length,4);
+  assert.ok(demo.every(x=>x.text==='DEMO'&&x.height<=x.lineHeight+1),'mobile DEMO labels must fit on a single line');
   assert.ok(await p.locator('.graph-legend').isVisible());
   assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
  }finally{await close(f);}

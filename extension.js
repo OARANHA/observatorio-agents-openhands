@@ -213,7 +213,7 @@ function graphModel(){
   const edges=[];
   Object.keys(defs).filter(k=>k!=='observado').forEach((key,i)=>{
     const item=defs[key];
-    nodes.push({id:'demo-'+key,name:item.name,tag:'DEMONSTRAÇÃO',kind:'demo',x:places[i][0],y:places[i][1],description:'Projeto ilustrativo. Agentes, missões e atividades não comprovados.'});
+    nodes.push({id:'demo-'+key,name:item.name,tag:'DEMO',kind:'demo',x:places[i][0],y:places[i][1],description:'Projeto ilustrativo. Agentes, missões e atividades não comprovados.'});
     edges.push({from:'demo-root',to:'demo-'+key,kind:'demo'});
   });
   if(verifiedMission&&validGraphIdentity(verifiedMission.graphIdentity)){
