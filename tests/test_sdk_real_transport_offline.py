@@ -104,6 +104,10 @@ class OfflineSDKFixture:
             def astop(name):
                 async def fake(**_kwargs):
                     self.arrived.append(name)
+                    if mode == "success":
+                        if response_factory is None:
+                            raise GateError("fake_success_response_missing")
+                        return response_factory(name)
                     if mode == "runtime_error":
                         raise RuntimeError("synthetic transport failure")
                     raise OfflineSyntheticHalt("synthetic sink reached")
@@ -228,7 +232,7 @@ class RealSDKOfflineTests(unittest.TestCase):
                         total_tokens=prompt+output),
         )
 
-    def _fake_sdk_cost(self, _telemetry, response, provider_info=None):
+    def _fake_sdk_cost(self, response, provider_info=None):
         normalized = normalize_usage(_response_usage(response))
         if normalized is None or not normalized.has_tokens:
             return None
