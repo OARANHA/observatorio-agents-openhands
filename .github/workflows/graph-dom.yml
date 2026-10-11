@@ -1,0 +1,29 @@
+name: Graph DOM Offline
+on:
+  pull_request:
+    paths:
+      - source/**
+      - extension.js
+      - scripts/build.mjs
+      - scripts/extension-template.txt
+      - tests/browser/**
+      - .github/workflows/graph-dom.yml
+permissions:
+  contents: read
+jobs:
+  graph-dom:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Dependência de teste efêmera fixada, sem scripts de instalação
+        run: npm install --prefix "$RUNNER_TEMP/obs-graph-dom" --ignore-scripts --no-audit --no-fund playwright@1.58.0
+      - name: Chromium oficial no runner efêmero
+        run: node "$RUNNER_TEMP/obs-graph-dom/node_modules/playwright/cli.js" install --with-deps chromium --only-shell
+      - name: DOM fictício sem rede, com sandbox Chromium obrigatório
+        run: OBS_PLAYWRIGHT_MODULE="$RUNNER_TEMP/obs-graph-dom/node_modules/playwright" node --test --test-reporter=tap tests/browser/graph_dom.mjs
