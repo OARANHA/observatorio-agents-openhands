@@ -177,3 +177,11 @@ local. Handoff:
 `docs/handoffs/OBS-EXPLORER-SDK-SUCCESS-SETTLEMENT-001.md`.
 Nenhum preço real, token cap operacional, credencial ou modelo autorizado.
 Sem execução LLM, deploy ou merge automático. **NO-GO operacional**.
+
+## Precisão monetária sintética — 2026-10-11
+
+Base `50009d1` (PR #18 integrada). Contexto Decimal independente e exato,
+limites defensivos de representações e testes de sub-reserva implementados.
+115 testes descobertos: 98 aprovados, 17 opcionais ignorados localmente.
+CI/revisão do HEAD ainda por conferir; NO-GO operacional permanece.
+Handoff: `docs/handoffs/OBS-EXPLORER-MONEY-HARDENING-001.md`.

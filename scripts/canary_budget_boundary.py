@@ -11,7 +11,7 @@ from decimal import Decimal
 import inspect
 
 from canary_controls import GateError
-from canary_budget import validate_sdk_config
+from canary_budget import validate_sdk_config, exact_money
 from canary_sdk import _metrics
 
 ROUTES=("completion","acompletion","responses","aresponses")
@@ -55,6 +55,7 @@ def synthetic_budgeted_llm_routes(llm_class, guard, book, rates, caps):
         reservation=book.reserve(guard,rates,caps,live=False)
         return starting,reservation
 
+    @exact_money
     def after(llm,starting,reservation):
         finish=_metrics(llm)
         cost=Decimal(str(finish[0]))-Decimal(str(starting[0]))

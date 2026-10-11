@@ -6,7 +6,8 @@ Not yet wired to SDK provider routes; never grants operational authorization.
 from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, InvalidOperation, Context, localcontext, Inexact, Rounded
+from functools import wraps
 from threading import RLock
 from urllib.parse import urlsplit
 from canary_controls import GateError
@@ -19,19 +20,31 @@ OFFICIAL_HOSTS={
     "google":frozenset({"ai.google.dev","cloud.google.com"}),
 }
 
+def exact_money(fn):
+    """Independent exact arithmetic; never inherit caller rounding or traps."""
+    @wraps(fn)
+    def checked(*args, **kwargs):
+        context = Context(prec=80, Emin=-99, Emax=99)
+        context.traps[Inexact] = context.traps[Rounded] = True
+        with localcontext(context):
+            return fn(*args, **kwargs)
+    return checked
+
+
 def _positive_decimal(value: str, error: str) -> Decimal:
-    if not isinstance(value,str) or not value.strip():
+    if not isinstance(value,str) or not value.strip() or len(value)>64:
         raise GateError(error)
     try:
         result=Decimal(value)
     except InvalidOperation as exc:
         raise GateError(error) from exc
-    if not result.is_finite() or result<=0:
+    if (not result.is_finite() or result<=0 or len(result.as_tuple().digits)>30
+        or abs(result.as_tuple().exponent)>18 or result.adjusted()>12):
         raise GateError(error)
     return result
 
 def _positive_int(value: int, error: str) -> int:
-    if type(value) is not int or value<=0:
+    if type(value) is not int or value<=0 or value>1_000_000_000:
         raise GateError(error)
     return value
 
@@ -135,6 +148,7 @@ class BudgetBook:
         self.closed=False
         self._lock=RLock()
 
+    @exact_money
     def reserve(self,guard,rates: RateCard,caps: TokenCaps,*,live: bool=False,
                 today: date|None=None) -> Reservation:
         with self._lock:
@@ -162,6 +176,7 @@ class BudgetBook:
                 self.closed=True
                 raise
 
+    @exact_money
     def settle(self,guard,reservation: Reservation,*,input_tokens: int,
                output_tokens: int,reported_usd: str) -> Decimal:
         with self._lock:
@@ -196,6 +211,7 @@ class BudgetBook:
             guard.cancel()
             self.closed=True
 
+@exact_money
 def validate_sdk_config(llm,rates: RateCard,caps: TokenCaps,*,live: bool=False,
                         today: date|None=None) -> Decimal:
     """Only inert SDK field comparison, not proof of provider enforcement."""
