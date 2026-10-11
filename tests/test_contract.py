@@ -166,7 +166,7 @@ class GraphV050(unittest.TestCase):
 
     def test_manifest_v050(self):
         data = json.loads((ROOT / 'canvas-extension.json').read_text(encoding='utf-8'))
-        self.assertEqual(data['version'], '0.5.1')
+        self.assertEqual(data['version'], '0.5.2')
         self.assertIn('grafo', data['description'].lower())
 
     def test_graph_navigation_and_interaction(self):

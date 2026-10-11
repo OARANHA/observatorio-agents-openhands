@@ -102,6 +102,70 @@
 .graph-tools button{font:inherit;font-size:11px;color:#dcf9ff;background:#154561;border:1px solid #67bddb;border-radius:8px;padding:8px 10px;cursor:pointer}
 .graph-tools button:hover{background:#215d7b}
 @media(max-width:580px){.graph-tools button{padding:6px;font-size:10px}}
+
+/* V0.5.2 — céu de constelações: estética local, sem representar telemetria nova. */
+.graph-map[data-visual="stellar"]{isolation:isolate;background-color:#071526;background-image:
+ radial-gradient(ellipse at 20% 22%,rgba(45,100,173,.29),transparent 37%),
+ radial-gradient(ellipse at 76% 68%,rgba(45,121,134,.17),transparent 42%),
+ radial-gradient(ellipse at 50% 48%,rgba(21,55,100,.32),transparent 65%),
+ linear-gradient(135deg,#06101f,#091c32 58%,#07101e);
+ border:1px solid #466d9b7d;box-shadow:inset 0 0 72px #010816a3,0 16px 46px #00081655}
+.graph-map[data-visual="stellar"]:before{z-index:0;opacity:.65;inset:0;background-image:
+ radial-gradient(circle at 7% 18%,#d7f0ff 0 1px,transparent 2px),
+ radial-gradient(circle at 18% 61%,#82bdec 0 1px,transparent 2px),
+ radial-gradient(circle at 34% 12%,#ccdbff 0 1px,transparent 2px),
+ radial-gradient(circle at 42% 83%,#81bded 0 1px,transparent 2px),
+ radial-gradient(circle at 61% 36%,#c8e7ff 0 1px,transparent 2px),
+ radial-gradient(circle at 78% 15%,#80c7df 0 1px,transparent 2px),
+ radial-gradient(circle at 89% 69%,#bddbff 0 1px,transparent 2px),
+ radial-gradient(circle at 96% 41%,#a7d1ff 0 1px,transparent 2px),
+ radial-gradient(circle,#6487ba77 .75px,transparent 1.5px);
+ background-size:auto,auto,auto,auto,auto,auto,auto,auto,64px 64px}
+.graph-map[data-visual="stellar"]:after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+ background:repeating-radial-gradient(ellipse at 50% 49%,transparent 0 71px,#508ec419 72px 73px,transparent 74px 142px),
+ linear-gradient(#5e99c10b 1px,transparent 1px),linear-gradient(90deg,#5e99c10b 1px,transparent 1px);
+ background-size:auto,48px 48px,48px 48px;mask-image:linear-gradient(to right,transparent,#000 14%,#000 86%,transparent);opacity:.66}
+.graph-map[data-visual="stellar"] .graph-surface{z-index:1}
+.graph-map-index{position:absolute;z-index:2;left:17px;top:15px;pointer-events:none;
+ display:flex;align-items:center;gap:7px;color:#aed1e7;font-size:9px;letter-spacing:.19em;
+ text-shadow:0 1px 7px #040c1c;font-weight:700}
+.graph-map-index i{width:6px;height:6px;display:inline-block;background:#8ce7e0;border-radius:50%;box-shadow:0 0 9px #5adcd0}
+.graph-edges .graph-arc-glow{fill:none;stroke:#6ba2e9;stroke-width:9;opacity:.12;vector-effect:non-scaling-stroke}
+.graph-edges .graph-arc{fill:none;stroke:#8cb8eb;stroke-width:1.7;stroke-linecap:round;vector-effect:non-scaling-stroke;opacity:.8}
+.graph-edges .graph-arc[data-kind="demo"]{stroke:#8dabd4;stroke-dasharray:2 6;opacity:.75}
+.graph-edges .graph-arc-glow[data-kind="verified"]{stroke:#59f3d4;opacity:.25}
+.graph-edges .graph-arc[data-kind="verified"]{stroke:#71ffe0;stroke-width:2.5;opacity:.95}
+.graph-edges .graph-arc-glow[data-kind="manual"]{stroke:#f9cb83;opacity:.20}
+.graph-edges .graph-arc[data-kind="manual"]{stroke:#fbd293;stroke-width:2.2;stroke-dasharray:7 7}
+.graph-edges path.dimmed{opacity:.11}
+.graph-map[data-visual="stellar"] .graph-node{
+ --node-accent:#93c2ed;--node-glow:#66a9f150;
+ width:clamp(110px,12vw,168px);min-height:90px;padding:13px 11px 11px;gap:5px;
+ background-color:#10243f;background-image:linear-gradient(152deg,#1c3a5e 0%,#13263f 55%,#0e2038 100%);
+ border:1px solid #6588b6;border-radius:20px;
+ box-shadow:0 18px 38px #010a1999,inset 0 1px #cdeaff20,0 0 25px var(--node-glow);
+ transition:border-color .22s ease,box-shadow .22s ease,background-color .22s ease,left .25s ease,top .25s ease;
+}
+.graph-map[data-visual="stellar"] .graph-node:before{content:"";position:absolute;inset:-5px;border:1px solid var(--node-accent);border-radius:24px;opacity:.18;pointer-events:none}
+.graph-map[data-visual="stellar"] .graph-node small{font-size:10px;line-height:1.3;letter-spacing:.09em;color:#ddedff;font-weight:700}
+.graph-map[data-visual="stellar"] .graph-node strong{font-size:12px;line-height:1.35;color:#f6fbff;text-wrap:balance}
+.graph-beacon{position:relative;display:block;justify-self:center;width:19px;height:19px;border:1px solid var(--node-accent);border-radius:50%;background:#122d4c;box-shadow:0 0 0 4px #79bbf312,0 0 15px var(--node-glow)}
+.graph-beacon:after{content:"";position:absolute;inset:5px;border-radius:50%;background:var(--node-accent);box-shadow:0 0 7px var(--node-accent)}
+.graph-node[data-kind="demo"]{--node-accent:#a0b8da;--node-glow:#6a9ac133;border-style:dashed}
+.graph-node[data-kind="demo-hub"]{--node-accent:#e8d5ff;--node-glow:#b99cff48;min-height:108px;background-color:#242943;background-image:linear-gradient(145deg,#353858,#1d2944 62%,#17233d);border-color:#c2aef2}
+.graph-node[data-kind="verified"]{--node-accent:#67f1d4;--node-glow:#30e2ba42;background-color:#113c3f;background-image:linear-gradient(145deg,#1b514e,#143837 68%,#122d32);border-color:#5fdec1}
+.graph-node[data-kind="manual"]{--node-accent:#ffcf82;--node-glow:#eab45a35;background-color:#403126;background-image:linear-gradient(145deg,#57432b,#382c27 70%,#2c2928);border:1px dashed #ecc386}
+.graph-map[data-visual="stellar"] .graph-node:hover,.graph-map[data-visual="stellar"] .graph-node.selected{
+ outline:2px solid #e5faff;outline-offset:4px;box-shadow:0 22px 44px #000c20b0,0 0 28px var(--node-glow)}
+.graph-map[data-visual="stellar"] .graph-node:focus-visible{outline:3px solid #fff4c7;outline-offset:5px}
+.graph-map[data-visual="stellar"] .graph-node.dimmed{opacity:1;border-color:#526a82;box-shadow:0 9px 18px #04101e77}
+.graph-map[data-visual="stellar"] .graph-node.dimmed:before{opacity:.08}
+.graph-map[data-visual="stellar"] .graph-node.dimmed .graph-beacon{box-shadow:none}
+@keyframes stellar-breathe{0%,100%{box-shadow:0 0 0 4px #79bbf312,0 0 10px var(--node-glow)}50%{box-shadow:0 0 0 6px #79bbf309,0 0 20px var(--node-glow)}}
+@media(prefers-reduced-motion:no-preference){.graph-map[data-visual="stellar"] .graph-beacon{animation:stellar-breathe 5.5s ease-in-out infinite}}
+@media(max-width:870px){.graph-map[data-visual="stellar"] .graph-node{width:112px;min-height:79px;padding:9px 6px;gap:3px;border-radius:16px}.graph-map[data-visual="stellar"] .graph-node strong{font-size:11px}.graph-map[data-visual="stellar"] .graph-node[data-kind="demo-hub"]{min-height:87px}.graph-map[data-visual="stellar"] .graph-node:before{border-radius:19px}}
+@media(max-width:580px){.graph-map-index{left:12px;top:9px;font-size:8px}.graph-map[data-visual="stellar"] .graph-node{width:clamp(77px,22vw,91px);min-height:68px;padding:6px 3px;gap:2px;border-radius:13px}.graph-map[data-visual="stellar"] .graph-node strong{font-size:10px}.graph-map[data-visual="stellar"] .graph-node small{font-size:10px;letter-spacing:.015em}.graph-map[data-visual="stellar"] .graph-node[data-kind="demo-hub"]{min-height:75px}.graph-map[data-visual="stellar"] .graph-node:before{inset:-3px;border-radius:16px}.graph-map[data-visual="stellar"] .graph-beacon{width:13px;height:13px}.graph-map[data-visual="stellar"] .graph-beacon:after{inset:3px}}
+@media(prefers-reduced-motion:reduce){.graph-map[data-visual="stellar"] .graph-node{transition:none}.graph-map[data-visual="stellar"] .graph-beacon{animation:none}}
 </style>
 </head>
 <body>
@@ -112,7 +176,7 @@
     <main class="scene-column"><div class="scene-heading"><div><span class="eyebrow" id="breadcrumb">NÍVEL 01 / UNIVERSO CENTRAL</span><h1 id="scene-title">Sua galáxia de operações</h1><p id="scene-description">Cada sistema solar representa um projeto. Entre em um deles para explorar seus agentes e tarefas.</p></div><div class="scene-actions"><button class="smallbutton" id="mode-3d" type="button" aria-pressed="false" title="Alternar modo 3D ou 2D">3D</button><button class="smallbutton" id="zoom-out" title="Reduzir zoom" aria-label="Reduzir zoom">−</button><button class="smallbutton" id="zoom-reset" title="Restaurar zoom" aria-label="Restaurar zoom">⌖</button><button class="smallbutton" id="zoom-in" title="Ampliar zoom" aria-label="Ampliar zoom">+</button></div></div>
     <div class="scene" id="scene"><div class="universe" id="universe" role="region" aria-label="Projetos disponíveis"></div><div class="graph hidden" id="graph" role="region" aria-label="Grafo de relações multiprojeto">
   <div class="graph-tools"><label>Exibir <select id="graph-scope" aria-label="Filtrar nós por origem"><option value="all">Todos</option><option value="verified">Consulta real</option><option value="demo">Exemplos</option></select></label><label>Buscar <input id="graph-search" type="search" placeholder="Projeto ou conversa" autocomplete="off" aria-label="Buscar nós no grafo"></label><button type="button" id="graph-open-read" title="Consultar o estado de uma conversa no OpenHands">☾ Consultar conversa</button></div>
-  <div class="graph-map" id="graph-map" tabindex="0" aria-describedby="graph-help" aria-label="Nós e conexões entre projetos demonstrativos e conversas consultadas"><div class="graph-surface" id="graph-surface"></div></div>
+  <div class="graph-map" id="graph-map" data-visual="stellar" tabindex="0" aria-describedby="graph-help" aria-label="Nós e conexões entre projetos demonstrativos e conversas consultadas"><div class="graph-surface" id="graph-surface"></div><div class="graph-map-index" aria-hidden="true"><i></i> CONSTELAÇÕES · V0.5.2</div></div>
   <div class="graph-legend"><span id="graph-help">Setas movem o mapa · Esc limpa a seleção</span><span class="real">Origem confirmada</span><span class="manual">Associação manual (não atestada)</span><span>Somente demonstração</span></div>
 </div><div class="solar hidden" id="solar" role="region" aria-label="Sistema solar de agentes"><div class="solar-background" id="solar-stage"><svg class="orbit-layer" id="orbits" aria-hidden="true"></svg><button class="sun" id="sun" title="Visão geral do sistema"><span class="sun-core"></span><span class="sun-label" id="sun-label">NÚCLEO<small>COORDENAÇÃO</small></span></button><div id="planets"></div><button type="button" class="real-mission-lua hidden" id="real-lua" aria-label="Abrir estado recebido da conversa"><span class="lua-globo" aria-hidden="true"></span><span class="lua-desc"><strong>CONVERSA CONSULTADA</strong><small id="real-lua-state">Estado consultado</small></span></button></div></div><div class="scene-bottom"><div class="solar-note hidden" id="solar-note">● Planetas = agentes propostos &nbsp; ● Luas/tarefas = representação conceitual</div><footer class="metrics" id="metrics"><div class="metric"><small>PROJETOS</small><strong>04</strong><span>Ambientes conceituais</span></div><div class="metric"><small>ESTRUTURA</small><strong>Multiuniverso</strong><span>Um sistema por projeto</span></div><div class="metric"><small>CONEXÃO REAL</small><strong>Não ativa</strong><span>Interface demonstrativa</span></div></footer></div></div></main>
     <aside class="rightpanel" id="rightpanel" aria-live="polite"><div class="panel-top"><span class="panel-kicker">PAINEL DE INSPEÇÃO</span><span class="panel-icon">◎</span></div><div id="panel-content"></div></aside>
@@ -248,21 +312,23 @@ function validGraphIdentity(value){
       typeof value[key]==='string'&&new RegExp('^obs:'+kind+':'+value.context+':[0-9a-f]{64}$').test(value[key]));
 }
 function graphModel(){
+  // Posições determinísticas, sem simulação de atividade ou topologia operacional.
+  const hasConsulted=!!(verifiedMission&&validGraphIdentity(verifiedMission.graphIdentity));
   const nodes=[
-    {id:'demo-root',name:'Projetos ilustrativos',tag:'APENAS DEMO',kind:'demo-hub',x:27,y:48,description:'Agrupador dos quatro exemplos visuais. Não representa inventário de operações reais.'}
+    {id:'demo-root',name:'Projetos ilustrativos',tag:'APENAS DEMO',kind:'demo-hub',x:hasConsulted?34:49,y:49,description:'Agrupador dos quatro exemplos visuais. Não representa inventário de operações reais.'}
   ];
-  const places=[[14,19],[43,18],[13,79],[43,79]];
+  const places=hasConsulted?[[16,21],[53,17],[13,81],[55,79]]:[[24,19],[76,21],[19,79],[80,78]];
   const edges=[];
   Object.keys(defs).filter(k=>k!=='observado').forEach((key,i)=>{
     const item=defs[key];
     nodes.push({id:'demo-'+key,name:item.name,tag:'DEMO',kind:'demo',x:places[i][0],y:places[i][1],description:'Projeto ilustrativo. Agentes, missões e atividades não comprovados.'});
     edges.push({from:'demo-root',to:'demo-'+key,kind:'demo'});
   });
-  if(verifiedMission&&validGraphIdentity(verifiedMission.graphIdentity)){
+  if(hasConsulted){
     const ids=verifiedMission.graphIdentity;
-    nodes.push({id:ids.source,role:'source',name:'OpenHands',tag:'FONTE CONSULTADA',kind:'verified',x:69,y:24,description:'Origem: GET de conversa pela sessão autenticada do Canvas.'});
-    nodes.push({id:ids.mission,role:'mission',name:'Conversa '+verifiedMission.conversationId.slice(0,8),tag:'ESTADO: '+verifiedMission.status,kind:'verified',x:83,y:51,description:'Conversa consultada pontualmente, não sucesso de tarefa ou agente comprovado.'});
-    nodes.push({id:ids.project,role:'project',name:verifiedMission.project.split('/').pop().slice(0,22),tag:'PROJETO INFORMADO',kind:'manual',x:69,y:81,description:'Associação informada pelo operador; o servidor não confirmou o vínculo.'});
+    nodes.push({id:ids.source,role:'source',name:'OpenHands',tag:'FONTE CONSULTADA',kind:'verified',x:83,y:19,description:'Origem: GET de conversa pela sessão autenticada do Canvas.'});
+    nodes.push({id:ids.mission,role:'mission',name:'Conversa '+verifiedMission.conversationId.slice(0,8),tag:'ESTADO: '+verifiedMission.status,kind:'verified',x:83,y:49,description:'Conversa consultada pontualmente, não sucesso de tarefa ou agente comprovado.'});
+    nodes.push({id:ids.project,role:'project',name:verifiedMission.project.split('/').pop().slice(0,22),tag:'PROJETO INFORMADO',kind:'manual',x:83,y:81,description:'Associação informada pelo operador; o servidor não confirmou o vínculo.'});
     edges.push({from:ids.source,to:ids.mission,kind:'verified'});
     edges.push({from:ids.mission,to:ids.project,kind:'manual'});
   }
@@ -293,13 +359,17 @@ function renderGraph(){
   const edges=data.edges.filter(e=>ids.has(e.from)&&ids.has(e.to));
   const byId=new Map(nodes.map(n=>[n.id,n]));
   const selected=ids.has(graphSelected)?graphSelected:null;
-  const lines=edges.map(e=>{
+  const lines=edges.map((e,i)=>{
     const a=byId.get(e.from),b=byId.get(e.to);
-    return '<line x1="'+a.x*10+'" y1="'+a.y*6+'" x2="'+b.x*10+'" y2="'+b.y*6+'" data-kind="'+e.kind+'" class="'+(selected&&e.from!==selected&&e.to!==selected?'dimmed':'')+'"></line>';
+    const x1=a.x*10,y1=a.y*6,x2=b.x*10,y2=b.y*6;
+    const sweep=(i%2===0?1:-1)*Math.min(84,Math.max(22,Math.abs(x2-x1)*.12));
+    const d='M '+x1+' '+y1+' Q '+((x1+x2)/2+sweep).toFixed(1)+' '+((y1+y2)/2-sweep).toFixed(1)+' '+x2+' '+y2;
+    const kind=safe(e.kind),dim=selected&&e.from!==selected&&e.to!==selected?' dimmed':'';
+    return '<path class="graph-arc-glow'+dim+'" data-kind="'+kind+'" d="'+d+'"></path><path class="graph-arc'+dim+'" data-kind="'+kind+'" d="'+d+'"></path>';
   }).join('');
   const controls=nodes.map(n=>{
     const selectedClass=selected===n.id?' selected':selected?' dimmed':'';
-    return '<button type="button" class="graph-node'+selectedClass+'" data-node="'+safe(n.id)+'" data-kind="'+safe(n.kind)+'" style="left:'+n.x+'%;top:'+n.y+'%" aria-pressed="'+String(selected===n.id)+'" title="'+safe(n.description)+'"><small>'+safe(n.tag)+'</small><strong>'+safe(n.name)+'</strong></button>';
+    return '<button type="button" class="graph-node'+selectedClass+'" data-node="'+safe(n.id)+'" data-kind="'+safe(n.kind)+'" style="left:'+n.x+'%;top:'+n.y+'%" aria-pressed="'+String(selected===n.id)+'" title="'+safe(n.description)+'"><span class="graph-beacon" aria-hidden="true"></span><small>'+safe(n.tag)+'</small><strong>'+safe(n.name)+'</strong></button>';
   }).join('');
   applyGraphTransform();
   $('graph-surface').innerHTML='<svg class="graph-edges" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true">'+lines+'</svg>'+controls+(nodes.length?'':'<div class="graph-empty">Nenhum item para este filtro. Consulte o estado de uma conversa no OpenHands ou limpe a busca.</div>');
@@ -327,8 +397,8 @@ function openGraph(){
   $('graph').classList.remove('hidden');$('mode-3d').hidden=true;
   $('real-lua').classList.add('hidden');$('solar-note').classList.add('hidden');
   $('breadcrumb').textContent='NÍVEL 02 / MAPA DE RELAÇÕES';
-  $('scene-title').textContent='Grafo · conexões com origem';
-  $('scene-description').textContent='Explore projetos ilustrativos e conversas consultadas. Cada linha indica o nível de comprovação.';
+  $('scene-title').textContent='Grafo estelar · conexões com origem';
+  $('scene-description').textContent='Explore constelações ilustrativas e conversas consultadas. Cor e traçado indicam a origem de cada relação.';
   $('metrics').innerHTML='<div class="metric"><small>CONSULTAS OPENHANDS</small><strong>'+(verifiedMission?'01':'00')+'</strong><span>Uma leitura pontual por UUID</span></div><div class="metric"><small>PROJETOS EXEMPLO</small><strong>04</strong><span>Identificados como demonstração</span></div><div class="metric"><small>RELAÇÕES CONFIRMADAS</small><strong>'+(verifiedMission?'01':'00')+'</strong><span>Fonte → conversa; projeto é manual</span></div>';
   renderGraph();setNav();
 }

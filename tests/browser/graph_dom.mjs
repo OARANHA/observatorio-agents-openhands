@@ -75,7 +75,7 @@ test('project navigation, demo source, search and empty filter keep search focus
  const f=await fixture();try{const p=f.page;await p.locator('.system-tile').first().click();assert.ok((await p.locator('#scene-title').innerText()).includes('Sistema solar'));await p.locator('#top-universe').click();assert.equal(await p.locator('.system-tile').count(),4);await p.locator('#top-graph').click();assert.equal(await p.locator('.graph-node').count(),5);await p.locator('#graph-search').fill('NOT_FOUND_SYNTHETIC');await p.locator('.graph-empty').waitFor();assert.equal(await p.evaluate(()=>document.querySelector('.ob-wrap').shadowRoot.activeElement?.id),'graph-search');await p.locator('#graph-search').fill('');await p.locator('#graph-scope').selectOption('verified');assert.equal(await p.locator('.graph-node').count(),0);}finally{await close(f);}
 });
 test('synthetic consulted source remains distinct from manual and errors create no new observation',async()=>{
- const f=await fixture();try{const p=f.page;await consult(p);await p.locator('#top-graph').click();await p.locator('#graph-scope').selectOption('verified');assert.equal(await p.locator('.graph-node').count(),3);assert.equal(await p.locator('.graph-node[data-kind=manual]').count(),1);assert.equal(await p.locator('.graph-edges line[data-kind=verified]').count(),1);assert.equal(await p.locator('.graph-edges line[data-kind=manual]').count(),1);assert.deepEqual(await p.evaluate(()=>window.fixtureReads),[{method:'GET',path:'/api/conversations/00000000-0000-4000-8000-000000000001'}]);}finally{await close(f);}
+ const f=await fixture();try{const p=f.page;await consult(p);await p.locator('#top-graph').click();await p.locator('#graph-scope').selectOption('verified');assert.equal(await p.locator('.graph-node').count(),3);assert.equal(await p.locator('.graph-node[data-kind=manual]').count(),1);assert.equal(await p.locator('.graph-edges path.graph-arc[data-kind=verified]').count(),1);assert.equal(await p.locator('.graph-edges path.graph-arc[data-kind=manual]').count(),1);assert.deepEqual(await p.evaluate(()=>window.fixtureReads),[{method:'GET',path:'/api/conversations/00000000-0000-4000-8000-000000000001'}]);}finally{await close(f);}
  const bad=await fixture();try{await bad.page.evaluate(()=>window.fixtureError=true);await bad.page.locator('details.ob-real summary').click();await bad.page.locator('input.id').fill('00000000-0000-4000-8000-000000000001');await bad.page.getByText('Consultar estado no OpenHands',{exact:true}).click();await bad.page.locator('output').filter({hasText:'desconhecido'}).waitFor();await bad.page.locator('#top-graph').click();assert.equal(await bad.page.locator('.graph-node[data-kind=verified]').count(),0);}finally{await close(bad);}
 });
 test('mobile/reduced-motion, zoom and keyboard pan are bounded and resettable',async()=>{
@@ -258,5 +258,47 @@ test('manifest and universe metrics describe a consulted conversation, not execu
   const empty=await p.locator('.graph-empty').innerText();
   assert.match(empty,/estado de uma conversa/);
   assert.doesNotMatch(empty,/consulte uma missão/i);
+ }finally{await close(f);}
+});
+test('stellar graph has accessible typed constellations and curved classified links',async()=>{
+ const f=await fixture();try{
+  const p=f.page;await p.locator('#top-graph').click();
+  assert.equal(await p.locator('#graph-map').getAttribute('data-visual'),'stellar');
+  assert.equal(await p.locator('.graph-map-index').getAttribute('aria-hidden'),'true');
+  assert.equal(await p.locator('.graph-node .graph-beacon').count(),5);
+  assert.equal(await p.locator('.graph-node[data-kind=demo]').count(),4);
+  assert.equal(await p.locator('.graph-node[data-kind=verified]').count(),0);
+  assert.equal(await p.locator('.graph-edges path.graph-arc[data-kind=demo]').count(),4);
+  const curves=await p.locator('.graph-edges path.graph-arc').evaluateAll(paths=>paths.map(el=>el.getAttribute('d')));
+  assert.ok(curves.every(path=>path.startsWith('M ')&&path.includes(' Q ')));
+  assert.equal(await p.locator('.graph-edges').getAttribute('aria-hidden'),'true');
+  assert.match(await p.locator('#scene-title').innerText(),/Grafo estelar/);
+ }finally{await close(f);}
+});
+test('stellar graph keeps verified and manual provenance distinct when a test conversation is consulted',async()=>{
+ const f=await fixture();try{
+  const p=f.page;await consult(p);await p.locator('#top-graph').click();
+  assert.equal(await p.locator('.graph-edges path.graph-arc[data-kind=verified]').count(),1);
+  assert.equal(await p.locator('.graph-edges path.graph-arc[data-kind=manual]').count(),1);
+  assert.equal(await p.locator('.graph-edges path.graph-arc[data-kind=demo]').count(),4);
+  assert.equal(await p.locator('.graph-node[data-kind=verified]').count(),2);
+  assert.equal(await p.locator('.graph-node[data-kind=manual]').count(),1);
+  const labels=await p.locator('.graph-node[data-kind=demo] small').allInnerTexts();
+  assert.deepEqual(labels,['DEMO','DEMO','DEMO','DEMO']);
+ }finally{await close(f);}
+});
+test('stellar reduced-motion disables ambient animation and preserves keyboard control on mobile',async()=>{
+ const f=await fixture({mobile:true,reduced:true});try{
+  const p=f.page;await p.locator('#rail-graph').click();
+  const visual=await p.locator('.graph-node[data-kind=demo] .graph-beacon').first().evaluate(el=>({
+   animation:getComputedStyle(el).animationName,tag:getComputedStyle(el.closest('.graph-node')).backgroundColor
+  }));
+  assert.equal(visual.animation,'none');
+  assert.ok(visual.tag.startsWith('rgb('));
+  const map=p.locator('#graph-map');
+  const style=await map.evaluate(el=>getComputedStyle(el).touchAction);
+  assert.ok(style.includes('pan-y')&&style.includes('pinch-zoom'));
+  await map.focus();await p.keyboard.press('ArrowRight');
+  assert.equal(await p.locator('#graph-surface').evaluate(el=>new DOMMatrixReadOnly(getComputedStyle(el).transform).e),20);
  }finally{await close(f);}
 });
