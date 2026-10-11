@@ -126,3 +126,18 @@ Testes usam exclusivamente tarifas fictícias e nenhum LLM. Documentação:
 offline podem ser reivindicadas até a CI do HEAD exato. Modelo/provedor
 autorizados, preços oficiais e limites do provedor ainda estão pendentes.
 NO-GO operacional; sem merge, deploy, VPS ou Canvas nesta preparação.
+
+
+## BudgetBook nas quatro rotas simuladas — 2026-10-11
+
+Main reconfirmada antes do slice em `b16a1eddaa852ee92716a0162f09106ee73b4335`
+(PR #14 integrada). A branch `feat/explorer-budget-sdk-boundary-mock-v1`
+acrescenta adaptador **exclusivamente para classes LLM fictícias** nos nomes
+oficiais `completion/acompletion/responses/aresponses` e vincula reserva
+prévia `BudgetBook`, `Guard` e reconciliação de métricas. Recusa de
+classe OpenHands LLM real é explícita; nenhum modelo, provedor ou preço
+operacional foi homologado. O SDK v1.53.0 contém caminhos internos de
+segunda tentativa não inteiramente cobertos pelo wrapper público; **NO-GO**
+operacional continua, mesmo com CI verde. Testes e escopo:
+`docs/handoffs/OBS-EXPLORER-BUDGET-SDK-MOCK-001.md`.
+Nenhum merge/deploy/chamada LLM nesta preparação.

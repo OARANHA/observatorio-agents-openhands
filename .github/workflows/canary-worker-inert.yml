@@ -7,6 +7,10 @@ on:
       - scripts/probe_canary_worker.py
       - scripts/canary_sdk.py
       - scripts/canary_controls.py
+      - scripts/canary_budget.py
+      - scripts/canary_budget_boundary.py
+      - tests/test_canary_budget_boundary.py
+      - tests/test_canary_budget_sdk_surface.py
       - tests/test_canary_worker_wiring.py
       - tests/test_canary_sdk_manager.py
 
@@ -40,6 +44,9 @@ jobs:
       - name: Compatibilidade do TaskManager oficial sem LLM
         run: |
           "$RUNNER_TEMP/observatorio-canary-sdk/bin/python" -B -m unittest discover -s tests -p test_canary_sdk_manager.py -v
+      - name: Assinaturas oficiais SDK LLM sem transporte/provedor
+        run: |
+          "$RUNNER_TEMP/observatorio-canary-sdk/bin/python" -B -m unittest discover -s tests -p test_canary_budget_sdk_surface.py -v
       - name: Worker supervisionado com TaskToolSet real e terminal bwrap restrito
         run: |
           "$RUNNER_TEMP/observatorio-canary-sdk/bin/python" -B scripts/probe_canary_worker.py --supervise-synthetic-worker

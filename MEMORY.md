@@ -105,3 +105,16 @@ testes em `tests/test_canary_budget.py`. Handoff:
 Nenhum provedor/modelo/tarifa real aprovado, nenhuma chamada LLM,
 registro de agente, delegação, merge ou deploy. Integração efetiva da reserva
 a todas as rotas de SDK segue ausente: **NO-GO operacional**.
+
+
+## Próximo gate SDK de orçamento — 2026-10-11
+
+Base da branch `feat/explorer-budget-sdk-boundary-mock-v1`:
+`b16a1eddaa852ee92716a0162f09106ee73b4335`.
+Objetivo: chamar pré-reserva e liquidação do `BudgetBook` dentro de
+quatro rotas **mocks** com mesmas formas de API do SDK 1.53.0, restaurar
+instrumentação no finally e negar classe OpenHands LLM real. O módulo
+não protege cobranças reais nem caminhos internos de retry, portanto
+**NO-GO** para canário operacional. Handoff:
+`docs/handoffs/OBS-EXPLORER-BUDGET-SDK-MOCK-001.md`.
+Sem preço/modelo real, LLM, merge, deploy ou mudança de infraestrutura.
