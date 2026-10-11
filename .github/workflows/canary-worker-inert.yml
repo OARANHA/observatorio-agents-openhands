@@ -13,6 +13,7 @@ on:
       - scripts/audit_canary_sdk_transport.py
       - tests/test_canary_transport_attempts.py
       - tests/test_canary_sdk_transport_audit.py
+      - tests/test_sdk_real_transport_offline.py
       - tests/test_canary_budget_boundary.py
       - tests/test_canary_budget_sdk_surface.py
       - tests/test_canary_worker_wiring.py
@@ -57,6 +58,26 @@ jobs:
       - name: Provas negativas de tentativas sinteticas de transporte (sem provedor)
         run: |
           "$RUNNER_TEMP/observatorio-canary-sdk/bin/python" -B -m unittest discover -s tests -p test_canary_transport_attempts.py -v
+      - name: SDK real contra stubs isolados de rede (zero provedor)
+        env:
+          OBS_CANARY_HOST_NETNS: unused
+        run: |
+          set -euo pipefail
+          HOST_NS="$(readlink /proc/self/ns/net)"
+          test -n "$HOST_NS"
+          bwrap --unshare-all --die-with-parent --new-session \
+            --clearenv \
+            --ro-bind / / \
+            --proc /proc \
+            --dev /dev \
+            --tmpfs /tmp \
+            --setenv PATH /usr/bin:/bin \
+            --setenv HOME /tmp \
+            --setenv PYTHONDONTWRITEBYTECODE 1 \
+            --setenv OBS_CANARY_HOST_NETNS "$HOST_NS" \
+            --chdir "$GITHUB_WORKSPACE" \
+            -- "$RUNNER_TEMP/observatorio-canary-sdk/bin/python" -B -m unittest discover \
+               -s tests -p test_sdk_real_transport_offline.py -v
       - name: Worker supervisionado com TaskToolSet real e terminal bwrap restrito
         run: |
           "$RUNNER_TEMP/observatorio-canary-sdk/bin/python" -B scripts/probe_canary_worker.py --supervise-synthetic-worker
