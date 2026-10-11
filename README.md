@@ -2,7 +2,7 @@
 
 Extensão experimental **instalável como App do OpenHands Canvas**, reutilizando o protótipo V0.2: universo central, sistemas solares por projeto, planetas, informações de agentes, WebGL2 e fallback 2D.
 
-**V0.3.2: dados exclusivamente demonstrativos.** Não existe conexão a OpenHands/Agent Mesh real, monitoramento de clientes ou execução de tarefas. Nomes e estados não são inventário factual.
+**V0.4.0: dados exclusivamente demonstrativos.** Não existe conexão a OpenHands/Agent Mesh real, monitoramento de clientes ou execução de tarefas. Nomes e estados não são inventário factual.
 
 ## Instalar (somente após revisão e autorização da mudança no Canvas)
 Em **Customize → Apps → Add app**, preencher:
@@ -19,6 +19,13 @@ A camada visual \`.ob-wrap::before\` da extensão anterior usava \`position: fix
 
 ## Correção de sobreposição na visualização solar (V0.3.2)
 A nota descritiva ficava parcialmente escondida pelo painel inferior porque ambos usavam posições absolutas independentes. Agora eles dividem um contêiner vertical, com a nota acima das métricas. O universo oculta a nota; dispositivos móveis mantêm o comportamento responsivo. O teste de regressão valida o CSS e o DOM efetivamente gerados.
+
+## Realismo progressivo e atividade visual (V0.4.0)
+- O botão **SIMULAR: CALMO / ATIVIDADE / ATENÇÃO / FALHA** permite avaliar os estados sem alegar conexão com agentes ou tarefas reais.
+- Universo: rotação lenta das órbitas, cartões com brilho contextual e contagem **DEMO**.
+- Sistema solar: brilho WebGL por estado e até duas pequenas luas ilustrativas em movimento por planeta ativo; labels 2D acompanham os cenários.
+- Respeita `prefers-reduced-motion`, mantém Shadow DOM e não adiciona dependências, requests, tokens ou persistência.
+- O modelo de demonstração é interno à fonte; **não** corresponde a eventos operacionais. A integração real exige novo projeto de contrato de leitura e controle de acesso.
 
 ## Desenvolver
 Sem npm/CDN em runtime. Fonte: `source/observatorio-v02.html`. Regenerar `extension.js` usando `node scripts/build.mjs`. Verificar `node --check extension.js` e `python3 -m unittest discover -s tests -p test_contract.py`.
