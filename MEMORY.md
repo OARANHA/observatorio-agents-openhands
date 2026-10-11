@@ -545,3 +545,6 @@ Main base `e06d3b01e60d9a5503e046dc0fe2eeb269f0e403` após #42. Reuso da PR #35 
 
 ## CYCLE007 — P2 colisão responsiva (2026-10-11)
 - Codex independente automatizado apontou colisão hub/VIGIAFAST a 900×700 após consulta no HEAD `73d035542e30fd256dfa16bd59498ce92ae7b46c`; geometria calculada, não Chromium local. Alteradas somente posições consultadas, sem semântica nova. Adicionado Chromium `getBoundingClientRect` para 900×700 e 390×844; esperado 23 DOM, nova CI pendente sem polling. Sem merge/Canvas/deploy. G11 não provado e G12 bloqueado.
+
+## CYCLE007 — CSS compacto após teste geométrico RED (2026-10-11)
+- O novo teste 23 Chromium em HEAD `d56b316eaaa77551851fedcbbb5687bdb087d3e9` localizou interseções de 3,89 e 5,22 px entre os cartões consultados no viewport 900×700; Graph DOM RED 22/23, CI e SDK inerte GREEN. Corrigida a densidade de cartão `verified/manual` em viewport baixo sem mexer em consulta/identidade ou no Canvas; recompilado `extension.js`; CI do novo HEAD pendente, sem polling. G11 não provado/G12 bloqueado.

@@ -166,6 +166,19 @@
 @media(max-width:870px){.graph-map[data-visual="stellar"] .graph-node{width:112px;min-height:79px;padding:9px 6px;gap:3px;border-radius:16px}.graph-map[data-visual="stellar"] .graph-node strong{font-size:11px}.graph-map[data-visual="stellar"] .graph-node[data-kind="demo-hub"]{min-height:87px}.graph-map[data-visual="stellar"] .graph-node:before{border-radius:19px}}
 @media(max-width:580px){.graph-map-index{left:12px;top:9px;font-size:8px}.graph-map[data-visual="stellar"] .graph-node{width:clamp(77px,22vw,91px);min-height:68px;padding:6px 3px;gap:2px;border-radius:13px}.graph-map[data-visual="stellar"] .graph-node strong{font-size:10px}.graph-map[data-visual="stellar"] .graph-node small{font-size:10px;letter-spacing:.015em}.graph-map[data-visual="stellar"] .graph-node[data-kind="demo-hub"]{min-height:75px}.graph-map[data-visual="stellar"] .graph-node:before{inset:-3px;border-radius:16px}.graph-map[data-visual="stellar"] .graph-beacon{width:13px;height:13px}.graph-map[data-visual="stellar"] .graph-beacon:after{inset:3px}}
 @media(prefers-reduced-motion:reduce){.graph-map[data-visual="stellar"] .graph-node{transition:none}.graph-map[data-visual="stellar"] .graph-beacon{animation:none}}
+/* Cartões consultados compactos em viewport desktop baixo: mantém nomes legíveis sem cortar conteúdo. */
+@media(min-width:871px) and (max-height:760px){
+ .graph-map[data-visual="stellar"] .graph-node[data-kind="verified"],
+ .graph-map[data-visual="stellar"] .graph-node[data-kind="manual"]{
+  min-height:76px;padding:6px 8px;gap:3px
+ }
+ .graph-map[data-visual="stellar"] .graph-node[data-kind="verified"] .graph-beacon,
+ .graph-map[data-visual="stellar"] .graph-node[data-kind="manual"] .graph-beacon{width:14px;height:14px}
+ .graph-map[data-visual="stellar"] .graph-node[data-kind="verified"] .graph-beacon:after,
+ .graph-map[data-visual="stellar"] .graph-node[data-kind="manual"] .graph-beacon:after{inset:3px}
+ .graph-map[data-visual="stellar"] .graph-node[data-kind="verified"] strong,
+ .graph-map[data-visual="stellar"] .graph-node[data-kind="manual"] strong{font-size:11px;line-height:1.2}
+}
 </style>
 </head>
 <body>

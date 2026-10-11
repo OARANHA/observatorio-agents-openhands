@@ -619,3 +619,8 @@ Main pré-consolidação96ed4a3c5ce659aa55a4841716e7623d30aaeb64.
 - Revisão Codex do HEAD histórico `73d035542e30fd256dfa16bd59498ce92ae7b46c` reportou P2: hub DEMO e VIGIAFAST DEMO podem colidir após consulta em 900×700 devido a cartões maiores. Não foram demonstrados P0/P1; a revisão é automatizada e **não promove G11**.
 - Patch no layout consultado (hub x40,y50, DEMO direito y15/y85) e teste Chromium medindo rects sem colisão em 900×700/390×844. `extension.js` regenerada, código de proveniência/host inalterado. **23 testes DOM esperados, nova CI pendente**.
 - Handoff `docs/handoffs/OBS-CYCLE-007-STELLAR-GRAPH-V052.md`, Canvas V0.5.1 não modificado, G11 NÃO PROVADO, G12 BLOQUEADO, P02/P03 NÃO PROVADOS, NO-GO operacional.
+
+## CYCLE007 — RED de geometria da coluna consultada (2026-10-11)
+- Em `d56b316eaaa77551851fedcbbb5687bdb087d3e9`, Graph DOM 38181224586 **RED** (22/23). Capturou em Chromium 900×700 duas colisões entre fonte, conversa e vínculo manual consultados (3,89/5,22 px). Outros workflows no SHA: CI 38181224559 e SDK inerte 38181224742 GREEN.
+- Patch posterior compacta tipografia/espacamento dos nós `verified/manual` exclusivamente em viewport desktop baixo (largura maior ou igual a 871 e altura até 760px), sem cortar texto/alterar identidade ou API; `extension.js` regenerado. Regressão de `getBoundingClientRect` mantida para 900×700 + 390×844, **23 testes esperados, CI pendente**.
+- Handoff `docs/handoffs/OBS-CYCLE-007-STELLAR-GRAPH-V052.md`, G11 NÃO PROVADO, G12 BLOQUEADO, P02/P03 NÃO PROVADOS, Canvas V0.5.1 não alterado.
