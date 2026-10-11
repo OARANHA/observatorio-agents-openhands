@@ -38,3 +38,19 @@ Decisão: P01 PARCIAL, P02/P03 NÃO PROVADOS. Aprovação específica do proprie
 continua necessária para merge da #7 e qualquer alteração no Canvas instalado.
 Próxima frente segura: fixtures DOM e contratos de identidade/proveniência,
 sem implantar backend RBAC fictício nem declarar memória persistente pronta.
+
+
+## Provas de modelo congelado — ciclo 002
+
+Seis contratos Node em tests/graph_model_contract.mjs executam apenas
+graphModel, snapshot HEAD48f898d99a8979ef2c794513131506b028772666.
+Fixture/proveniência em tests/fixtures/pr7_graph_model*; SHA256 da origem
+e extração declarados, não assinatura/autenticação remota. Inputs fictícios.
+Sem observação: cinco nós/quatro arestas DEMO; com observação sintética:
+fonte→conversa consultada e conversa→projeto manual distintos; finished
+não gera agente/success; IDs resolvem dentro da vista. Conversas/projetos
+distintos reutilizam IDs, comprovando lacuna multiprojeto. Nada alterado
+na #7 ou no runtime da main. Contratos caracterizam baseline, não homologam
+HEAD futuro da #7. DOM/foco/teclado/contraste não testados: navegador ausente.
+PR #7 continuou aberta/draft na reconciliação, mergeable=true então; estado
+histórico divergente acima não determina autorização. P02/P03 NÃO PROVADOS.

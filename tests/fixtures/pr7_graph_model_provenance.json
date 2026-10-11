@@ -1,0 +1,8 @@
+{
+  "synthetic_fixture_inputs": true,
+  "source_commit": "48f898d99a8979ef2c794513131506b028772666",
+  "source_path": "source/observatorio-v02.html",
+  "source_sha256": "9239aca0f9ac1b4d0b5972ec5745e688c80a5dc0994cbc460f00d897ae16f4f0",
+  "extracted_sha256": "25bd18f9802f03c8fe6b7139aa8ead0cc4afe3baa9bec074966ad3832a527fc1",
+  "extraction": "graphModel through before renderGraphPanel; unchanged"
+}
