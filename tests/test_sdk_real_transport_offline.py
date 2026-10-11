@@ -332,6 +332,42 @@ class RealSDKOfflineTests(unittest.TestCase):
         self.assertIsNotNone(fixture.book.active)
         self.assertEqual(1,len(fixture.arrived))
 
+    def test_success_with_tokens_over_reservation_is_rejected(self):
+        fixture=OfflineSDKFixture()
+        llm=fixture.llm()
+        llm.metrics.initialize_accumulated_token_usage()
+        def over_cap(name):
+            return self._fake_success_response(name,prompt=501,output=100)
+        with fixture.patch_all_four_litellm_exports(
+            mode="success",response_factory=over_cap,
+        ), patch.object(sdk_module.Telemetry,"_compute_cost",self._fake_sdk_cost):
+            with self.assertRaisesRegex(GateError,"token_usage_outside_reservation"):
+                with fixture.gate.logical_call():
+                    start=snapshot_success_start(fixture.gate,llm)
+                    response=llm.completion(messages=[])
+                    settle_success_from_sdk_metrics(fixture.gate,llm,start,response)
+        self.assertTrue(fixture.book.closed)
+        self.assertTrue(fixture.guard.cancelled)
+        self.assertIsNotNone(fixture.book.active)
+        self.assertEqual(1,len(fixture.arrived))
+
+    def test_success_with_tokens_but_no_reported_cost_is_rejected(self):
+        fixture=OfflineSDKFixture()
+        llm=fixture.llm()
+        llm.metrics.initialize_accumulated_token_usage()
+        with fixture.patch_all_four_litellm_exports(
+            mode="success",response_factory=self._fake_success_response,
+        ), patch.object(sdk_module.Telemetry,"_compute_cost",return_value=None):
+            with self.assertRaisesRegex(GateError,"sdk_success_cost_missing_or_decreased"):
+                with fixture.gate.logical_call():
+                    start=snapshot_success_start(fixture.gate,llm)
+                    response=llm.completion(messages=[])
+                    settle_success_from_sdk_metrics(fixture.gate,llm,start,response)
+        self.assertTrue(fixture.book.closed)
+        self.assertTrue(fixture.guard.cancelled)
+        self.assertIsNotNone(fixture.book.active)
+        self.assertEqual(1,len(fixture.arrived))
+
     def test_unreserved_real_sdk_call_cannot_reach_stub(self):
         fixture = OfflineSDKFixture()
         llm = fixture.llm()
