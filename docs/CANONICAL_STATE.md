@@ -1,29 +1,33 @@
-# Estado canônico — Observatório de Agentes (2026-10-10)
+# CANONICAL_STATE — Observatório de Agentes
 
-## REAL NOW
+## REAL NOW — última reconciliação da base em 2026-10-10/11
 - Repositório: `OARANHA/observatorio-agents-openhands`.
-- `main` verificada em `9deda677ec382197a9cfcfa02d5a8b7bc3755eef` no início desta correção, com V0.4.0 e PR #3 mesclada.
-- V0.4.1 proposta em branch de correção; CI e revisão pendentes. Não interpretar o commit da `main` acima como estado futuro.
+- `main` lida antes desta PR de documentação: `7212c51c38fc34cd195afb4db99ee35808e67cb5`, resultante do **merge da PR #5**.
+- Manifesto da versão **0.4.2**; app do Canvas via `host.registerPage`, UI Shadow DOM com WebGL2/fallback 2D.
+- Evidência trazida pelo usuário: screenshot de **Apps** mostrou Observatório v0.4.2 habilitado, `Ref: 7212c51c38fc34cd195afb4db99ee35808e67cb5`. Outro screenshot mostrou, no Canvas, `OBSERVATÓRIO · Missão consultada`, uma lua real, UUID `69009100-f867-4032-ad17-9023e24ae4ee`, `finished`, origem/horários e **0 agentes comprovados**.
+- Evidência independente anterior via MCP: a conversa sintética `OBS-REAL-001` retornou `finished` e a resposta `OBS-REAL-001|OK` para operações de leitura simples. Não afirmar que o frontend recebeu essa resposta final.
+- Evidência trazida pelo usuário: em **Configurações → Contexto do agente**, a memória persistente foi ativada e a UI apresentou “Configurações salvas”. **Não houve prova de gravação, recuperação ou isolamento por projeto**; conversas antigas podem requerer reinicialização.
+- Quatro sistemas originais do universo (VIGIAFAST, Wandora, ELUS, OpenHands Lab) continuam cenários **DEMONSTRATIVOS**; sistema `OBSERVATÓRIO` aparece após GET pontual de UUID e não persiste após reload.
+- Sem descoberta de missões automática, monitoramento contínuo, grafo Obsidian operacional, agentes reais identificados, inventário multi-projeto verificado, controle de execução pela UI ou RBAC multi-tenant comprovado.
 
-## EVIDÊNCIA DO CANVAS REAL
-- Screenshot do usuário confirma Observatório V0.4 carregando cenário `SIMULAR: CALMO`, 4 sistemas solares, painel e menu normais.
-- Regressão visual: as órbitas SVG de cada cartão ficam quase verticais, fora de suas proporções anteriores, porque `.sys-orbits` recebe animação `transform:rotate(360deg)` no SVG inteiro.
-- Fonte previa inclinação fixa `rotate(-17 224 77)` nas elipses. Rodar o SVG completo altera a aparência, pode cortar a órbita e invadir áreas visuais.
-- Correção V0.4.1: preservar a orientação original e animar `stroke-dashoffset` somente num traço luminoso sobre a elipse externa; velocidade por cenário, opção `prefers-reduced-motion`.
+## IDENTIDADE E FRONTEIRAS — regra canônica
+Consulte `docs/decisions/ADR-0002-horizontal-operations.md`.
+**ChatGPT coordena → OpenHands executa tarefas autorizadas → Observatório exibe o que for verificável → GitHub registra histórico e decisões**.
+**VIGIAFAST e demais produtos são PROJETOS ATENDIDOS; não são donos, camadas-base ou sinônimos de OpenHands/Observatório.**
+Nenhuma memória do OpenHands ou conteúdo dos projetos deve ser compartilhado transversalmente sem controle de escopo.
 
-## LIMITES, GATES E FUTURO
-- V0.4.1 é somente apresentação: `SIMULAR` segue identificando dados fictícios. Sem telemetria, execuções, credenciais, chamadas HTTP ou bibliotecas adicionadas.
-- CI da revisão e validação visual com screenshots desktop/mobile ainda necessárias. Não alegar validação em navegador nem alteração da instalação.
-- Integração futura com fontes reais requer BFF autenticado, RBAC por projeto/tenant e origem/horário de observação; nenhuma alteração de VPS, imagens Docker ou OpenHands Core está autorizada.
-- Fluxo de trabalho: branch + PR, revisar/aguardar CI, sem polling contínuo e sem merge/deploy automático.
+## PROVEN EVIDENCE x GAPS
+- **Comprovado**: `main` da PR #5; CI do HEAD pré-merge aprovada; extensão 0.4.2 habilitada no screenshot; leitura manual de conversa real `finished` visível no Canvas; memória ativada nas configurações do usuário.
+- **Não comprovado**: runtime atualizado automaticamente, correlação missão→agente, vínculo projeto validado no servidor, sucesso semântico de tarefas, memória recuperável em sessão posterior, grafo vivo, acesso de observação a todos os projetos.
+- O projeto informado no formulário da consulta de conversa é **declaração manual**, não resultado autenticado da API.
 
-## Reconciliação e slice V0.4.2 (2026-10-10)
-- `main` publicada verificada: `3c97c9427df9462f16a1f7fc3fd0d3004e6dd977` (V0.4.1); snapshot anterior acima é histórico.
-- MCP OpenHands read saudável; list/status/result disponíveis. Missão sintética nova aguardava `waiting_for_confirmation` (gate humano) na última consulta.
-- Código V0.4.2 proposto em branch: leitura pontual e manual pelo host autenticado, sem mudança de backend; vínculo ao projeto declarado, não atestado.
-- Pendente: CI, revisão, teste real no Canvas e autorização de instalação; sem RBAC multi-tenant, sem clientes reais, sem deploy.
+## ROADMAP — não é estado presente
+1. Refinar painel de consulta e geometria/legibilidade da lua (propostas).
+2. Investigar contratos de leitura, identidade/projeto e permissões antes de ativar descoberta multiprojeto.
+3. Projetar modo **Grafo** estilo Obsidian como vista adicional do Observatório, apenas com nós e arestas rastreáveis.
+4. Avaliar memória nativa OpenHands após teste sintético de escrita e recuperação; **não duplicá-la** como recurso específico do VIGIAFAST.
 
-## Ajuste visual integrado à PR #5
-- Missão OBS-REAL-001 verificada como `finished` e resultado `OBS-REAL-001|OK` pela leitura MCP, sem escrita no CRISE.
-- Nova proposta: após GET da conversa via Canvas, o Multiverso cria em memória sistema Observatório com uma lua real, sem planetas de agentes falsos. Não há conexão contínua nem persistência.
-- **PENDENTE:** CI do novo HEAD, teste autenticado no Canvas, aprovação de merge/instalação. Dados de outros projetos continuam demonstrativos.
+## GATES
+- Consultar estado atual e reutilizar o que funciona. Branch + PR + testes.
+- Sem merge/deploy automáticos, sem acesso a dados reais de clientes, sem alterações em VPS, Docker, OpenHands Core ou projetos atendidos sem autorização separada.
+- Documento vivo mantém decisões e evidências **com data**; não tratar notas históricas de propostas como estado atual.
