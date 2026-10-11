@@ -139,11 +139,30 @@ def synthetic_worker() -> dict:
 
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description="Inert SDK wiring, no agents or LLM")
-    parser.add_argument("--synthetic-worker", action="store_true")
+    modes = parser.add_mutually_exclusive_group(required=True)
+    modes.add_argument("--supervise-synthetic-worker", action="store_true")
+    modes.add_argument("--synthetic-child", action="store_true")
     args = parser.parse_args(argv)
-    if not args.synthetic_worker:
-        parser.error("Only --synthetic-worker is supported; no operational mode")
-    result = synthetic_worker()
+    if args.synthetic_child:
+        result = synthetic_worker()
+        print(json.dumps(result, sort_keys=True))
+        return 0
+    # O supervisor deve envolver todo o worker, não apenas os comandos bwrap.
+    output = supervise(
+        [sys.executable, "-B", str(Path(__file__).resolve()), "--synthetic-child"], 60
+    )
+    result = json.loads(output)
+    expected = {
+        "mode": "inert_sdk_wiring",
+        "terminal": "official_restricted_executor_resolved",
+        "task": "official_manager_callback_bound_not_dispatched",
+        "denial": "stopped_all_further_actions",
+        "actual_llm_calls": 0,
+        "actual_agent_registrations": 0,
+        "actual_task_dispatches": 0,
+    }
+    if any(result.get(k) != v for k, v in expected.items()):
+        raise GateError("inert_worker_contract_failed")
     print(json.dumps(result, sort_keys=True))
     return 0
 
