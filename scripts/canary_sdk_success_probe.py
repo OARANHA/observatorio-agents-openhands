@@ -43,7 +43,7 @@ def settle_success_from_sdk_metrics(gate, llm, before, sdk_response):
             raise GateError("sdk_cache_accounting_invalid")
         if current_cache != prior_cache:
             raise GateError("sdk_cache_pricing_not_reviewed")
-        ir, out = gate.card_rates()
+        ir, out = gate.rates.validate(live=False)
         expected = (Decimal(delta_input) * ir +
                     Decimal(delta_output) * out) / MILLION
         if delta_cost != expected:
