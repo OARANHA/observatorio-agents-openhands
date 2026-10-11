@@ -163,3 +163,17 @@ fora da guarda opcional de SDK no runner principal. Corrigido
 movendo `SecretStr` para import condicional, sem mexer em transportes.
 Aguardar CI do novo HEAD, não fazer polling/merge/deploy.
 Handoff: `docs/handoffs/OBS-EXPLORER-SDK-REAL-OFFLINE-001.md`.
+
+## Preparação PR #18 — SDK real + liquidação fictícia (2026-10-11)
+
+Base GitHub `main` `a21eb4e2250cf935de783b305f3d32d643bd0b1a`,
+PR #17 integrada. Branch
+`test/explorer-sdk-success-settlement-offline-v1`.
+Objetivo: comprovar offline que o `LLM` SDK 1.53.0 produz métricas
+de uma resposta tipada falsa e que `BudgetBook` encerra reserva
+pela utilização calculada com tarifa fictícia, usando quatro rotas e
+casos de negação. Testes em Bubblewrap sem egress e catálogo LiteLLM
+local. Handoff:
+`docs/handoffs/OBS-EXPLORER-SDK-SUCCESS-SETTLEMENT-001.md`.
+Nenhum preço real, token cap operacional, credencial ou modelo autorizado.
+Sem execução LLM, deploy ou merge automático. **NO-GO operacional**.
