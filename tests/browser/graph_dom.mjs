@@ -36,8 +36,8 @@ const artifacts='test-artifacts/graph';mkdirSync(artifacts,{recursive:true});
 let browser;
 test.before(async()=>{browser=await chromium.launch({headless:true,chromiumSandbox:true});});
 test.after(async()=>{await browser?.close();});
-async function fixture({mobile=false,reduced=false,fault=null}={}){
- const context=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1440,height:1000},reducedMotion:reduced?'reduce':'no-preference',serviceWorkers:'block'});
+async function fixture({mobile=false,reduced=false,fault=null,viewport=null}={}){
+ const context=await browser.newContext({viewport:viewport||(mobile?{width:390,height:844}:{width:1440,height:1000}),reducedMotion:reduced?'reduce':'no-preference',serviceWorkers:'block'});
  const unexpected=[];
  await context.route('**/*',async route=>{
    const url=route.request().url();
@@ -300,5 +300,27 @@ test('stellar reduced-motion disables ambient animation and preserves keyboard c
   assert.ok(style.includes('pan-y')&&style.includes('pinch-zoom'));
   await map.focus();await p.keyboard.press('ArrowRight');
   assert.equal(await p.locator('#graph-surface').evaluate(el=>new DOMMatrixReadOnly(getComputedStyle(el).transform).e),20);
+ }finally{await close(f);}
+});
+test('consulted constellation nodes do not collide at 900x700 or mobile viewport',async()=>{
+ const f=await fixture({viewport:{width:900,height:700},reduced:true});try{
+  const p=f.page;await consult(p);await p.locator('#top-graph').click();
+  for(const size of [{width:900,height:700},{width:390,height:844}]){
+   await p.setViewportSize(size);
+   await p.waitForTimeout(320); // Wait for stellar node position transition.
+   const nodes=await p.locator('.graph-node').evaluateAll(items=>items.map(n=>{
+    const r=n.getBoundingClientRect();
+    return {label:n.textContent.trim().replace(/\s+/g,' '),x:r.x,y:r.y,right:r.right,bottom:r.bottom};
+   }));
+   assert.equal(nodes.length,8,'4 DEMO + hub + consulted source/conversation/manual nodes');
+   const overlaps=[];
+   for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+    const a=nodes[i],b=nodes[j];
+    const dx=Math.min(a.right,b.right)-Math.max(a.x,b.x);
+    const dy=Math.min(a.bottom,b.bottom)-Math.max(a.y,b.y);
+    if(dx>0.5&&dy>0.5)overlaps.push({a:a.label,b:b.label,width:+dx.toFixed(2),height:+dy.toFixed(2)});
+   }
+   assert.deepEqual(overlaps,[],'node overlap at '+size.width+'x'+size.height);
+  }
  }finally{await close(f);}
 });

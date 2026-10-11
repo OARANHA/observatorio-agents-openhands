@@ -27,3 +27,10 @@
 - Correção mínima `tests/test_contract.py`: exigir **ambas** a atribuição com `validGraphIdentity` e a guarda `if(hasConsulted){`; manter demais asserts sobre tipos, relações, origem e ausência de sucesso inventado.
 - Nenhum `source/observatorio-v02.html`, `extension.js`, manifesto, runtime, CSS, host ou Canvas alterados nessa correção. **CI do próximo SHA PENDENTE**, workflow verde do SHA anterior não valida o novo commit. Sem polling; proprietário informa `green`/`red`.
 - G11 NÃO PROVADO; G12 BLOQUEADO; P01 PARCIAL; P02/P03 NÃO PROVADOS; ADR-0001 PROPOSTO, NO-GO operacional.
+
+## Revisão adversarial Codex — P2 colisão em 900×700 (2026-10-11)
+- Revisor Codex examinou PR #45 HEAD `73d035542e30fd256dfa16bd59498ce92ae7b46c` árvore `79591af8aada48260141b0707327adc071b60b3f` base `5cedc0eada928fcd1f46cc50e2144d02822181be`, somente leitura. Parecer **CORREÇÕES NECESSÁRIAS**, sem P0/P1 demonstrados. Revisou geração byte-a-byte, proveniência, escaping, curvas SVG e consultas tardias. Não conseguiu testar Chromium localmente.
+- Achado P2: no layout **com conversa consultada**, hub em (34%,49%) e cartão VIGIAFAST em (16%,21%) podem se sobrepor em viewport 900×700 (mapa 525×338 px, interseção estimada 15,5×4,36 px). Cálculo de geometria, não reprodução direta no navegador pelo Codex.
+- Alteração estritamente visual: hub consultado em (40%,50%); DEMO direito superior em y15%, direito inferior em y85%. Sem consulta, layout preservado. Nós, vínculos, proveniência e contrato host inalterados.
+- Nova regressão Chromium por `getBoundingClientRect()` mede oito nós após GET sintético e exige interseções vazias em 900×700 e 390×844 (esperados **23 testes Graph DOM**, **nova CI NÃO VALIDADA**). Viewports adicionais/Canvas/touch e acessibilidade não comprovados por isso.
+- Artefato `extension.js` regenerado com algoritmo oficial após comparar baseline byte-a-byte. Sem merge, Canvas, deploy, LLM/agente real ou dados privados. **G11 NÃO PROVADO; G12 BLOQUEADO; P01 PARCIAL; P02/P03 NÃO PROVADOS; ADR-0001 PROPOSTO; NO-GO operacional**. Aguardar proprietário informar GREEN/RED, sem polling.

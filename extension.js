@@ -245,9 +245,9 @@ function graphModel(){
   // Posições determinísticas, sem simulação de atividade ou topologia operacional.
   const hasConsulted=!!(verifiedMission&&validGraphIdentity(verifiedMission.graphIdentity));
   const nodes=[
-    {id:'demo-root',name:'Projetos ilustrativos',tag:'APENAS DEMO',kind:'demo-hub',x:hasConsulted?34:49,y:49,description:'Agrupador dos quatro exemplos visuais. Não representa inventário de operações reais.'}
+    {id:'demo-root',name:'Projetos ilustrativos',tag:'APENAS DEMO',kind:'demo-hub',x:hasConsulted?40:49,y:hasConsulted?50:49,description:'Agrupador dos quatro exemplos visuais. Não representa inventário de operações reais.'}
   ];
-  const places=hasConsulted?[[16,21],[53,17],[13,81],[55,79]]:[[24,19],[76,21],[19,79],[80,78]];
+  const places=hasConsulted?[[16,21],[53,15],[13,81],[55,85]]:[[24,19],[76,21],[19,79],[80,78]];
   const edges=[];
   Object.keys(defs).filter(k=>k!=='observado').forEach((key,i)=>{
     const item=defs[key];

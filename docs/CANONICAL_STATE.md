@@ -614,3 +614,8 @@ Main pré-consolidação96ed4a3c5ce659aa55a4841716e7623d30aaeb64.
 - PR #45 V0.5.2 HEAD histórico `7105dcf0154aa6bcc6d6677a6c7e6cbeae54b735`: CI Observatorio `38179029418` RED devido exclusivamente à asserção textual antiga em `tests/test_contract.py:197`; Graph DOM Offline `38179029437` **22/22 GREEN**, Canary Worker Inert SDK `38179029414` GREEN.
 - Condição `verifiedMission&&validGraphIdentity` foi extraída em `hasConsulted` e permanece sendo a guarda real para a criação de nós consultados. Correção **somente de asserção do contrato e docs**, sem alterar código de produção, geração ou Canvas. Nova CI aguardando `green`/`red` sem polling.
 - Handoff `docs/handoffs/OBS-CYCLE-007-STELLAR-GRAPH-V052.md`; G11 NÃO PROVADO, G12 BLOQUEADO, P02/P03 NÃO PROVADOS; NO-GO operacional.
+
+## CYCLE007 — correção de colisão responsiva P2 (2026-10-11)
+- Revisão Codex do HEAD histórico `73d035542e30fd256dfa16bd59498ce92ae7b46c` reportou P2: hub DEMO e VIGIAFAST DEMO podem colidir após consulta em 900×700 devido a cartões maiores. Não foram demonstrados P0/P1; a revisão é automatizada e **não promove G11**.
+- Patch no layout consultado (hub x40,y50, DEMO direito y15/y85) e teste Chromium medindo rects sem colisão em 900×700/390×844. `extension.js` regenerada, código de proveniência/host inalterado. **23 testes DOM esperados, nova CI pendente**.
+- Handoff `docs/handoffs/OBS-CYCLE-007-STELLAR-GRAPH-V052.md`, Canvas V0.5.1 não modificado, G11 NÃO PROVADO, G12 BLOQUEADO, P02/P03 NÃO PROVADOS, NO-GO operacional.

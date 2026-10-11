@@ -542,3 +542,6 @@ Main base `e06d3b01e60d9a5503e046dc0fe2eeb269f0e403` após #42. Reuso da PR #35 
 
 ## CYCLE007 — correção de teste após CI RED (2026-10-11)
 - PR #45 HEAD `7105dcf0154aa6bcc6d6677a6c7e6cbeae54b735`: CI `38179029418` RED por asserção estática obsoleta em `tests/test_contract.py:197` após extração de `hasConsulted`; DOM `38179029437` 22/22 e SDK inerte `38179029414` GREEN. Guard de identidade segue presente e é agora checado com duas asserts. Só teste/docs alterados, sem Canvas/deploy/merge. Nova CI pendente; evitar polling. G11 não provado/G12 bloqueado.
+
+## CYCLE007 — P2 colisão responsiva (2026-10-11)
+- Codex independente automatizado apontou colisão hub/VIGIAFAST a 900×700 após consulta no HEAD `73d035542e30fd256dfa16bd59498ce92ae7b46c`; geometria calculada, não Chromium local. Alteradas somente posições consultadas, sem semântica nova. Adicionado Chromium `getBoundingClientRect` para 900×700 e 390×844; esperado 23 DOM, nova CI pendente sem polling. Sem merge/Canvas/deploy. G11 não provado e G12 bloqueado.
