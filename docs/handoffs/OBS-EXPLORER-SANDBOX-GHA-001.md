@@ -18,7 +18,7 @@ Autorização recebida: preparar uma PR para testes de isolamento em um runner t
 
 ## Matriz de provas do job
 
-O workflow .github/workflows/canary-sandbox.yml usa ubuntu-24.04 efêmero, até oito minutos, token GitHub somente para leitura e checkout sem persistir credenciais. Instala apenas bubblewrap dos repositórios Ubuntu do runner. Não usa secrets, SDK, modelo de IA ou provedor LLM.
+O workflow .github/workflows/canary-sandbox.yml usa ubuntu-24.04 efêmero, até oito minutos, token GitHub somente para leitura e checkout sem persistir credenciais. Instala bubblewrap e o pacote de perfis AppArmor do Ubuntu no runner; carrega apenas o perfil específico bwrap-userns-restrict, sem alterar sysctls globais. Não usa secrets, SDK, modelo de IA ou provedor LLM.
 
 Em scripts/probe_canary_sandbox.py:
 
@@ -42,3 +42,13 @@ Os passos de apt são apenas preparação temporária do runner; a etapa de rede
 ## Entrega
 
 Branch e PR para revisão, sem merge/deploy. Após o primeiro job, conferir UMA vez o status do HEAD e o relatório de falhas/sucessos. Não fazer polling contínuo.
+
+## Rodada inicial RED — evidência GitHub Actions
+
+- Workflow `Canary Sandbox Probe`, run `38111147014`, job `114386800339`, HEAD `49715f65fe13f4d788394b969883252c5926d828`: **failure**. CI principal do mesmo HEAD: **success**.
+- Bubblewrap 0.9.0-1ubuntu0.3 instalou normalmente no runner Ubuntu 24.04.5. Quatro das seis provas falharam **antes de executar o comando protegido**, com a mesma mensagem: `bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted`.
+- Duas provas passaram: rejeição de comandos desconhecidos e encerramento do grupo/descendente. Isso **não** prova isolamento de filesystem, rede ou ambiente: NO-GO mantido.
+- Hipótese fundamentada por incidentes públicos em Ubuntu 24.04: políticas AppArmor de user namespace podem impedir que o Bubblewrap configure a interface loopback isolada. A mensagem não prova isoladamente a configuração exata do kernel/AppArmor no runner.
+- Próxima tentativa: instalar o pacote Ubuntu `apparmor-profiles` no **runner descartável** e carregar o perfil específico `bwrap-userns-restrict` através de `apparmor_parser`. NÃO desativar `kernel.apparmor_restrict_unprivileged_userns`, NÃO habilitar `--share-net`, NÃO modificar a VPS e NÃO fazer fallback inseguro. Falta/erro de perfil continua RED.
+- Referências públicas para o diagnóstico (não substituem a prova do job): https://github.com/anthropics/sandbox-runtime/issues/74 e https://github.com/styin/kaguya/issues/71.
+- A atualização do workflow é nova tentativa **não validada** enquanto não houver logs do novo HEAD. Não declarar GREEN antecipadamente.
