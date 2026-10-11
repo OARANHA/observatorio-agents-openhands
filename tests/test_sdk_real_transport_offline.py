@@ -16,7 +16,6 @@ import socket
 import sys
 import unittest
 from unittest.mock import patch
-from pydantic import SecretStr
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from canary_budget import BudgetBook, RateCard, TokenCaps
@@ -26,6 +25,7 @@ from canary_transport_probe import SyntheticTransportGate
 try:
     from openhands.sdk.llm import LLM
     import openhands.sdk.llm.llm as sdk_module
+    from pydantic import SecretStr  # SDK 1.53.0 dependency; unavailable in contract runner
     HAS_SDK = importlib.metadata.version("openhands-sdk") == "1.53.0"
 except (ImportError, importlib.metadata.PackageNotFoundError):
     LLM = None
