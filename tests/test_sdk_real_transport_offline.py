@@ -146,6 +146,64 @@ class OfflineSDKFixture:
 
 @unittest.skipUnless(HAS_SDK, "requires SDK 1.53.0 in isolated runner")
 class RealSDKOfflineTests(unittest.TestCase):
+    def test_litellm_closed_session_rebuild_cannot_reenter_synthetic_sink(self):
+        import aiohttp
+        import httpx
+        from litellm.llms.custom_httpx.aiohttp_transport import LiteLLMAiohttpTransport
+        async def attempt():
+            fixture=OfflineSDKFixture();sessions=[];arrived=[]
+            def make_session():
+                session=aiohttp.ClientSession(trust_env=False)
+                sessions.append(session);return session
+            transport=LiteLLMAiohttpTransport(make_session(),session_factory=make_session)
+            async def first(**_kwargs):
+                arrived.append('synthetic_first')
+                raise RuntimeError('Session is closed')
+            async def guarded(**kwargs):
+                return await fixture.gate.ainvoke(first,**kwargs)
+            try:
+                with patch.object(transport,'_make_aiohttp_request',guarded):
+                    async with httpx.AsyncClient(transport=transport,trust_env=False,
+                                                 timeout=0.3) as client:
+                        with self.assertRaises(GateError):
+                            with fixture.gate.logical_call():
+                                await client.get('http://127.0.0.1:9/')
+                self.assertEqual(['synthetic_first'],arrived)
+                self.assertEqual(2,len(sessions),'official session rebuild was not exercised')
+                self.assertTrue(fixture.guard.cancelled);self.assertTrue(fixture.book.closed)
+                self.assertIsNotNone(fixture.book.active)
+                with self.assertRaises(GateError):
+                    with fixture.gate.logical_call():pass
+            finally:
+                for session in sessions:await session.close()
+                tasks=list(LiteLLMAiohttpTransport._background_close_tasks)
+                if tasks:await asyncio.gather(*tasks,return_exceptions=True)
+            self.assertTrue(all(s.closed for s in sessions))
+        asyncio.run(attempt())
+
+    def test_httpcore_and_litellm_aiohttp_transport_are_blocked_in_namespace(self):
+        import httpcore
+        import httpx
+        import aiohttp
+        from litellm.llms.custom_httpx.aiohttp_transport import LiteLLMAiohttpTransport
+        with httpcore.ConnectionPool(retries=0) as pool:
+            with self.assertRaises(httpcore.ConnectError):
+                pool.request('GET','http://127.0.0.1:9/',extensions={
+                    'timeout':{'connect':0.3,'read':0.3,'write':0.3,'pool':0.3}})
+        async def attempt():
+            session=aiohttp.ClientSession(trust_env=False,
+                timeout=aiohttp.ClientTimeout(total=0.3))
+            transport=LiteLLMAiohttpTransport(session)
+            try:
+                async with httpx.AsyncClient(transport=transport,trust_env=False,
+                                             timeout=0.3) as client:
+                    with self.assertRaises(httpx.ConnectError):
+                        await client.get('http://127.0.0.1:9/')
+            finally:
+                await session.close()
+            self.assertTrue(session.closed)
+        asyncio.run(attempt())
+
     def test_auxiliary_proxy_metadata_http_is_blocked_without_litellm_sinks(self):
         import httpx
         from openhands.sdk.llm.utils import model_info
