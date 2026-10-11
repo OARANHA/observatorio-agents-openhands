@@ -139,5 +139,56 @@ class Contract(unittest.TestCase):
         subprocess.run(['node', '--check', str(ROOT / 'extension.js')], check=True)
 
 
+
+class GraphV050(unittest.TestCase):
+    """Contratos: modo Grafo, identidade multiprojeto e dados rastreaveis."""
+
+    def test_manifest_v050(self):
+        data = json.loads((ROOT / 'canvas-extension.json').read_text(encoding='utf-8'))
+        self.assertEqual(data['version'], '0.5.0')
+        self.assertIn('grafo', data['description'].lower())
+
+    def test_graph_navigation_and_interaction(self):
+        source = (ROOT / 'extension.js').read_text(encoding='utf-8')
+        style_line = next(line for line in source.splitlines() if line.startswith('const STYLE = '))
+        markup_line = next(line for line in source.splitlines() if line.startswith('const MARKUP = '))
+        css = json.loads(style_line[len('const STYLE = '):-1])
+        markup = json.loads(markup_line[len('const MARKUP = '):-1])
+        for expected in ('id="top-graph"', 'id="rail-graph"', 'id="graph"',
+                         'id="graph-scope"', 'id="graph-search"', 'id="graph-map"',
+                         'id="graph-surface"'):
+            self.assertIn(expected, markup)
+        for expected in ('function openGraph()', 'function graphModel()',
+                         'function renderGraph()', 'function renderGraphPanel()',
+                         'graphScope', 'graphQuery', 'graphZoom', "graphSelected"):
+            self.assertIn(expected, source)
+        self.assertIn(".graph.hidden{display:none}", css)
+        self.assertIn(".graph-node[data-kind=\"verified\"]", css)
+        self.assertIn(".graph-node[data-kind=\"manual\"]", css)
+        self.assertIn("graph-surface", css)
+        self.assertIn("graphScope='all'", source)
+        self.assertIn("graphScope==='demo'", source)
+
+    def test_grafo_nao_inventa_agentes_vinculos_ou_sucesso(self):
+        source = (ROOT / 'extension.js').read_text(encoding='utf-8')
+        self.assertIn("if(verifiedMission){", source)
+        self.assertIn("kind:'verified'", source)
+        self.assertIn("kind:'manual'", source)
+        self.assertIn("kind:'demo'", source)
+        self.assertIn("kind:'demo-hub'", source)
+        self.assertIn("edges.push({from:'real-origin',to:'real-mission',kind:'verified'})", source)
+        self.assertIn("edges.push({from:'real-mission',to:'manual-project',kind:'manual'})", source)
+        self.assertIn("O servidor não confirmou o vínculo", source)
+        self.assertIn("Uma conversa concluída não garante sucesso da tarefa.", source)
+        self.assertNotIn("setInterval(", source)
+        self.assertNotIn("fetch(", source)
+        self.assertNotIn("document.cookie", source)
+
+    def test_consulta_recolhe_formulario_sem_apagar_resultado(self):
+        source = (ROOT / 'extension.js').read_text(encoding='utf-8')
+        self.assertIn("detail.open=false;", source)
+        self.assertIn("onVerified({conversationId:id", source)
+
+
 if __name__ == '__main__':
     unittest.main()
