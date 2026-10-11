@@ -2,8 +2,8 @@
   "schema_version": 1,
   "name": "observatorio-agentes",
   "display_name": "Observatório de Agentes",
-  "version": "0.4.2",
-  "description": "Universo demonstrativo com consulta manual e somente leitura de missão OpenHands.",
+  "version": "0.5.0",
+  "description": "Universo e grafo operacional com projetos demonstrativos separados de conversas OpenHands consultadas.",
   "entrypoint": "extension.js",
   "contributes": {
     "pages": [
@@ -12,7 +12,7 @@
         "title": "Observatório de Agentes",
         "path": "/observatorio",
         "nav_label": "Observatório",
-        "description": "Sistemas solares navegáveis por projeto com dados ilustrativos."
+        "description": "Universo 3D e grafo 2D; exemplos visuais separados de execução OpenHands consultada."
       }
     ]
   }
