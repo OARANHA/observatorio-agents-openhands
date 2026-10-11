@@ -160,3 +160,11 @@ factuais fixos; extra payload e counters bool são recusados. Nunca serializar
 objeto LLM, ambiente, prompt privado, exceção ou nome de cliente.
 G07 continua PARCIAL: prova integrada sintética não cria filho operacional,
 não registra code-explorer e não prova herança em delegação real.
+
+
+### G10 — envelope sintético v1 (2026-10-11)
+
+Contrato em [SYNTHETIC_EVIDENCE_SCHEMA.md](SYNTHETIC_EVIDENCE_SCHEMA.md):
+campos fechados, hash de integridade e SHA declarado, sem autenticidade
+independente ou anti-replay. Oito negativas/roundtrips offline. G10 PARCIAL;
+G11 NÃO PROVADO. Nunca constitui autorização para canário real.

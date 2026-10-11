@@ -284,3 +284,17 @@ Contrato do pai rejeita bool como contador e campos extras potencialmente
 privados antes de imprimir JSON (RED reproduzido). 149 testes locais: 128
 PASS/21 opcionais SDK skip; manager oficial local: 6 PASS. CI por conferir.
 Worker continua inerte; não certifica wiring operacional ou cgroup. NO-GO.
+
+
+## Evidência sintética versionada — 2026-10-11
+
+PR #27 integrada em dd441990b72fed8917a8bf9ec279ddb0a5f688ca; CIs
+38121276910 e 38121276933 GREEN no HEAD ab157d165c8eeb998d10b79b9b50df056ff7e836,
+logs e autorrevisão registrados. Esquema obs.synthetic.audit.v1 reutiliza
+relatório contábil fechado; JSON limitado, campos/tipos estritos, duplicatas
+negadas, hash canônico e origem SHA explicitamente declarada, não autenticada.
+Oito testes novos: RED inicial (contrato ausente), GREEN após implementação.
+157 testes locais: 136 PASS/21 opcionais SDK skip; SDK manager já comprovado
+em CI. Sem persistência, assinatura, credenciais ou payload livre.
+Ver docs/SYNTHETIC_EVIDENCE_SCHEMA.md. CI deste incremento por conferir; G10
+continua parcial, G11 não provado e NO-GO operacional mantido.
