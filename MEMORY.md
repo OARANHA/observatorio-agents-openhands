@@ -446,3 +446,8 @@ skip esperados; teste TaskManager PAUSED/close/hold aguarda runner dedicado.
 Replay aceita receipt em instância nova: prova de lacuna, sem store criado.
 Ver docs/CYCLE003_SECURITY_FINDINGS.md. G07/G10 parciais, G11 não provado,
 G12 BLOQUEADO. Não houve agente/LLM/provedor/credencial ou mudança Core.
+
+
+## Fechamento do ciclo 003 — 2026-10-11
+
+Main pré-fechamento 4c0f5f0f7559bbe8b2ab7476387fbe700894de9c; #34/#36 integradas, #35 visual aberta e #7 draft intocada. CIs dos HEADs GREEN, evidência/limites e desvio de inspeção tardia dos logs #34 registrados em [OBS-CYCLE-003-CONTINUITY](docs/handoffs/OBS-CYCLE-003-CONTINUITY.md). SDK/transportes reais só em provas inertes; DOM Chromium com fixtures na #35, sem Canvas instalado. Autorrevisão automatizada não substitui G11. G12 BLOQUEADO/NO-GO; P03 memória persistente NÃO PROVADA. SHA do merge desta documentação na descrição da PR de fechamento.

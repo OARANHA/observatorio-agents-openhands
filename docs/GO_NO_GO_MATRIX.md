@@ -2,7 +2,7 @@
 
 **Data de referência:** 2026-10-11
 **Repositório:** https://github.com/OARANHA/observatorio-agents-openhands
-**Main verificada:** `ba38f1a0dd29110c0b1dbbc7c0c0c51a07887510`
+**Main verificada antes do fechamento 003:** `4c0f5f0f7559bbe8b2ab7476387fbe700894de9c` (histórico e SHA do próprio fechamento: handoff/PR).
 **Fontes de autoridade:** `docs/PROJECT_SOURCE.md` → `AGENTS.md` → ADRs (ADR-0001: **Proposto**) → `docs/CANONICAL_STATE.md` → `MEMORY.md` → `docs/ARCHITECTURE.md` → código/CI.
 **Decisão atual:** **NO-GO operacional**.
 
@@ -297,3 +297,24 @@ Navegador local indisponível; nenhuma instalação foi tentada. Sem deploy,
 Canvas, infraestrutura, provider ou outros projetos. Revisões favoráveis
 automáticas são autorrevisões, não certificação humana independente.
 Quatro PRs úteis bastam: não criar duas artificiais para atingir seis.
+
+
+## Estado factual consolidado do ciclo 003
+
+Esta seção prevalece sobre snapshots históricos acima; detalhes/SHAs/runs e desvio procedimental #34 em [handoff](handoffs/OBS-CYCLE-003-CONTINUITY.md).
+
+| Gates | Antes → depois | Evidência e limite |
+|---|---|---|
+| G01 | PROVADO → PROVADO | Reconciliado GitHub; #34 teve inspeção real de logs após merge, desvio explicitamente retificado |
+| G02–G04 | PROVADO OFFLINE → PROVADO OFFLINE | UTC ASCII, contratos financeiros/metrics existentes e SDK 1.53.0 preservados |
+| G05/G06 | PARCIAL → PARCIAL | httpcore/aiohttp negados no netns; resubmissão transitive bloqueada pelo Guard; inventário incompleto |
+| G07 | PARCIAL → PARCIAL | TaskManager pausa/saída parcial/close falho caracterizados; cleanup/restart ainda têm lacunas |
+| G08 | PARCIAL DOCUMENTAL → PARCIAL DOCUMENTAL | Dossiê público anterior preservado; sem validação de conta/modelo/tarifa efetivos |
+| G09/G11 | NÃO PROVADO → NÃO PROVADO | Nenhum provisionamento/review independente; autorrevisão automatizada identificada |
+| G10 | PARCIAL → PARCIAL | UTC/UUID mais estritos; replay em memória não persiste no restart, hash não autentica |
+| G12 | BLOQUEADO → BLOQUEADO | NO-GO; autorização operacional separada ausente |
+| P01 | PARCIAL → PARCIAL | #35 seis cenários DOM sintéticos GREEN; #7 intocada, #35 aberta, sem Canvas instalado |
+| P02 | NÃO PROVADO → NÃO PROVADO | IDs locais compostos não comprovam tenant/RBAC/autorização |
+| P03 | NÃO PROVADO → NÃO PROVADO | Memória persistente não testada; não confundir com acessibilidade DOM |
+
+Não promover nenhum gate operacional por GREEN sintético. Ver handoff para prioridades e decisões humanas.
