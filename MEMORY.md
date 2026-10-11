@@ -94,3 +94,14 @@ TaskToolSet e supervisor do worker inteiro, **sem agente real ou LLM**.
 Documento: `docs/handoffs/OBS-EXPLORER-WORKER-INERT-001.md`.
 Status desta nota: preparação sob validação, não alegar execução aprovada
 até ler a CI do HEAD. Ainda **NO-GO operacional**.
+
+## Preparação de orçamento preventivo do Explorador — 2026-10-11
+
+Base GitHub: main `cf4a429fde6e8b4aecd7c1001166ee13f2d755c4`
+(PR #13 integrada). Branch `feat/explorer-offline-budget-gate-v1`.
+O preço sintético e reserva antecipada ficam em `scripts/canary_budget.py`;
+testes em `tests/test_canary_budget.py`. Handoff:
+`docs/handoffs/OBS-EXPLORER-BUDGET-OFFLINE-001.md`.
+Nenhum provedor/modelo/tarifa real aprovado, nenhuma chamada LLM,
+registro de agente, delegação, merge ou deploy. Integração efetiva da reserva
+a todas as rotas de SDK segue ausente: **NO-GO operacional**.
