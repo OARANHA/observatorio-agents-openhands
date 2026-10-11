@@ -539,3 +539,6 @@ Main base `e06d3b01e60d9a5503e046dc0fe2eeb269f0e403` após #42. Reuso da PR #35 
 - Canvas: operador mostrou V0.5.1 ativada em `https://canvas.wandora.com.br` com ref `5cedc0eada928fcd1f46cc50e2144d02822181be`, e screenshot do grafo com VIGIAFAST/WANDORA/ELUS/OPENHANDS LAB classificados DEMO. Essas capturas não autorizam instalação nem provam operação real.
 - V0.5.2 aprovada **para implementação em PR separada sem merge**. Redesign por CSS estelar/halos e SVG curvas deterministicamente geradas de relações **existentes**, sem dependência externa; manifesto `0.5.2`, fonte+artefato gerado e testes offline. Handoff `docs/handoffs/OBS-CYCLE-007-STELLAR-GRAPH-V052.md`. CI e screenshot do novo HEAD aguardam usuário informar green/red, sem polling.
 - Nenhuma atualização Canvas, LLM/agente, VPS/host/core. G11 não provado, G12 bloqueado, P02/P03 não provados, NO-GO operacional.
+
+## CYCLE007 — correção de teste após CI RED (2026-10-11)
+- PR #45 HEAD `7105dcf0154aa6bcc6d6677a6c7e6cbeae54b735`: CI `38179029418` RED por asserção estática obsoleta em `tests/test_contract.py:197` após extração de `hasConsulted`; DOM `38179029437` 22/22 e SDK inerte `38179029414` GREEN. Guard de identidade segue presente e é agora checado com duas asserts. Só teste/docs alterados, sem Canvas/deploy/merge. Nova CI pendente; evitar polling. G11 não provado/G12 bloqueado.

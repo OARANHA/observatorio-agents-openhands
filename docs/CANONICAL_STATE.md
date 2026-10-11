@@ -609,3 +609,8 @@ Main pré-consolidação96ed4a3c5ce659aa55a4841716e7623d30aaeb64.
 - O operador enviou duas evidências novas do Canvas real: **App Observatório V0.5.1 ativado**, ref `5cedc0eada928fcd1f46cc50e2144d02822181be`, e captura do grafo DEMO efetivamente renderizado no Canvas. Evidência é de instalação e renderização básica, não de inspeção abrangente H0–H3 ou GO operacional.
 - Novo trabalho autorizado: **V0.5.2 em PR draft**, redesign CSS/SVG do grafo estelar reaproveitando V0.5.1 (sem mudanças no host, rede, autorização, dados e projetos). Novo manifesto `0.5.2`, `extension.js` regenerado, três cenários Chromium adicionais; esperado **22 testes DOM**, CI **não verificada no novo HEAD**.
 - Arquivo de autoridade: `docs/handoffs/OBS-CYCLE-007-STELLAR-GRAPH-V052.md`. G11 NÃO PROVADO, G12 BLOQUEADO, P01 PARCIAL, P02/P03 NÃO PROVADOS, NO-GO operacional; **Canvas V0.5.1 não foi atualizado por este trabalho**.
+
+## CYCLE007 — diagnóstico da CI RED e correção no teste do grafo (2026-10-11)
+- PR #45 V0.5.2 HEAD histórico `7105dcf0154aa6bcc6d6677a6c7e6cbeae54b735`: CI Observatorio `38179029418` RED devido exclusivamente à asserção textual antiga em `tests/test_contract.py:197`; Graph DOM Offline `38179029437` **22/22 GREEN**, Canary Worker Inert SDK `38179029414` GREEN.
+- Condição `verifiedMission&&validGraphIdentity` foi extraída em `hasConsulted` e permanece sendo a guarda real para a criação de nós consultados. Correção **somente de asserção do contrato e docs**, sem alterar código de produção, geração ou Canvas. Nova CI aguardando `green`/`red` sem polling.
+- Handoff `docs/handoffs/OBS-CYCLE-007-STELLAR-GRAPH-V052.md`; G11 NÃO PROVADO, G12 BLOQUEADO, P02/P03 NÃO PROVADOS; NO-GO operacional.

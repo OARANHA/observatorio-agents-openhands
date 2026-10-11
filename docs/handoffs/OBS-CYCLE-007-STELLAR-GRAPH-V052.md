@@ -19,3 +19,11 @@
 - `prefers-reduced-motion:reduce` desabilita pulse/transições dos nós.
 - Mapa mobile não impede scroll vertical e pinch do browser.
 - Screenshots sintéticos de CI não são evidência de homologação do Canvas.
+
+## CI RED pontual e correção do contrato estático (2026-10-11)
+
+- HEAD anterior `7105dcf0154aa6bcc6d6677a6c7e6cbeae54b735`: workflow CI Observatorio [38179029418](https://github.com/OARANHA/observatorio-agents-openhands/actions/runs/38179029418) **failure**: `tests/test_contract.py:197`, caso `test_grafo_nao_inventa_agentes_vinculos_ou_sucesso` exige por igualdade textual o `if(verifiedMission&&validGraphIdentity(...))` da V0.5.1. Na V0.5.2 essa condição foi extraída para `const hasConsulted=!!(verifiedMission&&validGraphIdentity(verifiedMission.graphIdentity));` e aplicada por `if(hasConsulted){`. Não houve evidência de bypass lógico; **é contrato estático não atualizado**.
+- Dois workflows do mesmo HEAD **GREEN**: Graph DOM Offline [38179029437](https://github.com/OARANHA/observatorio-agents-openhands/actions/runs/38179029437) **22/22**; Canary Worker Inert SDK [38179029414](https://github.com/OARANHA/observatorio-agents-openhands/actions/runs/38179029414) sem ações reais.
+- Correção mínima `tests/test_contract.py`: exigir **ambas** a atribuição com `validGraphIdentity` e a guarda `if(hasConsulted){`; manter demais asserts sobre tipos, relações, origem e ausência de sucesso inventado.
+- Nenhum `source/observatorio-v02.html`, `extension.js`, manifesto, runtime, CSS, host ou Canvas alterados nessa correção. **CI do próximo SHA PENDENTE**, workflow verde do SHA anterior não valida o novo commit. Sem polling; proprietário informa `green`/`red`.
+- G11 NÃO PROVADO; G12 BLOQUEADO; P01 PARCIAL; P02/P03 NÃO PROVADOS; ADR-0001 PROPOSTO, NO-GO operacional.

@@ -194,7 +194,8 @@ class GraphV050(unittest.TestCase):
 
     def test_grafo_nao_inventa_agentes_vinculos_ou_sucesso(self):
         source = (ROOT / 'extension.js').read_text(encoding='utf-8')
-        self.assertIn("if(verifiedMission&&validGraphIdentity(verifiedMission.graphIdentity)){", source)
+        self.assertIn("const hasConsulted=!!(verifiedMission&&validGraphIdentity(verifiedMission.graphIdentity));", source)
+        self.assertIn("if(hasConsulted){", source)
         self.assertIn("kind:'verified'", source)
         self.assertIn("kind:'manual'", source)
         self.assertIn("kind:'demo'", source)
