@@ -180,6 +180,28 @@ class EvidencePreflight(unittest.TestCase):
     fixture=MetricsBinding.fixture
     response=MetricsBinding.response
     transport=MetricsBinding.transport
+    def test_unreviewed_sdk_routes_are_denied_before_baseline(self):
+        from canary_sdk_success_probe import snapshot_success_start
+        for field,value in [('stream',True),('caching_prompt',True),
+                            ('fallback_strategy',object()),('_api_key_refresh_hook',lambda:None),
+                            ('litellm_extra_body',{'stream':True})]:
+            gate,llm=self.fixture();setattr(llm,field,value)
+            with self.subTest(field=field),self.assertRaisesRegex(GateError,"sdk_unreviewed_route"):
+                with gate.logical_call():snapshot_success_start(gate,llm)
+            self.assertEqual(0,gate.book.calls)
+            self.assertTrue(gate.guard.cancelled)
+
+    def test_unreviewed_route_mutation_after_stub_keeps_uncertain_hold(self):
+        from canary_sdk_success_probe import snapshot_success_start,settle_success_from_sdk_metrics
+        gate,llm=self.fixture()
+        with self.assertRaises(GateError):
+            with gate.logical_call():
+                before=snapshot_success_start(gate,llm);self.transport(gate,llm)
+                llm.stream=True
+                settle_success_from_sdk_metrics(gate,llm,before,self.response(llm))
+        self.assertIsNotNone(gate.book.active)
+        self.assertEqual(Decimal(0),gate.book.spent)
+
     def test_nominal_sdk_overrides_denied_before_any_transport(self):
         from canary_sdk_success_probe import snapshot_success_start
         for field,value in [('model','unapproved'),('num_retries',1),('max_output_tokens',501),('input_cost_per_token',None)]:

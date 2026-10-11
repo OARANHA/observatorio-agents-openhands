@@ -118,3 +118,22 @@ Limites: não testa evasão do kernel, processos hostis que criam nova sessão
 fora do PID namespace, canais pela própria stdout ou isolamento multi-tenant.
 A prova SDK que monta / inteiro RO continua sendo apenas isolamento de rede
 de um runner sem credenciais de produção; não é o filesystem mínimo do terminal.
+
+
+### G02/G06 — inventário nominal de SDK/Tools 1.53.0
+
+| Caminho oficial instalado | Superfície | Prova e limite |
+|---|---|---|
+| llm/llm.py completion/acompletion | _transport_call/_atransport_call → aliases LiteLLM | AST, quatro rotas stubadas; sem prova de todos requests internos |
+| llm/llm.py responses/aresponses | aliases Responses, fluxo stream | baseline sintético nega stream; não há streaming operacional homologado |
+| llm/utils/retry_mixin.py | Tenacity, num_retries e before_sleep | num_retries=0 e segunda tentativa negada no sink; transporte de dependência fora do gate continua gap |
+| llm/llm.py _handle_error/_ahandle_error | fallback_strategy, inclusive thread no async | atributo negado no preflight; owner de thread/task exige mesma execução |
+| llm/llm.py _resolve_refreshed_api_key/_auth_refreshed_llm | refresh 401 tenta novamente | hook negado nominalmente; teste real com stubs nega segunda tentativa |
+| llm/llm.py resolve_runtime_metadata/aresolve_runtime_metadata | cache positivo/negativo e HTTP auxiliar | AST inventaria nomes; nenhum catálogo remoto consultado |
+| llm/streaming.py | chunks e métricas agregadas | apenas inventário; stream permanece não homologado |
+
+A auditoria não executa SDK LLM e não certifica ausência de imports dinâmicos,
+plugins, redirects ou tráfego LiteLLM/httpx. Funções novas exigem revisão.
+Aliases desconhecidos eram aceitos no baseline: RED → negação. Getter/setter
+is_subscription da distribuição oficial não é duplicação de método; teste
+positivo protege compatibilidade. G06 continua PARCIAL operacionalmente.

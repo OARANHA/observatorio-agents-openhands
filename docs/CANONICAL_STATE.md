@@ -286,3 +286,16 @@ descendente com ambiente limpo/RO/DNS negado e tmpfs separado. Não muda
 sandbox_argv nem allowlist. CI efêmera é obrigatória, sem skip/fallback.
 Local: bwrap indisponível para namespaces; resultado RED não certifica
 isolamento. Provas do novo HEAD ainda dependem do runner. NO-GO mantido.
+
+
+## SDK superfície e rotas inertes — 2026-10-11
+
+PR #24 integrada 05f88c1790b13c19e23a74fadc80cbaa22f0de23; CIs 38120541286 /
+38120541272 e sandbox 38120541278 GREEN, dez probes reais sem skips,
+autorrevisão registrada. Auditoria AST agora nega aliases LiteLLM extras,
+imports duplicados, módulos renomeados e duplicação de método executável;
+property getter/setter oficial preservado. REDs reproduzidos e corrigidos.
+Baseline/settlement sintéticos negam streaming, cache, fallback, refresh hook
+e extra_body antes do transporte ou após mutação, retendo hold incerto.
+139 testes locais: 122 PASS/17 opcionais skip; AST no SDK 1.53.0: 12 PASS.
+Não garante todo egress de dependências; CI do novo HEAD por conferir. NO-GO.
