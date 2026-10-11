@@ -48,6 +48,55 @@ class MoneyPrecision(unittest.TestCase):
                 Fractional().completion([])
             self.assertEqual(Decimal('0.001234567'),book.spent)
 
+class LedgerAdversarial(unittest.TestCase):
+    def fixture(self):
+        return Guard(),BudgetBook('.1'),RateCard('synthetic','fake','2','8','https://example.invalid','2026-10-11'),TokenCaps(2000,500,500)
+    def test_zero_usage_cannot_liquidate_positive_cost(self):
+        guard,book,rates,caps=self.fixture();hold=book.reserve(guard,rates,caps)
+        with self.assertRaisesRegex(GateError,'token_usage_outside_reservation'):
+            book.settle(guard,hold,input_tokens=0,output_tokens=0,reported_usd='.001')
+        self.assertTrue(book.closed);self.assertTrue(guard.cancelled)
+        self.assertIs(book.active,hold);self.assertEqual(Decimal(0),book.spent)
+    def test_negative_or_invalid_state_cannot_fund_a_transport(self):
+        for field,value in [('spent',Decimal('-1')),('calls',-1),('max_calls',True),
+                            ('guard_cost',-1.),('guard_calls',-1),('guard_budget',float('nan'))]:
+            guard,book,rates,caps=self.fixture()
+            if field.startswith('guard_'):setattr(guard,field[6:],value)
+            else:setattr(book,field,value)
+            with self.subTest(field=field),self.assertRaisesRegex(GateError,'ledger_state_invalid'):
+                book.reserve(guard,rates,caps)
+            self.assertTrue(book.closed);self.assertTrue(guard.cancelled)
+            self.assertIsNone(book.active)
+    def test_corrupted_ledger_during_response_keeps_hold_uncertain(self):
+        guard,book,rates,caps=self.fixture();hold=book.reserve(guard,rates,caps)
+        book.spent=Decimal('-1')
+        with self.assertRaisesRegex(GateError,'ledger_state_invalid'):
+            book.settle(guard,hold,input_tokens=100,output_tokens=100,reported_usd='.001')
+        self.assertIs(book.active,hold);self.assertTrue(guard.cancelled)
+    def test_concurrent_reservations_never_fund_two_calls(self):
+        import threading
+        guard,book,rates,caps=self.fixture();barrier=threading.Barrier(2);out=[]
+        def attempt():
+            barrier.wait(timeout=2)
+            try:out.append(book.reserve(guard,rates,caps))
+            except GateError:out.append('denied')
+        threads=[threading.Thread(target=attempt,daemon=True) for _ in range(2)]
+        for t in threads:t.start()
+        for t in threads:t.join(timeout=3);self.assertFalse(t.is_alive())
+        self.assertEqual(1,out.count('denied'));self.assertEqual(1,book.calls)
+        self.assertEqual(1,guard.calls);self.assertTrue(book.closed)
+        self.assertIsNotNone(book.active)
+        with self.assertRaises(GateError):book.settle(guard,book.active,input_tokens=100,output_tokens=100,reported_usd='.001')
+    def test_partial_metrics_cannot_reach_transport(self):
+        from canary_sdk_success_probe import snapshot_success_start
+        for field in ('accumulated_cost','accumulated_token_usage','prompt_tokens','completion_tokens'):
+            gate,llm=MetricsBinding.fixture(self)
+            target=llm.metrics if field.startswith('accumulated') else llm.metrics.accumulated_token_usage
+            delattr(target,field)
+            with self.subTest(field=field),self.assertRaisesRegex(GateError,'usage_missing|AttributeError'):
+                with gate.logical_call():snapshot_success_start(gate,llm)
+            self.assertEqual(0,gate.book.calls);self.assertTrue(gate.guard.cancelled)
+
 class MetricsBinding(unittest.TestCase):
     def fixture(self):
         import types

@@ -43,3 +43,17 @@ Baseline/settlement sintéticos negam streaming, cache, fallback, refresh hook
 e extra_body antes do transporte ou após mutação, retendo hold incerto.
 139 testes locais: 122 PASS/17 opcionais skip; AST no SDK 1.53.0: 12 PASS.
 Não garante todo egress de dependências; CI do novo HEAD por conferir. NO-GO.
+
+
+## Financeiro adversarial — 2026-10-11
+
+PR #25 integrada em 2329f85123f04667bbd39ce1ce4a4021e3cbb9c2; CIs 38120804684
+e 38120804699 GREEN, logs/revisão registrados. Negativas financeiras novas
+reproduziram RED: saldo/contadores negativos financiavam reserva; custo com
+zero tokens era liquidado. Invariantes agora são verificadas antes de reserva
+e liquidação; uso zero mantém hold incerto e cancela, sem refund/retry.
+Concorrência determinística: só uma reserva, segunda encerra missão inteira.
+Métricas parciais negadas antes do stub; ausência de usage vira GateError.
+144 testes locais: 127 PASS/17 opcionais skip. CI deste HEAD por conferir.
+Proteção contra código hostil no mesmo processo continua fora da garantia.
+NO-GO operacional mantido.

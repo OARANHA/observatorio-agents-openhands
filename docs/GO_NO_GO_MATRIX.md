@@ -137,3 +137,15 @@ plugins, redirects ou tráfego LiteLLM/httpx. Funções novas exigem revisão.
 Aliases desconhecidos eram aceitos no baseline: RED → negação. Getter/setter
 is_subscription da distribuição oficial não é duplicação de método; teste
 positivo protege compatibilidade. G06 continua PARCIAL operacionalmente.
+
+
+### G03/G04 — expansão financeira sintética
+
+Novas provas em tests/test_canary_accounting_hardening.py: custo sem tokens,
+ledger corrompido antes/depois do transporte, reservas concorrentes e métricas
+parciais. Reutiliza exatidão Decimal e hold sem refund; nenhuma tolerância
+para float introduzida. Estado ainda PROVADO OFFLINE, sem tarifa/fatura real.
+Achado adicional C: utils/model_info.py faz HTTP GET de proxy /v1/model/info;
+utils/runtime_metadata.py cria task por loop/rota e resolver OpenRouter usa
+httpx Client/AsyncClient. Esses destinos não são os quatro sinks; precisariam
+de bloqueio de rede independente no worker futuro. Nada foi solicitado à API.

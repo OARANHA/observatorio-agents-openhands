@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal, InvalidOperation, Context, localcontext, Inexact, Rounded
 from functools import wraps
+import math
 from threading import RLock
 from urllib.parse import urlsplit
 from canary_controls import GateError
@@ -156,12 +157,29 @@ class BudgetBook:
         elif self._guard is not guard:
             raise GateError("guard_identity_mismatch")
 
+    def _check_state(self,guard):
+        """Validate mutable observed state before funding or liquidating a hold.
+
+        Defensive corruption check, not protection against hostile same-process code.
+        """
+        if (any(type(x) is not Decimal or not x.is_finite() or x<0
+                for x in (self.budget,self.spent))
+            or self.budget<=0 or self.spent>self.budget
+            or any(type(x) is not int or x<1 for x in (self.max_calls,guard.max_calls))
+            or type(self.calls) is not int or not 0<=self.calls<=self.max_calls
+            or type(guard.calls) is not int or not self.calls<=guard.calls<=guard.max_calls
+            or type(self.closed) is not bool or type(guard.cancelled) is not bool
+            or type(guard.cost) not in (int,float) or not math.isfinite(guard.cost) or guard.cost<0
+            or type(guard.budget) not in (int,float) or not math.isfinite(guard.budget) or guard.budget<=0):
+            raise GateError('ledger_state_invalid')
+
     @exact_money
     def reserve(self,guard,rates: RateCard,caps: TokenCaps,*,live: bool=False,
                 today: date|None=None) -> Reservation:
         with self._lock:
             try:
                 self._require_guard(guard)
+                self._check_state(guard)
                 if self.closed or guard.cancelled or guard.clock()>=guard.deadline:
                     raise GateError("mission_unavailable")
                 if self.active is not None:
@@ -193,12 +211,13 @@ class BudgetBook:
         with self._lock:
             try:
                 self._require_guard(guard)
+                self._check_state(guard)
                 if self.closed or self.active is not reservation or guard.cancelled:
                     raise GateError("reservation_not_active")
                 if guard.clock()>=guard.deadline:
                     raise GateError("reservation_expired")
                 if (type(input_tokens) is not int or type(output_tokens) is not int
-                    or input_tokens<0 or output_tokens<0
+                    or input_tokens<0 or output_tokens<0 or input_tokens+output_tokens==0
                     or input_tokens>reservation.max_input_tokens
                     or output_tokens>reservation.max_output_tokens):
                     raise GateError("token_usage_outside_reservation")
