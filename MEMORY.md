@@ -433,3 +433,16 @@ Navegador local indisponível; nenhuma instalação foi tentada. Sem deploy,
 Canvas, infraestrutura, provider ou outros projetos. Revisões favoráveis
 automáticas são autorrevisões, não certificação humana independente.
 Quatro PRs úteis bastam: não criar duas artificiais para atingir seis.
+
+
+## Ciclo 003 — correção de UTC sintético (2026-10-11)
+
+Main reconciliada ebd967cad24603f06e08b5e141e7e9b7ac6fe34e; #33 integrada,
+#7 aberta/draft HEAD48f898d99a8979ef2c794513131506b028772666 e #10 fechada
+sem merge. Nova autorização até oito PRs offline; evolução visual isolada,
+sem merge #7/Canvas. Envelope e janela admitiam dígitos Unicode via \d;
+negativas RED→GREEN agora exigem ASCII. 187 testes locais:161 PASS/26 SDK
+skip esperados; teste TaskManager PAUSED/close/hold aguarda runner dedicado.
+Replay aceita receipt em instância nova: prova de lacuna, sem store criado.
+Ver docs/CYCLE003_SECURITY_FINDINGS.md. G07/G10 parciais, G11 não provado,
+G12 BLOQUEADO. Não houve agente/LLM/provedor/credencial ou mudança Core.

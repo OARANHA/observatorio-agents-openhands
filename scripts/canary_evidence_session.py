@@ -14,7 +14,7 @@ from canary_controls import GateError
 
 def _time(value):
     if type(value) is not str or re.fullmatch(
-            r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z',value) is None:
+            r'[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z',value) is None:
         raise GateError('synthetic_session_invalid')
     try:return datetime.strptime(value,'%Y-%m-%dT%H:%M:%SZ')
     except ValueError:raise GateError('synthetic_session_invalid') from None

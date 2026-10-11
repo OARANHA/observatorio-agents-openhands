@@ -101,3 +101,28 @@ class SyntheticAuditTests(unittest.TestCase):
         b=self.bundle(); del b['source_sha']
         with self.assertRaises(GateError):
             self.api().verify_synthetic_audit_bundle(self.rehash(b))
+
+    def test_non_ascii_timestamp_digits_are_denied_even_with_valid_digest(self):
+        for stamp in ('٢026-10-11T12:00:00Z','2026-10-1١T12:00:00Z',
+                      '2026-10-11T1٢:00:00Z','2026-10-11T12:0٠:00Z',
+                      '2026-10-11T12:00:0٠Z'):
+            with self.subTest(stamp=stamp):
+                b=self.bundle();b['observed_at_utc']=stamp
+                with self.assertRaisesRegex(GateError,'^synthetic_audit_invalid$'):
+                    self.api().verify_synthetic_audit_bundle(self.rehash(b))
+
+    def test_calendar_leap_century_and_uuid_variant_boundaries(self):
+        api=self.api()
+        for stamp in ('2000-02-29T23:59:59Z','2024-02-29T00:00:00Z'):
+            b=self.bundle();b['observed_at_utc']=stamp
+            self.assertEqual(stamp,api.verify_synthetic_audit_bundle(self.rehash(b))['observed_at_utc'])
+        for field,value in (
+                ('observed_at_utc','1900-02-29T00:00:00Z'),
+                ('observed_at_utc','2026-02-29T00:00:00Z'),
+                ('observed_at_utc','2026-10-11T12:00:60Z'),
+                ('evidence_id','SYNTHETIC-00000000-0000-4000-0000-000000000000'),
+                ('evidence_id','SYNTHETIC-00000000-0000-5000-8000-000000000000'),
+                ('evidence_id','SYNTHETIC-ABCDEF00-0000-4000-8000-000000000000')):
+            with self.subTest(field=field,value=value):
+                b=self.bundle();b[field]=value
+                with self.assertRaises(GateError):api.verify_synthetic_audit_bundle(self.rehash(b))
