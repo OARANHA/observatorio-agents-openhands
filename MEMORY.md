@@ -118,3 +118,15 @@ não protege cobranças reais nem caminhos internos de retry, portanto
 **NO-GO** para canário operacional. Handoff:
 `docs/handoffs/OBS-EXPLORER-BUDGET-SDK-MOCK-001.md`.
 Sem preço/modelo real, LLM, merge, deploy ou mudança de infraestrutura.
+
+## Continuidade — transportes internos SDK 1.53.0 (2026-10-11)
+
+Base GitHub: `8e008325bb59562369b0a0e69a017eda3123eb89`
+(PR #15 integrada). Branch `test/explorer-sdk-transport-attempts-v1`,
+handoff `docs/handoffs/OBS-EXPLORER-SDK-TRANSPORT-ATTEMPTS-001.md`.
+Quatro sinks LiteLLM e metadata HTTP auxiliar identificados na fonte
+oficial. Testes propostos auditam AST instalada, rejeitam chamadas
+sintéticas sem reserva e bloqueiam segunda tentativa na mesma execução.
+**Esses testes não provam segurança contra todo egress**: o SDK real
+não é instrumentado nem há execução de modelo. Estado: PR sob revisão,
+CI a confirmar, **NO-GO operacional**, sem merge/deploy/VPS/Canvas.
