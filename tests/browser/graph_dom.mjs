@@ -11,12 +11,14 @@ const html=`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><link 
 import {activate} from '/extension.js';
 window.fixtureReads=[];window.fixtureObservation={id:'00000000-0000-4000-8000-000000000001',execution_status:'finished',updated_at:'2026-10-11T00:00:00Z'};
 const host={registerPage(_id,mount){window.fixtureMount=()=>mount({container:document.getElementById('fixture')});window.fixtureDispose=window.fixtureMount();return ()=>{};},agentServer:{async request(request){window.fixtureReads.push(request);if(window.fixturePending)await new Promise(resolve=>window.fixtureFinishRead=resolve);if(window.fixtureError)throw Error('synthetic denied');return window.fixtureObservation;}}};
-activate(host);window.fixtureReady=true;</script></body></html>`;
+if(window.fixtureFault==='crypto')Object.defineProperty(Crypto.prototype,'randomUUID',{configurable:true,value(){throw Error('synthetic nonce failure');}});
+if(window.fixtureFault==='resize')window.ResizeObserver=class{constructor(){throw Error('synthetic resize failure');}};
+try{activate(host);}catch(error){window.fixtureMountFailure=String(error);}window.fixtureReady=true;</script></body></html>`;
 const artifacts='test-artifacts/graph';mkdirSync(artifacts,{recursive:true});
 let browser;
 test.before(async()=>{browser=await chromium.launch({headless:true,chromiumSandbox:true});});
 test.after(async()=>{await browser?.close();});
-async function fixture({mobile=false,reduced=false}={}){
+async function fixture({mobile=false,reduced=false,fault=null}={}){
  const context=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1440,height:1000},reducedMotion:reduced?'reduce':'no-preference',serviceWorkers:'block'});
  const unexpected=[];
  await context.route('**/*',async route=>{
@@ -35,6 +37,7 @@ async function fixture({mobile=false,reduced=false}={}){
    const Observer=window.ResizeObserver;window.fixtureObservers=new Set();
    window.ResizeObserver=class extends Observer{observe(...args){window.fixtureObservers.add(this);return super.observe(...args);}disconnect(){window.fixtureObservers.delete(this);return super.disconnect();}};
  });
+ if(fault)await page.addInitScript(value=>{window.fixtureFault=value;},fault);
  await page.goto(origin+'/');await page.waitForFunction(()=>window.fixtureReady);
  return {page,context,unexpected};
 }
@@ -130,5 +133,48 @@ test('idle conversation never appears as verified execution',async()=>{
   assert.ok((await p.locator('#scene-title').innerText()).includes('Conversa consultada'));
   assert.ok((await p.locator('#panel-content').innerText()).includes('Lua · conversa consultada'));
   assert.equal(await p.locator('#real-lua').getAttribute('aria-label'),'Abrir estado recebido da conversa');
+ }finally{await close(f);}
+});
+test('hung host GET hits local deadline; late completion does not update evidence',async()=>{
+ const f=await fixture();try{
+  const p=f.page;await p.clock.install();await p.evaluate(()=>window.fixturePending=true);
+  await p.locator('details.ob-real summary').click();
+  await p.locator('details.ob-real input.id').fill('00000000-0000-4000-8000-000000000001');
+  await p.getByText('Consultar estado no OpenHands',{exact:true}).click();
+  await p.waitForFunction(()=>typeof window.fixtureFinishRead==='function');
+  await p.clock.fastForward(10010);
+  await p.locator('details.ob-real output').filter({hasText:'prazo local excedido'}).waitFor();
+  assert.equal(await p.getByText('Consultar estado no OpenHands',{exact:true}).isEnabled(),true);
+  await p.evaluate(()=>window.fixtureFinishRead());
+  assert.ok((await p.locator('details.ob-real output').innerText()).includes('resposta tardia ignorada'));
+  assert.equal(await p.locator('.ob-real .moon').count(),0);
+  assert.equal(await p.locator('#source-banner').innerText(),'◌ PROTÓTIPO · DADOS ILUSTRATIVOS');
+  assert.equal(await p.evaluate(()=>fixtureReads.length),1);
+ }finally{await close(f);}
+});
+test('failed WebCrypto nonce prevents mount and leaves no wrapper',async()=>{
+ const f=await fixture({fault:'crypto'});try{
+  const p=f.page;
+  assert.match(await p.evaluate(()=>window.fixtureMountFailure||''),/synthetic nonce failure/);
+  assert.equal(await p.locator('section.ob-wrap').count(),0);
+  assert.deepEqual(await p.evaluate(()=>[fixtureFrames.size,fixtureObservers.size]),[0,0]);
+ }finally{await close(f);}
+});
+test('failed resize setup after append rolls back partial mount',async()=>{
+ const f=await fixture({fault:'resize'});try{
+  const p=f.page;
+  assert.match(await p.evaluate(()=>window.fixtureMountFailure||''),/synthetic resize failure/);
+  assert.equal(await p.locator('section.ob-wrap').count(),0);
+  assert.deepEqual(await p.evaluate(()=>[fixtureFrames.size,fixtureObservers.size]),[0,0]);
+ }finally{await close(f);}
+});
+test('mobile map retains native pan-y and pinch-zoom with bounded keyboard pan',async()=>{
+ const f=await fixture({mobile:true,reduced:true});try{
+  const p=f.page;await p.locator('#rail-graph').click();
+  const value=await p.locator('#graph-map').evaluate(el=>getComputedStyle(el).touchAction);
+  assert.ok(value.includes('pan-y')&&value.includes('pinch-zoom'),value);
+  assert.equal(value.includes('none'),false);
+  await p.locator('#graph-map').focus();await p.keyboard.press('ArrowRight');
+  assert.equal(await p.locator('#graph-surface').evaluate(el=>new DOMMatrixReadOnly(getComputedStyle(el).transform).e),20);
  }finally{await close(f);}
 });

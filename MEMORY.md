@@ -517,3 +517,8 @@ Main base `e06d3b01e60d9a5503e046dc0fe2eeb269f0e403` após #42. Reuso da PR #35 
 
 ## Ciclo 005 — Codex revisão independente automatizada e A1/A2 (2026-10-11)
 - PR #43: Codex em sessão separada reportou A1–A5 P2 e A6 P3 (sem P0/P1 demonstrado); JEV consultivo `split_task`. Primeiro commit remedia A1 estado antigo e A2 rótulos de proveniência, com dois novos testes Chromium. A3/A4/A5 continuam pendentes, A6 parcial. Nova CI aguardada sem polling. Sem merge/Canvas/operação real; G11/G12/P02/P03 inalterados.
+
+## Ciclo 005 — A3/A4/A5 corrigidos em branch, CI pendente (2026-10-11)
+
+- HEAD anterior PR #43 `0ebb942c7e13199381966d96ed1e4be4e6f2d77d` com CI `38172263276`, DOM `38172263290` 11/11 e SDK `38172263281` GREEN. Patch seguinte implementa timeout local A3 (sem abort host), rollback montagem A4 e mobile `pan-y pinch-zoom` A5 + quatro testes (15 DOM esperados).
+- JEV consultivo; revisão separada Codex é automatizada e **G11 permanece não provado**. G12 bloqueado, P02/P03 não provados, NO-GO operacional. Novas CIs somente após usuário sinalizar green/red.

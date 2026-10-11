@@ -29,6 +29,8 @@ function mountRealRead(stage,host,onVerified,onReset) {
   const get=s=>detail.querySelector(s), button=get('button'), output=get('output');
   const say=(label,value)=>{const p=document.createElement('p');p.textContent=label+value;output.append(p);};
   let active=true;
+  const GET_TIMEOUT_MS=10000; // Prazo local da interface. Sem AbortSignal do host comprovado.
+  const inFlight=new Set();
   button.addEventListener('click',async()=>{
     const id=get('.id').value.trim().toLowerCase();
     const project=get('.project').value.trim();
@@ -38,8 +40,17 @@ function mountRealRead(stage,host,onVerified,onReset) {
     if(!/^[A-Za-z0-9._-]+\/[A-Za-z0-9._-]+$/.test(project)){say('Erro: ','projeto inválido');return;}
     if(!host?.agentServer?.request){say('Indisponível: ','API de leitura do Canvas ausente');return;}
     button.disabled=true;say('Consulta: ','em andamento');
+    let expired=false;
+    const pending={timer:null,cancel:null};
+    const deadline=new Promise((_,reject)=>{
+      pending.cancel=()=>reject(new Error('montagem encerrada'));
+      pending.timer=setTimeout(()=>{expired=true;reject(new Error('prazo local excedido'));},GET_TIMEOUT_MS);
+    });
+    inFlight.add(pending);
     try {
-      const item=await host.agentServer.request({method:'GET',path:'/api/conversations/'+id});
+      const request=host.agentServer.request({method:'GET',path:'/api/conversations/'+id});
+      const item=await Promise.race([request,deadline]);
+      clearTimeout(pending.timer);
       if(!active)return;
       output.replaceChildren();
       if(!item||item.id!==id||typeof item.execution_status!=='string'){say('Erro: ','contrato não confirmado');return;}
@@ -55,10 +66,17 @@ function mountRealRead(stage,host,onVerified,onReset) {
       if(!active)return;
       detail.open=false; // Não encobrir o universo após consulta; reabrível pelo operador.
     } catch (_error) {
-      if(active){output.replaceChildren();say('Consulta: ','indisponível/não autorizada; estado desconhecido');}
-    } finally {if(active)button.disabled=false;}
+      if(active){output.replaceChildren();say('Consulta: ',expired?'prazo local excedido; resposta tardia ignorada (a requisição no host pode continuar)':'indisponível/não autorizada; estado desconhecido');}
+    } finally {
+      clearTimeout(pending.timer);inFlight.delete(pending);
+      if(active)button.disabled=false;
+    }
   });
-  return ()=>{active=false;detail.remove();sheet.remove();};
+  return ()=>{
+    active=false;
+    for(const pending of inFlight){clearTimeout(pending.timer);pending.cancel();}
+    inFlight.clear();detail.remove();sheet.remove();
+  };
 }
 
 
@@ -74,22 +92,24 @@ function mountObservatorio({container,host}) {
   stage.className='ob-wrap';
   stage.innerHTML=MARKUP;
   shadow.append(stage);
-  container.append(wrapper);
-  let destroyed=false,rafId=0;
-  // Local nonce scopes this view; never represents an authenticated tenant.
+  // WebCrypto é indispensável para identidade efêmera, nunca autenticação de tenant.
+  if(typeof crypto==='undefined'||typeof crypto.randomUUID!=='function'||!crypto.subtle||typeof crypto.subtle.digest!=='function')throw Error('WebCrypto indisponível');
   const observationContext=crypto.randomUUID();
-  const disposeRead=mountRealRead(stage,host,async observation=>{
-    const graphIdentity=await graphIdentityForObservation(observationContext,observation.conversationId,observation.project);
-    if(!destroyed)applyVerifiedMission({...observation,graphIdentity});
-  },()=>clearConsultedObservation());
+  let destroyed=false,rafId=0,disposeRead=()=>{},observer=null;
   const resizeCallbacks=[];
   const resize=()=>{if(destroyed)return;for(const cb of resizeCallbacks)cb();};
-  const observer=typeof ResizeObserver==='function'?new ResizeObserver(resize):null;
-  if(observer)observer.observe(wrapper);
-  else window.addEventListener('resize',resize);
-  // Código visual herdado da V0.2, agora isolado no mount.
+  try {
+    container.append(wrapper);
+    disposeRead=mountRealRead(stage,host,async observation=>{
+      const graphIdentity=await graphIdentityForObservation(observationContext,observation.conversationId,observation.project);
+      if(!destroyed)applyVerifiedMission({...observation,graphIdentity});
+    },()=>clearConsultedObservation());
+    observer=typeof ResizeObserver==='function'?new ResizeObserver(resize):null;
+    if(observer)observer.observe(wrapper);
+    else window.addEventListener('resize',resize);
+    // Código visual herdado da V0.2, agora isolado no mount.
 __CODE__
-  return () => {
+    return () => {
     destroyed=true;
     disposeRead();
     cancelAnimationFrame(rafId);
@@ -97,7 +117,17 @@ __CODE__
     if(!observer)window.removeEventListener('resize',resize);
     try {const gl=engine3d?.canvas?.getContext('webgl2');gl?.getExtension('WEBGL_lose_context')?.loseContext();}catch(_){}
     wrapper.remove();
-  };
+    };
+  } catch (error) {
+    destroyed=true;
+    try{disposeRead();}catch(_){}
+    cancelAnimationFrame(rafId);
+    try{observer?.disconnect();}catch(_){}
+    window.removeEventListener('resize',resize);
+    try{wrapper.querySelectorAll('canvas').forEach(c=>c.getContext('webgl2')?.getExtension('WEBGL_lose_context')?.loseContext());}catch(_){}
+    wrapper.remove();
+    throw error;
+  }
 }
 export function activate(host) {
   return host.registerPage('observatorio', ({container}) => mountObservatorio({container,host}));

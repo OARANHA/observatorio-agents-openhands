@@ -581,3 +581,9 @@ Main pré-consolidação96ed4a3c5ce659aa55a4841716e7623d30aaeb64.
 - Codex revisou `1567c386f9326607aae31d36de0d59e156b66d24` com A1–A5 P2, A6 P3 e nenhum P0/P1 demonstrado; JEV aconselhou dividir tarefas (`split_task`).
 - Slice A1/A2: retirar dados consultados antigos no começo da nova tentativa e mudar rótulos de execução verificada para conversa/estado consultado; duas regressões Chromium. A3/A4/A5 e A6 pendentes/parciais. Ver `docs/handoffs/OBS-CYCLE-005-VISUAL-CANDIDATE.md`.
 - CI do novo SHA pendente. Não promover G11/G12/P02/P03 ou instalar/mesclar/deploy.
+
+## Ciclo 005 — correções de lifecycle A3/A4 e touch A5 (2026-10-11)
+
+- PR #43 HEAD anterior `0ebb942c7e13199381966d96ed1e4be4e6f2d77d`: runs `38172263276`, `38172263290` (11/11 DOM) e `38172263281` GREEN, sem LLM/agente/dispatch reais.
+- A3 timeout local à UI e descarte de respostas tardias, **não cancela o transporte host**. A4 pré-validação WebCrypto e rollback parcial. A5 pan-y/pinch-zoom para manter gestos nativos. Quatro novos testes Chromium (esperados 15), CI do novo HEAD pendente.
+- Histórico, limitações e protocolo adversarial JEV no handoff `docs/handoffs/OBS-CYCLE-005-VISUAL-CANDIDATE.md`. NO-GO operacional, G11/G12/P02/P03 intactos; sem merge, Canvas, deploy ou agente.

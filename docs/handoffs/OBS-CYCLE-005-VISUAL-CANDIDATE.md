@@ -45,3 +45,13 @@ Nesta passagem foram submetidos **trechos reais do HEAD**, e o `jev_select_conte
 - **A3/A4/A5 P2 continuam PENDENTES nesta fatia:** prazo e cancelamento/ignorância de GET tardio, rollback quando montagem falha, gestos touch. Não afirmar correção sem código/testes específicos. **A6 P3 continua PARCIAL**; fixture Chromium força fallback2D.
 - CI anterior do HEAD `1567c386f9326607aae31d36de0d59e156b66d24`: `38169408157`, `38169408183` 9/9, `38169408172` GREEN. Esses runs **NÃO validam o HEAD desta remediação**. São esperados 11 testes Chromium após as duas adições, a confirmar pelo runner.
 - **G11 não provado, G12 bloqueado, P01 parcial, P02/P03 não provados. NO-GO operacional.** Sem merge/deploy/Canvas.
+
+## Ciclo 005 — remediação A3/A4/A5 após 11/11 Chromium GREEN (2026-10-11)
+
+- HEAD anterior `0ebb942c7e13199381966d96ed1e4be4e6f2d77d` conferido no GitHub: CI `38172263276` (218 Python, 28 SDK skips), Graph DOM Offline `38172263290` (**11/11**), SDK inerte `38172263281` GREEN; logs indicam zero operações LLM/agente/dispatch. Estes runs valem **somente para o HEAD anterior**.
+- A3: prazo de **10 segundos na UI** com `Promise.race`, feedback de timeout, botão reabilitado, rejeição local na desmontagem e prevenção de atualização tardia. A requisição `host.agentServer.request` **não é cancelada no transporte**; suporte `AbortSignal` do host não comprovado. Teste adversarial com relógio sintético.
+- A4: pré-checagem de `crypto.randomUUID`/`subtle.digest` antes de anexar e limpeza em erro síncrono depois do append (disposer leitura, RAF, observer, listener, DOM). Testes de nonce indisponível e falha do `ResizeObserver`.
+- A5: `touch-action:pan-y pinch-zoom` no mapa; preserva pan vertical/pinch nativos previstos pelo CSS e pan teclado, com teste CSS/sintético. **Não testado em touchscreen físico**.
+- A6: mais quatro testes DOM, total **15** esperados. Runner ainda força fallback2D, não valida WebGL2/Canvas instalado, leitor de tela ou autenticação tenant.
+- Passagem JEV `jev-1.13.0` aconselhou `confirm` (0,62; confiança 0,49); histórico de autorização do proprietário cobre apenas patch na PR, nenhum merge/deploy/Canvas. Próxima CI e inspeção dos logs no **novo HEAD** aguardam aviso `green`/`red`; **não realizar polling**.
+- ADR-0001 PROPOSTO, G11 NÃO PROVADO, G12 BLOQUEADO, P01 PARCIAL, P02/P03 NÃO PROVADOS. Sem agente/LLM real, VPS/MCP, deploy, Canvas ou merge.
