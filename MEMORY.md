@@ -557,3 +557,6 @@ Main base `e06d3b01e60d9a5503e046dc0fe2eeb269f0e403` após #42. Reuso da PR #35 
 
 ## CYCLE007 — arrumado teste de assinatura após RED (2026-10-11)
 - SHA anterior `dea4090c643045744b3c74b50003bb23aad7e141`: DOM 24/24 GREEN, SDK inerte GREEN, CI 38182836678 RED por teste Python/VM de `graphModel()` que não acompanhou `graphModel(narrowConsulted=false)`. Atualizados somente dois testes + docs; assert identidade fail-closed preservado e caso adicional para flag narrow. Nova CI pendente sem polling. Sem merge, Canvas, execução real de agentes ou LLM. G11 não provado, G12 bloqueado.
+
+## CYCLE007 — ajuste do wrapper TAP após CI RED (2026-10-11)
+- HEAD `cc989bbe2e7b81a7b15d0b6314ab6c11ae90a554`: CI #38184239577 RED só porque Python exigia 8 PASS contra 9 testes Node agora aprovados; DOM #38184239576 24/24 GREEN, SDK #38184239594 GREEN. Contador substituído por `# tests == # pass >= 9` e 0 fail/skip. CI do novo SHA aguardando usuário, sem polling. Issues #46–#48 preparadas mas não despachadas; G11 não provado/G12 bloqueado.

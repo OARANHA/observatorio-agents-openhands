@@ -639,3 +639,7 @@ Main pré-consolidação96ed4a3c5ce659aa55a4841716e7623d30aaeb64.
 - No SHA `dea4090c643045744b3c74b50003bb23aad7e141`, Graph DOM #38182836680 **24/24 GREEN** e Canary SDK #38182836686 **GREEN**, CI principal #38182836678 **RED** por 2 contratos de teste com assinatura literal antiga de `graphModel()`. Python 218 descobertos, 28 SDK opcionais skipped.
 - Ajustados apenas `tests/test_contract.py` e `tests/graph_identity_contract.mjs` para `graphModel(narrowConsulted=false)`, mantendo invariantes de identidade e adicionando prova de layout narrow fail-closed. Documentação viva atualizada. **Nova CI pendente; sem polling.**
 - Próxima frente distinta: tarefas de desenvolvimento delegáveis ao OpenHands devem ser definidas com escopo, evidências e gates; nenhum agente/LLM real executado/registrado. G11 não provado/G12 bloqueado.
+
+## CYCLE007 — contador TAP Python desatualizado (2026-10-11)
+- HEAD `cc989bbe2e7b81a7b15d0b6314ab6c11ae90a554`: CI #38184239577 RED por wrapper Python exigir `# pass 8` após 9 casos Node, enquanto Graph DOM #38184239576 24/24 GREEN e Canary Inert #38184239594 GREEN. Wrapper agora exige `# tests N == # pass N`, `N>=9`, zero falhas/skips. **Código de produção inalterado; nova CI PENDENTE**.
+- Issues #46/#47/#48 são fila offline OpenHands **não atribuída nem despachada**, sem LLM real. G11 não provado/G12 bloqueado; sem merge/Canvas.
