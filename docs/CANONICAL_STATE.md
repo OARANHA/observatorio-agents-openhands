@@ -95,3 +95,21 @@ de GATES-001; a branch #10 permanece intacta. Main continua `789d442`.
 NO-GO mantido pelos gates de sandbox, worker completo e orçamento preventivo.
 Detalhes, limites e ordem de integração humana em
 `docs/handoffs/OBS-EXPLORER-CANARY-GATES-001.md`.
+
+
+## Preparação do worker sintético OpenHands — 2026-10-11
+
+Após o merge da PR #12, `main` foi reconfirmada em
+`607a91f5fb88eb65b51cebd0db6941dc982dec00`. Seis provas
+de Bubblewrap/AppArmor passaram no runner GitHub Actions, mas só para o
+escopo isolado testado; não autorizaram inferência.
+Branch `test/explorer-worker-wiring-inert-v1` prepara a PR #13,
+sem mudar Canvas, VPS ou OpenHands Core. O worker **sintético**
+usa SDK/Tools 1.53.0 para resolver TaskToolSet e a instância oficial do
+terminal restrito, e invoca bwrap com dados artificiais. A TaskAction
+code-explorer é apenas construída, nunca enviada ao TaskExecutor.
+Novo workflow independente precisa de prova GREEN no HEAD exato antes
+de qualquer conclusão. Limites e procedimento em
+`docs/handoffs/OBS-EXPLORER-WORKER-INERT-001.md`.
+**NO-GO** para registro de agentes, delegação real e qualquer LLM;
+modelo, tarifas, orçamento preventivo e autorização continuam ausentes.
