@@ -20,4 +20,3 @@ function validGraphIdentity(value){
 }
 
 export {graphIdentityForObservation,validGraphIdentity};
-
