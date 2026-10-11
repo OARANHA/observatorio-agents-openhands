@@ -21,4 +21,4 @@ jobs:
           node scripts/build.mjs
           git diff --exit-code -- extension.js
       - name: Contrato e sintaxe
-        run: python3 -m unittest discover -s tests -p 'test_contract.py' -v
+        run: python3 -m unittest discover -s tests -p 'test*.py' -v

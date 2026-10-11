@@ -1,0 +1,199 @@
+{
+  "schema_version": 1,
+  "catalog_id": "observatorio-team-v1",
+  "purpose": "Coordenação técnica multiprojeto: ChatGPT planeja, OpenHands executa missões autorizadas, Observatório visualiza somente evidências verificáveis.",
+  "stage": "proposto_nao_ativado",
+  "deployment": {
+    "openhands_runtime_verified": false,
+    "subagent_registration_verified": false,
+    "task_delegation_verified": false,
+    "observatorio_graph_integration": false,
+    "automation_enabled": false,
+    "source_of_truth": "GitHub; esta definição não comprova execução nem implantação"
+  },
+  "roles": [
+    {
+      "id": "explorador",
+      "display_name": "Explorador",
+      "role_type": "built_in_candidate",
+      "openhands_agent_name": "code-explorer",
+      "agent_definition": null,
+      "description": "Reconcilia código, documentação, histórico e lacunas; não escreve.",
+      "capabilities": [
+        "repository_read",
+        "code_search",
+        "dependency_mapping",
+        "reuse_assessment"
+      ],
+      "required_input": [
+        "repository",
+        "read_scope",
+        "question",
+        "acceptance_criteria"
+      ],
+      "allowed_outcomes": [
+        "evidence_report",
+        "blocked"
+      ],
+      "external_side_effects_allowed": false,
+      "execution_status": "nao_verificado_na_instalacao",
+      "evidence_requirement": [
+        "source_path_or_url",
+        "source_ref",
+        "observed_at",
+        "gaps"
+      ],
+      "next": "construtor"
+    },
+    {
+      "id": "construtor",
+      "display_name": "Construtor",
+      "role_type": "project_file_candidate",
+      "openhands_agent_name": "observatorio-construtor",
+      "agent_definition": ".agents/agents/observatorio-construtor.md",
+      "description": "Implementa código apenas na branch e workspace autorizados, encaminhando resultado para revisão.",
+      "capabilities": [
+        "code_implementation",
+        "targeted_tests",
+        "diff_report"
+      ],
+      "required_input": [
+        "repository",
+        "workspace",
+        "base_ref",
+        "branch",
+        "objective",
+        "acceptance_criteria",
+        "approved_actions"
+      ],
+      "allowed_outcomes": [
+        "implementation_report",
+        "blocked",
+        "failed"
+      ],
+      "external_side_effects_allowed": false,
+      "execution_status": "nao_registrado_no_runtime",
+      "evidence_requirement": [
+        "changed_files",
+        "tested_commands_and_results",
+        "commit_sha_if_confirmed",
+        "risks"
+      ],
+      "next": "verificador"
+    },
+    {
+      "id": "verificador",
+      "display_name": "Verificador",
+      "role_type": "project_file_candidate",
+      "openhands_agent_name": "observatorio-verificador",
+      "agent_definition": ".agents/agents/observatorio-verificador.md",
+      "description": "Revisão independente, sem editar arquivos ou autorizar merge/deploy.",
+      "capabilities": [
+        "code_review",
+        "security_review",
+        "contract_checks",
+        "evidence_validation"
+      ],
+      "required_input": [
+        "repository",
+        "target_sha",
+        "acceptance_criteria",
+        "approved_verification_commands"
+      ],
+      "allowed_outcomes": [
+        "review_report",
+        "blocked",
+        "unverified"
+      ],
+      "external_side_effects_allowed": false,
+      "execution_status": "nao_registrado_no_runtime",
+      "evidence_requirement": [
+        "target_commit_sha",
+        "findings",
+        "actual_test_results",
+        "unverified_items",
+        "recommendation"
+      ],
+      "next": "human_gate"
+    }
+  ],
+  "policy": {
+    "operator": "proprietario_humano",
+    "coordinator": "ChatGPT (somente durante sessões e com ferramentas/autorização efetivas)",
+    "execution": "OpenHands (após compatibilidade, registro e aprovação comprovados)",
+    "observability": "Observatório (somente fontes autorizadas e verificadas)",
+    "task_state_values": [
+      "proposto",
+      "aguardando_autorizacao",
+      "autorizado",
+      "em_execucao",
+      "bloqueado",
+      "aguardando_revisao",
+      "concluido_com_evidencia",
+      "nao_verificado",
+      "cancelado"
+    ],
+    "routing": "manual_primeiro; nenhum evento é permissão de execução",
+    "approval_required_for": [
+      "start_llm_task",
+      "file_write",
+      "git_push",
+      "create_pr",
+      "merge_pr",
+      "deployment",
+      "host_or_container_change",
+      "external_api_mutation",
+      "cross_project_access"
+    ],
+    "forbidden": [
+      "claim_automatic_deployment",
+      "unbounded_polling",
+      "permission_escalation",
+      "fake_agents_or_graph_relations",
+      "secret_or_client_data_in_public_repo",
+      "cross_project_memory_sharing_without_scope_validation"
+    ],
+    "budgets": {
+      "max_concurrent_missions": 1,
+      "max_attempts_per_task": 1,
+      "max_tool_executions_unverified": 0,
+      "default_approval": "always_confirm"
+    },
+    "graph_evidence": {
+      "nodes": [
+        "agent_role_definition",
+        "openhands_conversation_if_verified",
+        "project_if_authorized",
+        "pull_request_if_verified",
+        "decision_if_documented"
+      ],
+      "edge_kinds": [
+        "uses_capability",
+        "produced_artifact",
+        "depends_on",
+        "was_reviewed_by",
+        "declared_project"
+      ],
+      "required_metadata": [
+        "origin",
+        "external_id_or_repo_path",
+        "observed_at",
+        "evidence_level",
+        "authorized_scope"
+      ],
+      "evidence_levels": [
+        "design",
+        "manual_declaration",
+        "authenticated_read",
+        "test_observed",
+        "human_approved"
+      ],
+      "display_rule": "Definição no catálogo não implica registro ou atividade real. Projetos e agentes reais só recebem marcação de 'verificado' após evidência."
+    }
+  },
+  "sources": [
+    "https://github.com/OpenHands/docs/blob/main/sdk/guides/agent-file-based.mdx",
+    "https://github.com/OpenHands/docs/blob/main/sdk/guides/task-tool-set.mdx",
+    "https://github.com/OpenHands/extensions/tree/main/skills/agent-creator"
+  ]
+}
