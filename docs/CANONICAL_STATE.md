@@ -22,3 +22,8 @@
 - MCP OpenHands read saudável; list/status/result disponíveis. Missão sintética nova aguardava `waiting_for_confirmation` (gate humano) na última consulta.
 - Código V0.4.2 proposto em branch: leitura pontual e manual pelo host autenticado, sem mudança de backend; vínculo ao projeto declarado, não atestado.
 - Pendente: CI, revisão, teste real no Canvas e autorização de instalação; sem RBAC multi-tenant, sem clientes reais, sem deploy.
+
+## Ajuste visual integrado à PR #5
+- Missão OBS-REAL-001 verificada como `finished` e resultado `OBS-REAL-001|OK` pela leitura MCP, sem escrita no CRISE.
+- Nova proposta: após GET da conversa via Canvas, o Multiverso cria em memória sistema Observatório com uma lua real, sem planetas de agentes falsos. Não há conexão contínua nem persistência.
+- **PENDENTE:** CI do novo HEAD, teste autenticado no Canvas, aprovação de merge/instalação. Dados de outros projetos continuam demonstrativos.
