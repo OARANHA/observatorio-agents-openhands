@@ -179,7 +179,7 @@ class GraphV050(unittest.TestCase):
                          'id="graph-scope"', 'id="graph-search"', 'id="graph-map"',
                          'id="graph-surface"'):
             self.assertIn(expected, markup)
-        for expected in ('function openGraph()', 'function graphModel()',
+        for expected in ('function openGraph()', 'function graphModel(narrowConsulted=false)',
                          'function renderGraph()', 'function renderGraphPanel()',
                          'graphScope', 'graphQuery', 'graphZoom', "graphSelected"):
             self.assertIn(expected, source)

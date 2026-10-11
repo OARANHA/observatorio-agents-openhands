@@ -554,3 +554,6 @@ Main base `e06d3b01e60d9a5503e046dc0fe2eeb269f0e403` após #42. Reuso da PR #35 
 
 ## CYCLE007 — RED de isolamento de graphModel e resize (2026-10-11)
 - HEAD anterior `1a5e902593e717cf5b27a2fc9dfdf5fa998aa7ee` dupla CI RED: identity contract isolado falhou em `$ is not defined`, DOM mobile computed fontSize/animationName vazios; teste geométrico em 320+ PASS. Separada decisão de layout da função pura `graphModel`, e redraw condicionado à troca de layout para preservar foco/DOM. Acrescentado teste Chromium de estabilidade de foco 390→400→390. Esperados 24 DOM no próximo SHA, ainda sem verificação de CI. Sem merge/Canvas/deploy. G11 não provado; G12 bloqueado.
+
+## CYCLE007 — arrumado teste de assinatura após RED (2026-10-11)
+- SHA anterior `dea4090c643045744b3c74b50003bb23aad7e141`: DOM 24/24 GREEN, SDK inerte GREEN, CI 38182836678 RED por teste Python/VM de `graphModel()` que não acompanhou `graphModel(narrowConsulted=false)`. Atualizados somente dois testes + docs; assert identidade fail-closed preservado e caso adicional para flag narrow. Nova CI pendente sem polling. Sem merge, Canvas, execução real de agentes ou LLM. G11 não provado, G12 bloqueado.
