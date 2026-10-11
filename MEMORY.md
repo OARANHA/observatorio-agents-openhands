@@ -193,3 +193,13 @@ Baseline agora vinculado à identidade de LLM/Metrics e geração de chamada,
 cache não precificado negado antes do stub. 121 testes descobertos: 104
 aprovados/17 opcionais ignorados localmente; CI deste incremento por conferir.
 NO-GO operacional permanece. Handoff METRICS-BINDING-001 em docs/handoffs.
+
+## Encerramento e liquidação sintéticos — 2026-10-11
+
+PR #20 integrada em main `2e17e05`, ambas CIs e revisão favoráveis.
+Book exige Guard único e reserva contra orçamento mais restritivo; limites
+de chamadas de TokenCaps são efetivos. Uso verificado no último limite é
+contabilizado uma vez antes do encerramento, sem ações seguintes. Erros
+expirados mantêm reserva incerta. Local: 127 testes, 110 pass/17 opcionais skip.
+CI/revisão deste HEAD por conferir. NO-GO operacional mantido.
+Handoff TERMINAL-SETTLEMENT-001 em docs/handoffs.

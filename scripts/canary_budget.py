@@ -133,6 +133,7 @@ class Reservation:
     output_rate_usd_per_million: Decimal
     max_input_tokens: int
     max_output_tokens: int
+    max_calls: int
 
 class BudgetBook:
     """Single-in-flight reserve/settle; uncertain failures never refund/resume.
@@ -147,17 +148,25 @@ class BudgetBook:
         self.active: Reservation|None=None
         self.closed=False
         self._lock=RLock()
+        self._guard=None
+
+    def _require_guard(self, guard):
+        if self._guard is None:
+            self._guard=guard
+        elif self._guard is not guard:
+            raise GateError("guard_identity_mismatch")
 
     @exact_money
     def reserve(self,guard,rates: RateCard,caps: TokenCaps,*,live: bool=False,
                 today: date|None=None) -> Reservation:
         with self._lock:
             try:
+                self._require_guard(guard)
                 if self.closed or guard.cancelled or guard.clock()>=guard.deadline:
                     raise GateError("mission_unavailable")
                 if self.active is not None:
                     raise GateError("parallel_requests_forbidden")
-                if self.calls>=self.max_calls or caps.max_calls>self.max_calls:
+                if self.calls>=min(self.max_calls,caps.max_calls) or caps.max_calls>self.max_calls:
                     raise GateError("call_limit_exceeded")
                 caps.validate(live=live)
                 irate,orate=rates.validate(live=live,today=today)
@@ -165,15 +174,17 @@ class BudgetBook:
                        Decimal(caps.max_output_tokens)*orate)/MILLION
                 if self.spent+worst>self.budget:
                     raise GateError("worst_case_over_budget")
+                if Decimal(str(guard.cost))+worst>Decimal(str(guard.budget)):
+                    raise GateError("worst_case_over_guard_budget")
                 guard.reserve()
                 self.calls+=1
                 reservation=Reservation(self.calls,rates.provider,rates.model,worst,irate,orate,
-                                        caps.max_input_tokens,caps.max_output_tokens)
+                                        caps.max_input_tokens,caps.max_output_tokens,
+                                        min(caps.max_calls,self.max_calls,guard.max_calls))
                 self.active=reservation
                 return reservation
             except BaseException:
-                guard.cancel()
-                self.closed=True
+                self.abort(guard)
                 raise
 
     @exact_money
@@ -181,8 +192,11 @@ class BudgetBook:
                output_tokens: int,reported_usd: str) -> Decimal:
         with self._lock:
             try:
+                self._require_guard(guard)
                 if self.closed or self.active is not reservation or guard.cancelled:
                     raise GateError("reservation_not_active")
+                if guard.clock()>=guard.deadline:
+                    raise GateError("reservation_expired")
                 if (type(input_tokens) is not int or type(output_tokens) is not int
                     or input_tokens<0 or output_tokens<0
                     or input_tokens>reservation.max_input_tokens
@@ -196,19 +210,25 @@ class BudgetBook:
                 if charged>reservation.ceiling_usd or self.spent+charged>self.budget:
                     raise GateError("charge_exceeded_reservation")
                 guard.record(float(charged),input_tokens,output_tokens)
-                if guard.cancelled:
+                if guard.cancelled and (guard.clock()>=guard.deadline
+                                        or guard.cost<guard.budget):
                     raise GateError("guard_stopped_during_settlement")
                 self.spent+=charged
                 self.active=None
+                if (guard.cancelled or self.spent==self.budget
+                    or self.calls>=reservation.max_calls):
+                    self.closed=True
+                    guard.cancel()
                 return charged
             except BaseException:
-                guard.cancel()
-                self.closed=True
+                self.abort(guard)
                 raise
 
     def abort(self,guard):
         with self._lock:
             guard.cancel()
+            if self._guard is not None and self._guard is not guard:
+                self._guard.cancel()
             self.closed=True
 
 @exact_money
