@@ -82,3 +82,15 @@ de GATES-001; a branch #10 permanece intacta. Main continua `789d442`.
 NO-GO mantido pelos gates de sandbox, worker completo e orçamento preventivo.
 Detalhes, limites e ordem de integração humana em
 `docs/handoffs/OBS-EXPLORER-CANARY-GATES-001.md`.
+
+
+## Continuidade — primeiro worker inerte do Explorer (2026-10-11)
+
+Base da branch: `main` = `607a91f5fb88eb65b51cebd0db6941dc982dec00`
+(PR #12 integrada, seis probes de sandbox GREEN no runner temporário).
+PR #13, branch `test/explorer-worker-wiring-inert-v1`:
+prepara testes oficiais SDK/Tools 1.53.0 com montagem restrita do terminal,
+TaskToolSet e supervisor do worker inteiro, **sem agente real ou LLM**.
+Documento: `docs/handoffs/OBS-EXPLORER-WORKER-INERT-001.md`.
+Status desta nota: preparação sob validação, não alegar execução aprovada
+até ler a CI do HEAD. Ainda **NO-GO operacional**.
