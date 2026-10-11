@@ -16,6 +16,7 @@ import socket
 import sys
 import unittest
 from unittest.mock import patch
+from pydantic import SecretStr
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from canary_budget import BudgetBook, RateCard, TokenCaps
@@ -31,6 +32,10 @@ except (ImportError, importlib.metadata.PackageNotFoundError):
     sdk_module = None
     HAS_SDK = False
 
+
+if (os.environ.get("OBS_CANARY_HOST_NETNS")
+    and os.environ.get("LITELLM_LOCAL_MODEL_COST_MAP") != "True"):
+    raise RuntimeError("litellm_offline_cost_map_not_enabled")
 
 if os.environ.get("OBS_CANARY_HOST_NETNS") and not HAS_SDK:
     raise RuntimeError("sdk_153_missing_in_isolated_runner")
@@ -145,6 +150,11 @@ class RealSDKOfflineTests(unittest.TestCase):
         # flags and namespace comparison are the primary evidence.
         cls.namespace_identity = current
 
+    def test_litellm_does_not_fetch_remote_price_map_at_import(self):
+        self.assertEqual(
+            "True", os.environ["LITELLM_LOCAL_MODEL_COST_MAP"]
+        )
+
     def test_network_namespace_is_independent_of_sdk_stubs(self):
         host = os.environ["OBS_CANARY_HOST_NETNS"]
         self.assertNotEqual(host,self.namespace_identity)
@@ -225,7 +235,7 @@ class RealSDKOfflineTests(unittest.TestCase):
                 LLM,"_resolve_refreshed_api_key",
                 autospec=True,
                 side_effect=lambda _self,error: (
-                    "SYNTHETIC_REFRESH_VALUE"
+                    SecretStr("SYNTHETIC_REFRESH_VALUE")
                     if type(error) is RuntimeError
                     and str(error) == "synthetic transport failure"
                     else None
