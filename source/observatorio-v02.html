@@ -114,7 +114,7 @@
   <div class="graph-tools"><label>Exibir <select id="graph-scope" aria-label="Filtrar nós por origem"><option value="all">Todos</option><option value="verified">Consulta real</option><option value="demo">Exemplos</option></select></label><label>Buscar <input id="graph-search" type="search" placeholder="Projeto ou missão" autocomplete="off" aria-label="Buscar nós no grafo"></label><button type="button" id="graph-open-read" title="Consultar uma conversa real do OpenHands">☾ Consultar missão</button></div>
   <div class="graph-map" id="graph-map" tabindex="0" aria-describedby="graph-help" aria-label="Nós e conexões entre projetos e execuções"><div class="graph-surface" id="graph-surface"></div></div>
   <div class="graph-legend"><span id="graph-help">Setas movem o mapa · Esc limpa a seleção</span><span class="real">Origem confirmada</span><span class="manual">Associação manual (não atestada)</span><span>Somente demonstração</span></div>
-</div><div class="solar hidden" id="solar" role="region" aria-label="Sistema solar de agentes"><div class="solar-background" id="solar-stage"><svg class="orbit-layer" id="orbits" aria-hidden="true"></svg><button class="sun" id="sun" title="Visão geral do sistema"><span class="sun-core"></span><span class="sun-label" id="sun-label">NÚCLEO<small>COORDENAÇÃO</small></span></button><div id="planets"></div><button type="button" class="real-mission-lua hidden" id="real-lua" aria-label="Abrir dados verificados da missão"><span class="lua-globo" aria-hidden="true"></span><span class="lua-desc"><strong>MISSÃO REAL</strong><small id="real-lua-state">Estado consultado</small></span></button></div></div><div class="scene-bottom"><div class="solar-note hidden" id="solar-note">● Planetas = agentes propostos &nbsp; ● Luas/tarefas = representação conceitual</div><footer class="metrics" id="metrics"><div class="metric"><small>PROJETOS</small><strong>04</strong><span>Ambientes conceituais</span></div><div class="metric"><small>ESTRUTURA</small><strong>Multiuniverso</strong><span>Um sistema por projeto</span></div><div class="metric"><small>CONEXÃO REAL</small><strong>Não ativa</strong><span>Interface demonstrativa</span></div></footer></div></div></main>
+</div><div class="solar hidden" id="solar" role="region" aria-label="Sistema solar de agentes"><div class="solar-background" id="solar-stage"><svg class="orbit-layer" id="orbits" aria-hidden="true"></svg><button class="sun" id="sun" title="Visão geral do sistema"><span class="sun-core"></span><span class="sun-label" id="sun-label">NÚCLEO<small>COORDENAÇÃO</small></span></button><div id="planets"></div><button type="button" class="real-mission-lua hidden" id="real-lua" aria-label="Abrir estado recebido da conversa"><span class="lua-globo" aria-hidden="true"></span><span class="lua-desc"><strong>CONVERSA CONSULTADA</strong><small id="real-lua-state">Estado consultado</small></span></button></div></div><div class="scene-bottom"><div class="solar-note hidden" id="solar-note">● Planetas = agentes propostos &nbsp; ● Luas/tarefas = representação conceitual</div><footer class="metrics" id="metrics"><div class="metric"><small>PROJETOS</small><strong>04</strong><span>Ambientes conceituais</span></div><div class="metric"><small>ESTRUTURA</small><strong>Multiuniverso</strong><span>Um sistema por projeto</span></div><div class="metric"><small>CONEXÃO REAL</small><strong>Não ativa</strong><span>Interface demonstrativa</span></div></footer></div></div></main>
     <aside class="rightpanel" id="rightpanel" aria-live="polite"><div class="panel-top"><span class="panel-kicker">PAINEL DE INSPEÇÃO</span><span class="panel-icon">◎</span></div><div id="panel-content"></div></aside>
   </div>
 </div>
@@ -173,12 +173,21 @@ function orbitalSVG(color){let circles='';for(let i=0;i<3;i++){const a=46+i*25,b
 function realMissionActivity(status){
   return status==='running'?'active':status==='waiting_for_confirmation'?'attention':status==='error'?'error':'idle';
 }
+function clearConsultedObservation(){
+  verifiedMission=null;graphSelected=null;
+  delete defs.observado;
+  const index=systems.indexOf('observado');if(index!==-1)systems.splice(index,1);
+  $('source-banner').textContent='◌ PROTÓTIPO · DADOS ILUSTRATIVOS';
+  $('real-lua').classList.add('hidden');
+  if(view==='graph')openGraph();
+  else if(view==='universe'||current==='observado')renderUniverse();
+}
 function applyVerifiedMission(observation){
   if(!observation||!/^[a-f0-9-]{36}$/.test(observation.conversationId))return;
   verifiedMission=Object.freeze({...observation});
-  $('source-banner').textContent='4 SISTEMAS DEMO · 1 MISSÃO OPENHANDS CONSULTADA';
+  $('source-banner').textContent='4 SISTEMAS DEMO · 1 CONVERSA OPENHANDS CONSULTADA';
   if(!defs.observado){
-    defs.observado={name:'OBSERVATÓRIO',subtitle:'Projeto associado manualmente',core:'EXECUÇÃO REAL',color:'#77dbff',sun:['#fff6de','#ffe1a1','#b15c2e'],agents:[]};
+    defs.observado={name:'OBSERVATÓRIO',subtitle:'Projeto associado manualmente',core:'CONVERSA CONSULTADA',color:'#77dbff',sun:['#fff6de','#ffe1a1','#b15c2e'],agents:[]};
     systems.push('observado');
   }
   openVerifiedSystem();
@@ -188,16 +197,16 @@ function openVerifiedSystem(){
   stage.classList.remove('graph-active');$('graph').classList.add('hidden');$('mode-3d').hidden=false;
   current='observado';view='solar';selected=null;slots=[];
   $('universe').classList.add('hidden');$('solar').classList.remove('hidden');$('solar-note').classList.remove('hidden');
-  $('breadcrumb').textContent='NÍVEL 02 / OBSERVATÓRIO · CONSULTA AUTENTICADA';
-  $('scene-title').textContent='OBSERVATÓRIO · Missão consultada';
-  $('scene-description').textContent='Uma execução real consultada no OpenHands. O projeto foi informado manualmente e não foi autenticado como vínculo.';
-  $('sun-label').innerHTML='MISSÃO<small>SEM AGENTE ATRIBUÍDO</small>';
+  $('breadcrumb').textContent='NÍVEL 02 / OBSERVATÓRIO · ESTADO CONSULTADO';
+  $('scene-title').textContent='OBSERVATÓRIO · Conversa consultada';
+  $('scene-description').textContent='O estado de uma conversa foi consultado no OpenHands. O projeto foi informado manualmente e não foi autenticado como vínculo.';
+  $('sun-label').innerHTML='CONVERSA<small>SEM AGENTE COMPROVADO</small>';
   $('planets').replaceChildren();
   const moon=$('real-lua');
   moon.classList.remove('hidden');
   $('real-lua-state').textContent=verifiedMission.status+' · '+verifiedMission.conversationId.slice(0,8);
   $('solar-note').textContent='☾ Lua = conversa OpenHands consultada; nenhum agente individual identificado. Outros sistemas permanecem demonstrativos.';
-  $('metrics').innerHTML='<div class="metric"><small>EXECUÇÕES CONSULTADAS</small><strong>01</strong><span>Fonte: OpenHands</span></div><div class="metric"><small>AGENTES COMPROVADOS</small><strong>00</strong><span>Nenhum agente registrado nesta prova</span></div><div class="metric"><small>VÍNCULO AO PROJETO</small><strong>Manual</strong><span>Sem validação no servidor</span></div>';
+  $('metrics').innerHTML='<div class="metric"><small>CONVERSAS CONSULTADAS</small><strong>01</strong><span>Fonte: OpenHands</span></div><div class="metric"><small>AGENTES COMPROVADOS</small><strong>00</strong><span>Nenhum agente registrado nesta prova</span></div><div class="metric"><small>VÍNCULO AO PROJETO</small><strong>Manual</strong><span>Sem validação no servidor</span></div>';
   drawSolar();setNav();renderPanel();
 }
 function renderVerifiedPanel(){
@@ -205,9 +214,9 @@ function renderVerifiedPanel(){
   if(!verifiedMission){p.textContent='Sem missão consultada.';return;}
   const v=verifiedMission;
   p.innerHTML=`<div class="empty">
-    <div class="panel-kicker">EXECUÇÃO OPENHANDS · CONSULTA REAL</div>
+    <div class="panel-kicker">CONVERSA OPENHANDS · ESTADO RECEBIDO</div>
     <div class="agent-hero" style="display:flex"><div class="hero-planet" style="--hero-light:#e8fcff;--hero-mid:#86d5ed;--hero-dark:#124b72;--hero-glow:#71dbffa8"></div></div>
-    <h2>Lua de execução verificada</h2>
+    <h2>Lua · conversa consultada</h2>
     <div class="section"><h3>STATUS CONSULTADO</h3><p class="panel-text">${safe(v.status)}</p></div>
     <div class="section"><h3>IDENTIFICADOR DA CONVERSA</h3><p class="panel-text">${safe(v.conversationId)}</p></div>
     <div class="section"><h3>PROJETO INFORMADO PELO OPERADOR</h3><p class="panel-text">${safe(v.project)}</p></div>
@@ -252,7 +261,7 @@ function graphModel(){
   if(verifiedMission&&validGraphIdentity(verifiedMission.graphIdentity)){
     const ids=verifiedMission.graphIdentity;
     nodes.push({id:ids.source,role:'source',name:'OpenHands',tag:'FONTE CONSULTADA',kind:'verified',x:69,y:24,description:'Origem: GET de conversa pela sessão autenticada do Canvas.'});
-    nodes.push({id:ids.mission,role:'mission',name:'Missão '+verifiedMission.conversationId.slice(0,8),tag:'ESTADO: '+verifiedMission.status,kind:'verified',x:83,y:51,description:'Conversa consultada pontualmente, não sucesso de tarefa ou agente comprovado.'});
+    nodes.push({id:ids.mission,role:'mission',name:'Conversa '+verifiedMission.conversationId.slice(0,8),tag:'ESTADO: '+verifiedMission.status,kind:'verified',x:83,y:51,description:'Conversa consultada pontualmente, não sucesso de tarefa ou agente comprovado.'});
     nodes.push({id:ids.project,role:'project',name:verifiedMission.project.split('/').pop().slice(0,22),tag:'PROJETO INFORMADO',kind:'manual',x:69,y:81,description:'Associação informada pelo operador; o servidor não confirmou o vínculo.'});
     edges.push({from:ids.source,to:ids.mission,kind:'verified'});
     edges.push({from:ids.mission,to:ids.project,kind:'manual'});
@@ -269,7 +278,7 @@ function renderGraphPanel(){
   let extra='';
   if(node.role==='mission'){
     const v=verifiedMission;
-    extra='<div class="section"><h3>FONTE DA EXECUÇÃO</h3><p class="panel-text">'+safe(v.conversationId)+'</p><p class="panel-text">Estado: '+safe(v.status)+'</p><p class="panel-text">Observado: '+safe(v.observedAt)+'</p><p class="panel-text">Servidor: '+safe(v.updatedAt||'Não informado')+'</p></div>';
+    extra='<div class="section"><h3>FONTE DA CONVERSA</h3><p class="panel-text">'+safe(v.conversationId)+'</p><p class="panel-text">Estado: '+safe(v.status)+'</p><p class="panel-text">Observado: '+safe(v.observedAt)+'</p><p class="panel-text">Servidor: '+safe(v.updatedAt||'Não informado')+'</p></div>';
   } else if(node.role==='project'){
     extra='<div class="section"><h3>DECLARAÇÃO MANUAL</h3><p class="panel-text">'+safe(verifiedMission.project)+'</p><p class="panel-text">Não foi validada pelo OpenHands.</p></div>';
   }

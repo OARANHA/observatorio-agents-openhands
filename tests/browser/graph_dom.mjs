@@ -39,7 +39,7 @@ async function fixture({mobile=false,reduced=false}={}){
  return {page,context,unexpected};
 }
 async function close(f){assert.deepEqual(f.unexpected,[],'unexpected external request');await f.context.close();}
-async function consult(page){await page.locator('details.ob-real summary').click();await page.locator('input.id').fill('00000000-0000-4000-8000-000000000001');await page.locator('button').filter({hasText:'Consultar estado no OpenHands'}).click();await page.locator('#source-banner').filter({hasText:'1 MISSÃO'}).waitFor();}
+async function consult(page){await page.locator('details.ob-real summary').click();await page.locator('input.id').fill('00000000-0000-4000-8000-000000000001');await page.locator('button').filter({hasText:'Consultar estado no OpenHands'}).click();await page.locator('#source-banner').filter({hasText:'1 CONVERSA'}).waitFor();}
 test('open, keyboard select/deselect, focus survives DOM replacement',async()=>{
  const f=await fixture();try{const p=f.page;await p.locator('#top-graph').click();const node=p.locator('.graph-node').first();await node.focus();await p.keyboard.press('Enter');assert.equal(await p.locator('.graph-node[aria-pressed=true]').count(),1);assert.equal(await p.evaluate(()=>document.querySelector('.ob-wrap').shadowRoot.activeElement?.dataset.node),await p.locator('.graph-node[aria-pressed=true]').getAttribute('data-node'));await p.keyboard.press('Enter');assert.equal(await p.locator('.graph-node[aria-pressed=true]').count(),0);await p.keyboard.press('Escape');assert.equal(await p.locator('.graph-node[aria-pressed=true]').count(),0);await p.screenshot({path:artifacts+'/graph-desktop.png',fullPage:true});}finally{await close(f);}
 });
@@ -104,5 +104,31 @@ test('mobile simulation control has complete compact text and accessible scenari
   const box=await button.boundingBox();
   assert.ok(box&&box.x>=0&&box.x+box.width<=390,'the simulation control must fit the mobile viewport');
   assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+ }finally{await close(f);}
+});
+test('denied second GET removes stale observation and manual association',async()=>{
+ const f=await fixture();try{
+  const p=f.page;await consult(p);await p.locator('#top-graph').click();
+  await p.locator('#graph-scope').selectOption('verified');
+  assert.equal(await p.locator('.graph-node[data-kind=verified]').count(),2);
+  await p.locator('#graph-open-read').click();
+  await p.evaluate(()=>window.fixtureError=true);
+  await p.locator('details.ob-real input.id').fill('00000000-0000-4000-8000-000000000001');
+  await p.getByText('Consultar estado no OpenHands',{exact:true}).click();
+  await p.locator('details.ob-real output').filter({hasText:'estado desconhecido'}).waitFor();
+  assert.equal(await p.locator('.graph-node[data-kind=verified]').count(),0);
+  assert.equal(await p.locator('.graph-node[data-kind=manual]').count(),0);
+  assert.equal(await p.locator('#source-banner').innerText(),'◌ PROTÓTIPO · DADOS ILUSTRATIVOS');
+  assert.equal(await p.evaluate(()=>fixtureReads.length),2);
+ }finally{await close(f);}
+});
+test('idle conversation never appears as verified execution',async()=>{
+ const f=await fixture();try{
+  const p=f.page;await p.evaluate(()=>window.fixtureObservation.execution_status='idle');
+  await consult(p);
+  assert.equal(await p.locator('.ob-real .moon').getAttribute('aria-label'),'Lua: conversa consultada');
+  assert.ok((await p.locator('#scene-title').innerText()).includes('Conversa consultada'));
+  assert.ok((await p.locator('#panel-content').innerText()).includes('Lua · conversa consultada'));
+  assert.equal(await p.locator('#real-lua').getAttribute('aria-label'),'Abrir estado recebido da conversa');
  }finally{await close(f);}
 });

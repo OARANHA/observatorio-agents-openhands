@@ -16,12 +16,12 @@ const REAL_STYLE = `
 .graph-active .ob-real[open]{top:210px;right:18px;max-height:calc(100% - 230px);overflow:auto}
 .ob-real .moon{display:inline-block;width:15px;height:15px;border-radius:50%;background:radial-gradient(circle at 30% 30%,white,#77d5f3,#23506c);box-shadow:0 0 12px #8edafa}
 `;
-function mountRealRead(stage,host,onVerified) {
+function mountRealRead(stage,host,onVerified,onReset) {
   const scene=stage.querySelector('.scene-column');
   if(!scene)return ()=>{};
   const sheet=document.createElement('style');sheet.textContent=REAL_STYLE;stage.append(sheet);
   const detail=document.createElement('details');detail.className='ob-real';
-  detail.innerHTML=`<summary>☾ CONSULTA DE MISSÃO REAL</summary><div class="form">
+  detail.innerHTML=`<summary>☾ CONSULTA DE CONVERSA</summary><div class="form">
     <label>ID da conversa OpenHands<input class="id" placeholder="UUID" autocomplete="off"></label>
     <label>Projeto associado pelo operador<input class="project" value="OARANHA/observatorio-agents-openhands" autocomplete="off"></label>
     <button type="button">Consultar estado no OpenHands</button><output aria-live="polite"></output></div>`;
@@ -33,6 +33,7 @@ function mountRealRead(stage,host,onVerified) {
     const id=get('.id').value.trim().toLowerCase();
     const project=get('.project').value.trim();
     output.replaceChildren();
+    onReset(); // Nova tentativa não herda observação possivelmente revogada.
     if(!/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(id)){say('Erro: ','UUID inválido');return;}
     if(!/^[A-Za-z0-9._-]+\/[A-Za-z0-9._-]+$/.test(project)){say('Erro: ','projeto inválido');return;}
     if(!host?.agentServer?.request){say('Indisponível: ','API de leitura do Canvas ausente');return;}
@@ -42,7 +43,7 @@ function mountRealRead(stage,host,onVerified) {
       if(!active)return;
       output.replaceChildren();
       if(!item||item.id!==id||typeof item.execution_status!=='string'){say('Erro: ','contrato não confirmado');return;}
-      const moon=document.createElement('span');moon.className='moon';moon.setAttribute('aria-label','Lua: execução real verificada');output.append(moon);
+      const moon=document.createElement('span');moon.className='moon';moon.setAttribute('aria-label','Lua: conversa consultada');output.append(moon);
       say('Conversa: ',id);
       say('Estado recebido: ',item.execution_status);
       say('Projeto declarado: ',project);
@@ -80,7 +81,7 @@ function mountObservatorio({container,host}) {
   const disposeRead=mountRealRead(stage,host,async observation=>{
     const graphIdentity=await graphIdentityForObservation(observationContext,observation.conversationId,observation.project);
     if(!destroyed)applyVerifiedMission({...observation,graphIdentity});
-  });
+  },()=>clearConsultedObservation());
   const resizeCallbacks=[];
   const resize=()=>{if(destroyed)return;for(const cb of resizeCallbacks)cb();};
   const observer=typeof ResizeObserver==='function'?new ResizeObserver(resize):null;

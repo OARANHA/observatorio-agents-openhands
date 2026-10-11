@@ -36,3 +36,12 @@ Nesta passagem foram submetidos **trechos reais do HEAD**, e o `jev_select_conte
 - O workflow do HEAD anterior `a94d269c614d059879b367546a91f1856a312177` comprovou 3 CIs GREEN (CI Observatorio `38167894448`, Graph DOM `38167894440` 8/8, Canary Worker `38167894511`), sem chamadas LLM/agentes reais; **esses resultados NÃO homologam o novo commit**.
 
 **PENDÊNCIAS:** CI no novo HEAD, screenshot atualizado e análise de revisor distinto (G11). `ADR-0001` PROPOSTO, G12 BLOQUEADO, P02/P03 NÃO PROVADOS. Sem merge, deploy, Canvas, OpenHands ou credenciais.
+
+## Remediação fatiada do parecer Codex — slice A1/A2 (2026-10-11)
+- Codex, em sessão separada e somente leitura, examinou HEAD `1567c386f9326607aae31d36de0d59e156b66d24`: 5 achados P2 (A1–A5), 1 P3 (A6), nenhum P0/P1 demonstrado. Parecer geral **CORREÇÕES NECESSÁRIAS**; segunda revisão automatizada não basta para G11.
+- JEV `jev-1.13.0` consultivo: recomendação `split_task` probabilidade 0,54 (confiança 0,39); preflight de remediação reversível `allow` probabilidade 0,75 (confiança 0,67); **não aprovação operacional**.
+- **A1 P2 abordado:** antes de cada nova consulta, a observação existente e relações derivadas são retiradas da UI. Erro de API, contrato inválido ou entrada inválida não deixam a informação anterior parecendo atual. Novo teste sequencial GET sucesso → GET negado exige grafo sem nós consultados/manuais.
+- **A2 P2 abordado:** Lua e painel usam `conversa consultada` e `estado recebido`, jamais `execução verificada`; teste de `execution_status='idle'` exige rótulos de conversa.
+- **A3/A4/A5 P2 continuam PENDENTES nesta fatia:** prazo e cancelamento/ignorância de GET tardio, rollback quando montagem falha, gestos touch. Não afirmar correção sem código/testes específicos. **A6 P3 continua PARCIAL**; fixture Chromium força fallback2D.
+- CI anterior do HEAD `1567c386f9326607aae31d36de0d59e156b66d24`: `38169408157`, `38169408183` 9/9, `38169408172` GREEN. Esses runs **NÃO validam o HEAD desta remediação**. São esperados 11 testes Chromium após as duas adições, a confirmar pelo runner.
+- **G11 não provado, G12 bloqueado, P01 parcial, P02/P03 não provados. NO-GO operacional.** Sem merge/deploy/Canvas.

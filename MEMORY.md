@@ -514,3 +514,6 @@ Main base `e06d3b01e60d9a5503e046dc0fe2eeb269f0e403` após #42. Reuso da PR #35 
 - PR #43 HEAD anterior `a94d269c614d059879b367546a91f1856a312177` com 3 GREEN (CI `38167894448`, DOM `38167894440` 8/8, SDK `38167894511`). JEV `jev-1.13.0` priorizou código GET/proveniência/testes/mobile; consultivo, **não** revisão G11.
 - Confirmado truncamento `SIMULAR` no mobile; patch limitado `SIMULAR:` desktop / `DEMO:` mobile com `aria-label` completo + regressão Chromium. Nova CI pendente. Registro completo em `docs/handoffs/OBS-CYCLE-005-VISUAL-CANDIDATE.md`.
 - Riscos GET in-flight não cancelado, RBAC/memória/Canvas/WebGL2 não provados. NO-GO operacional, sem merge/deploy/LLM/infra.
+
+## Ciclo 005 — Codex revisão independente automatizada e A1/A2 (2026-10-11)
+- PR #43: Codex em sessão separada reportou A1–A5 P2 e A6 P3 (sem P0/P1 demonstrado); JEV consultivo `split_task`. Primeiro commit remedia A1 estado antigo e A2 rótulos de proveniência, com dois novos testes Chromium. A3/A4/A5 continuam pendentes, A6 parcial. Nova CI aguardada sem polling. Sem merge/Canvas/operação real; G11/G12/P02/P03 inalterados.

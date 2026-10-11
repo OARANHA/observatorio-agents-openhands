@@ -576,3 +576,8 @@ Main pré-consolidação96ed4a3c5ce659aa55a4841716e7623d30aaeb64.
 - JEV `jev-1.13.0` foi usado para priorização adversarial de código **real** e preflight de patch limitado; juízo consultivo, não substitui revisor separado/G11.
 - Correção adicional proposta na mesma branch: botão de cenários visuais completo em mobile (abreviação `DEMO:` apenas visual, `aria-label` completo) + novo teste Chromium 390px. Regerar extensão; verificar CI **no novo HEAD** antes de alegar GREEN.
 - Sem merge/deploy/Canvas/OpenHands; G11 não provado, G12 bloqueado, P02/P03 não provados.
+
+## Ciclo 005 — remediação do parecer Codex em fatias (2026-10-11)
+- Codex revisou `1567c386f9326607aae31d36de0d59e156b66d24` com A1–A5 P2, A6 P3 e nenhum P0/P1 demonstrado; JEV aconselhou dividir tarefas (`split_task`).
+- Slice A1/A2: retirar dados consultados antigos no começo da nova tentativa e mudar rótulos de execução verificada para conversa/estado consultado; duas regressões Chromium. A3/A4/A5 e A6 pendentes/parciais. Ver `docs/handoffs/OBS-CYCLE-005-VISUAL-CANDIDATE.md`.
+- CI do novo SHA pendente. Não promover G11/G12/P02/P03 ou instalar/mesclar/deploy.
