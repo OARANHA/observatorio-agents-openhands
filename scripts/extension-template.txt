@@ -1,5 +1,5 @@
 // Gerado por scripts/build.mjs. Edite source/observatorio-v02.html e regenere.
-// Demonstração preservada; consulta pontual autenticada de execução, sem operação de escrita.
+// V0.5: Universo + Grafo de relações verificáveis; nenhuma operação de escrita.
 const STYLE = __STYLE__;
 const MARKUP = __MARKUP__;
 
@@ -12,6 +12,8 @@ const REAL_STYLE = `
 .ob-real button{padding:8px;border:1px solid #7bd5ef;background:#174564;color:white;border-radius:6px;cursor:pointer}
 .ob-real output{display:grid;gap:5px;overflow-wrap:anywhere}
 .ob-real output p{margin:0;line-height:1.4}
+.graph-active .ob-real:not([open]){display:none}
+.graph-active .ob-real[open]{top:210px;right:18px;max-height:calc(100% - 230px);overflow:auto}
 .ob-real .moon{display:inline-block;width:15px;height:15px;border-radius:50%;background:radial-gradient(circle at 30% 30%,white,#77d5f3,#23506c);box-shadow:0 0 12px #8edafa}
 `;
 function mountRealRead(stage,host,onVerified) {
@@ -48,7 +50,9 @@ function mountRealRead(stage,host,onVerified) {
       if(typeof item.updated_at==='string')say('Atualizado no servidor: ',item.updated_at);
       say('Observado em (hora do navegador): ',new Date().toISOString());
       say('Associação de projeto: ','manual, não atestada pela API');
-      onVerified({conversationId:id,status:item.execution_status,project,updatedAt:typeof item.updated_at==='string'?item.updated_at:null,observedAt:new Date().toISOString()});
+      await onVerified({conversationId:id,status:item.execution_status,project,updatedAt:typeof item.updated_at==='string'?item.updated_at:null,observedAt:new Date().toISOString()});
+      if(!active)return;
+      detail.open=false; // Não encobrir o universo após consulta; reabrível pelo operador.
     } catch (_error) {
       if(active){output.replaceChildren();say('Consulta: ','indisponível/não autorizada; estado desconhecido');}
     } finally {if(active)button.disabled=false;}
@@ -60,7 +64,7 @@ function mountRealRead(stage,host,onVerified) {
 function mountObservatorio({container,host}) {
   const wrapper=document.createElement('section');
   wrapper.className='ob-wrap';
-  wrapper.setAttribute('aria-label','Observatório de Agentes — demonstração');
+  wrapper.setAttribute('aria-label','Observatório de Agentes — Universo e Grafo');
   const shadow=wrapper.attachShadow({mode:'open'});
   const style=document.createElement('style');
   style.textContent=STYLE;
@@ -71,7 +75,12 @@ function mountObservatorio({container,host}) {
   shadow.append(stage);
   container.append(wrapper);
   let destroyed=false,rafId=0;
-  const disposeRead=mountRealRead(stage,host,observation=>applyVerifiedMission(observation));
+  // Local nonce scopes this view; never represents an authenticated tenant.
+  const observationContext=crypto.randomUUID();
+  const disposeRead=mountRealRead(stage,host,async observation=>{
+    const graphIdentity=await graphIdentityForObservation(observationContext,observation.conversationId,observation.project);
+    if(!destroyed)applyVerifiedMission({...observation,graphIdentity});
+  });
   const resizeCallbacks=[];
   const resize=()=>{if(destroyed)return;for(const cb of resizeCallbacks)cb();};
   const observer=typeof ResizeObserver==='function'?new ResizeObserver(resize):null;

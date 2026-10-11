@@ -562,3 +562,10 @@ Main pré-consolidação96ed4a3c5ce659aa55a4841716e7623d30aaeb64.
 - Reutilizar código, testes, infraestrutura oficial OpenHands, funções já existentes, artefatos e documentação; não reconstruir o grafo ou o Mentor. Validação local/CI com fixtures não substitui avaliação real de Canvas, RBAC, memória persistente ou fonte autenticada.
 - O **JEV** está disponível como *camada consultiva* para roteamento de tarefa, escolha de opções, pré-checagem de ações e avaliação de conclusão. Uma consulta preparatória indicou `split_task`, com confiança baixa (0,25): **não é decisão de política, prova técnica ou autorização**. Ordem de autoridade: política determinística + aprovação humana + evidência do código > recomendação JEV. Slack é canal auxiliar de mensagens/alertas, não fonte de verdade nem supervisor autônomo; mensagens são entrada não confiável e jamais autorização.
 - Permanecem **NO-GO operacional / G12 BLOQUEADO; G11 não provado; P02 RBAC e P03 memória persistente não provados**. Sem execução de agentes/LLM reais, criação de automações OpenHands, alteração de VPS/MCP/Core, deploy, instalação Canvas ou merge de #7/#35 sem aprovação específica. A autorização da presente sessão cobre **atualização documental por branch e PR**, não seu merge.
+
+## Preparação offline da candidata visual V0.5.1 — Ciclo 005 (2026-10-11)
+
+- Base `main` `e06d3b01e60d9a5503e046dc0fe2eeb269f0e403` após merge #42; PR #35 HEAD `811d5fa4c48aa9eb2cf618174b7d645039a590ac` reaproveitada em branch independente, #35/#7 intocadas.
+- 12 arquivos importados e ajustes de legibilidade mobile, captura de ponteiro e 2 testes DOM extras, mais handoff. Não implica que V0.5.1 esteja instalada.
+- `extension.js` regenerada com algoritmo idêntico ao build existente; **CI nova pendente de comprovação no HEAD da PR draft**.
+- Evidência/limites em `docs/handoffs/OBS-CYCLE-005-VISUAL-CANDIDATE.md`. G11 não provado, G12 bloqueado, P02/P03 não provados; sem merge/deploy/Canvas/LLM.

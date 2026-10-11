@@ -504,3 +504,7 @@ Mentor somente standaloneDEMO, sem Canvas. Main pré-consolidação96ed4a3... .
 - Próxima etapa proposta: **Ciclo 005 — homologação visual**. Revisar PR #7/#35 sem merge, testar acessibilidade/segurança/compatibilidade, planejar a integração do Mentor DEMO #40 e preparar critérios de aceite; eventual instalação Canvas requer decisão explícita.
 - JEV MCP é *apoio probabilístico* e consultivo (na preparação sugeriu `split_task` com confiança baixa, 0,25); ChatGPT mantém coordenação sujeita a políticas, evidência e autorização do proprietário. Slack pode dar suporte a eventos minimizados/alertas, sem conferir autorização nem garantir gatilho imediato.
 - **NO-GO operacional** preservado: G12 BLOQUEADO; G11 revisão independente, P02 RBAC e P03 memória persistente pendentes. Nenhum agente/LLM real, deploy/Canvas/Core/VPS/MCP, merge #7/#35 ou ação cross-project autorizada por esta nota. Atualização canônica por PR separada, sem merge automático.
+
+## Ciclo 005 — candidata visual offline (2026-10-11)
+
+Main base `e06d3b01e60d9a5503e046dc0fe2eeb269f0e403` após #42. Reuso da PR #35 HEAD `811d5fa4c48aa9eb2cf618174b7d645039a590ac` em nova branch draft, sem merge #7/#35 e sem Canvas. Mobile/pointer lifecycle e testes Chromium sintéticos adicionais. Geração do build pré-validada estaticamente; CI do novo HEAD **a verificar**. Ver `docs/handoffs/OBS-CYCLE-005-VISUAL-CANDIDATE.md`. Mentor DEMO #40 preservado standalone. NO-GO, G11/G12/P02/P03 inalterados.
