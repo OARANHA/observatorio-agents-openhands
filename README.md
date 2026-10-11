@@ -2,17 +2,23 @@
 
 > **FERRAMENTA HORIZONTAL DA OPERAÇÃO (não é módulo do VIGIAFAST).** ChatGPT coordena, OpenHands executa tarefas autorizadas, Observatório apresenta atividades comprovadas, e GitHub mantém o histórico e a documentação. **VIGIAFAST, Wandora, ELUS e demais são projetos atendidos**, não proprietários da plataforma. Regra canônica: [`docs/PROJECT_SOURCE.md`](docs/PROJECT_SOURCE.md), [`AGENTS.md`](AGENTS.md), [`docs/CANONICAL_STATE.md`](docs/CANONICAL_STATE.md).
 
-**Estado vigente:** versão 0.4.2 do Observatório foi instalada no Agent Canvas (ref `7212c51c38fc34cd195afb4db99ee35808e67cb5`) e a consulta de uma conversa OpenHands sintética real foi exibida como lua (`finished`); informação comprovada em screenshots do operador. Quatro sistemas originais seguem DEMO, e o projeto informado na consulta é manual. **Modo grafo estilo Obsidian não implementado**; memória persistente foi ativada no Canvas, mas gravação e recuperação ainda não foram validadas.
+**Estado vigente:** versão 0.4.2 do Observatório foi instalada no Agent Canvas (ref `7212c51c38fc34cd195afb4db99ee35808e67cb5`) e a consulta de uma conversa OpenHands sintética real foi exibida como lua (`finished`); informação comprovada em screenshots do operador. Quatro sistemas originais seguem DEMO, e o projeto informado na consulta é manual. **O Grafo V0.5.1 foi integrado ao código da `main` na PR #43, mas sua instalação no Canvas NÃO foi comprovada**; a última instalação documentada continua sendo a V0.4.2. A memória persistente foi ativada no Canvas, mas gravação e recuperação ainda não foram validadas.
 
 
 Extensão experimental **instalável como App do OpenHands Canvas**, reutilizando o protótipo V0.2: universo central, sistemas solares por projeto, planetas, informações de agentes, WebGL2 e fallback 2D.
 
 **Histórico V0.4.1:** dados exclusivamente demonstrativos. **V0.4.2:** agrega uma leitura pontual de estado via API autenticada do Canvas; os agentes/nomes ilustrativos permanecem DEMO e não são inventário factual.
 
+## V0.5.1 — Universo e Grafo integrados ao repositório, instalação ainda pendente
+
+A PR [#43](https://github.com/OARANHA/observatorio-agents-openhands/pull/43) integrou a candidata V0.5.1 à `main` no commit `ac9c525a7e169fe253f0f488550686491939289a`. A suíte sintética Chromium passou em **19/19** cenários, com UI demonstrativa, consulta de conversa opcional pelo Canvas host, proveniência manual/consultada distinta e controles de teclado/mobile. **Isso NÃO indica que o Canvas instalado já esteja na V0.5.1, nem valida GPU real, RBAC, memória ou operação de agentes.**
+
+Antes de qualquer atualização, seguir [Plano de homologação visual — CYCLE006](docs/handoffs/OBS-CYCLE-006-CANVAS-VISUAL-HOMOLOGATION-PLAN.md). Inicialmente, conferir a instalação real **somente leitura**; atualização/instalação e habilitação exigem autorizações específicas. PRs #7 e #35 continuam abertas e não devem ser mescladas automaticamente.
+
 ## Instalar (somente após revisão e autorização da mudança no Canvas)
 Em **Customize → Apps → Add app**, preencher:
 - **App source:** `https://github.com/OARANHA/observatorio-agents-openhands.git`
-- **Ref:** `main` para atualizações manuais após PR revisada e integrada (ou SHA fixo para congelar uma revisão).
+- **Ref:** preferir **SHA fixo** após autorização explícita; para homologar V0.5.1 a referência proposta é `ac9c525a7e169fe253f0f488550686491939289a`. `main` é móvel e não deve ser usado como prova de versão testada.
 - **Path:** deixar **vazio**: o manifesto está na raiz.
 
 Instale **desabilitado**, revise antes de habilitar. A entrada no menu é **Observatório**.
