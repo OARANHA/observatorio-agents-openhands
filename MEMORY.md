@@ -522,3 +522,6 @@ Main base `e06d3b01e60d9a5503e046dc0fe2eeb269f0e403` após #42. Reuso da PR #35 
 
 - HEAD anterior PR #43 `0ebb942c7e13199381966d96ed1e4be4e6f2d77d` com CI `38172263276`, DOM `38172263290` 11/11 e SDK `38172263281` GREEN. Patch seguinte implementa timeout local A3 (sem abort host), rollback montagem A4 e mobile `pan-y pinch-zoom` A5 + quatro testes (15 DOM esperados).
 - JEV consultivo; revisão separada Codex é automatizada e **G11 permanece não provado**. G12 bloqueado, P02/P03 não provados, NO-GO operacional. Novas CIs somente após usuário sinalizar green/red.
+
+## Ciclo 005 — proveniência visual em revisão (2026-10-11)
+- PR #43 HEAD histórico `0b6ccf879f92cc4691cacbe977db67fb58f07a6f`: CI e SDK GREEN; Graph DOM 15/15. Screenshot revelou rótulos residuais de “missão real”; patch de microcopy mais preciso e regressão DOM (16 esperados), a verificar. Em seguida pedir ao Codex reavaliação adversarial do HEAD final; G11 não provado, G12 bloqueado, P02/P03 não provados, sem merge/deploy/Canvas.

@@ -55,3 +55,8 @@ Nesta passagem foram submetidos **trechos reais do HEAD**, e o `jev_select_conte
 - A6: mais quatro testes DOM, total **15** esperados. Runner ainda força fallback2D, não valida WebGL2/Canvas instalado, leitor de tela ou autenticação tenant.
 - Passagem JEV `jev-1.13.0` aconselhou `confirm` (0,62; confiança 0,49); histórico de autorização do proprietário cobre apenas patch na PR, nenhum merge/deploy/Canvas. Próxima CI e inspeção dos logs no **novo HEAD** aguardam aviso `green`/`red`; **não realizar polling**.
 - ADR-0001 PROPOSTO, G11 NÃO PROVADO, G12 BLOQUEADO, P01 PARCIAL, P02/P03 NÃO PROVADOS. Sem agente/LLM real, VPS/MCP, deploy, Canvas ou merge.
+
+## Acabamento de proveniência após screenshot da CI — 2026-10-11
+- HEAD anterior `0b6ccf879f92cc4691cacbe977db67fb58f07a6f` verificou 3 GREEN (CI `38173719969`, DOM `38173719965` **15/15**, SDK inerte `38173719983` com zero operações reais). Captura do Graph DOM revelou instrução herdada `CONSULTA DE MISSÃO REAL` e texto `consulta real do OpenHands`; são claims semânticos acima da prova de consulta do estado da conversa.
+- Correção visual/textual limitada: `Consultar conversa`, `estado de conversa consultado`, instrução `CONSULTA DE CONVERSA`, placeholder e ARIA precisos, sem mudar endpoint, RBAC, identity, timeout, WebGL ou motor do grafo. Contrato DOM de proveniência adicionado (16 testes Chromium esperados no novo HEAD).
+- **GREEN anterior não valida o novo commit.** Retornar a PR ao Codex em sessão separada para reavaliar A1–A6 após nova CI. Revisão automatizada não promove G11. ADR-0001 PROPOSTO; G12 BLOQUEADO; P01 PARCIAL; P02/P03 NÃO PROVADOS. Sem merge/deploy/Canvas.

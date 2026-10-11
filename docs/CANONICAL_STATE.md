@@ -587,3 +587,7 @@ Main pré-consolidação96ed4a3c5ce659aa55a4841716e7623d30aaeb64.
 - PR #43 HEAD anterior `0ebb942c7e13199381966d96ed1e4be4e6f2d77d`: runs `38172263276`, `38172263290` (11/11 DOM) e `38172263281` GREEN, sem LLM/agente/dispatch reais.
 - A3 timeout local à UI e descarte de respostas tardias, **não cancela o transporte host**. A4 pré-validação WebCrypto e rollback parcial. A5 pan-y/pinch-zoom para manter gestos nativos. Quatro novos testes Chromium (esperados 15), CI do novo HEAD pendente.
 - Histórico, limitações e protocolo adversarial JEV no handoff `docs/handoffs/OBS-CYCLE-005-VISUAL-CANDIDATE.md`. NO-GO operacional, G11/G12/P02/P03 intactos; sem merge, Canvas, deploy ou agente.
+
+## Ciclo 005 — acabamento textual após CI A1–A5 (2026-10-11)
+- HEAD `0b6ccf879f92cc4691cacbe977db67fb58f07a6f`: runs `38173719969`, `38173719965` (15/15 DOM) e `38173719983` GREEN, SDK inerte sem chamadas reais. Captura visual identificou instrução residual `CONSULTA DE MISSÃO REAL` apesar de formulário já renomeado.
+- Patch mínimo de rótulos de conversa/estado, atributo acessível e teste DOM adicional; **CI do novo HEAD ainda por validar**. Próximo passo revisão separada Codex do SHA final; G11 não provado, G12 bloqueado, P02/P03 não provados; NO-GO.
