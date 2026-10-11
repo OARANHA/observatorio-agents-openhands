@@ -54,7 +54,7 @@ class MetricsBinding(unittest.TestCase):
         from canary_transport_probe import SyntheticTransportGate
         guard=Guard();book=BudgetBook('0.1')
         gate=SyntheticTransportGate(guard,book,RateCard('synthetic','fake','2','8','https://example.invalid','2026-10-11'),TokenCaps(2000,500,500))
-        llm=types.SimpleNamespace(metrics=types.SimpleNamespace(accumulated_cost=0.,accumulated_token_usage=types.SimpleNamespace(prompt_tokens=0,completion_tokens=0,cache_read_tokens=0,cache_write_tokens=0)))
+        llm=types.SimpleNamespace(model='fake',num_retries=0,max_output_tokens=500,input_cost_per_token=0.000002,output_cost_per_token=0.000008,metrics=types.SimpleNamespace(accumulated_cost=0.,accumulated_token_usage=types.SimpleNamespace(prompt_tokens=0,completion_tokens=0,cache_read_tokens=0,cache_write_tokens=0)))
         return gate,llm
     def response(self,llm):
         import copy,types
@@ -175,3 +175,70 @@ class TerminalSettlement(unittest.TestCase):
         with self.assertRaisesRegex(GateError,'worst_case_over_guard_budget'):
             book.reserve(guard,self.card(),TokenCaps(2000,500,500))
         self.assertEqual(0,guard.calls);self.assertIsNone(book.active)
+
+class EvidencePreflight(unittest.TestCase):
+    fixture=MetricsBinding.fixture
+    response=MetricsBinding.response
+    transport=MetricsBinding.transport
+    def test_nominal_sdk_overrides_denied_before_any_transport(self):
+        from canary_sdk_success_probe import snapshot_success_start
+        for field,value in [('model','unapproved'),('num_retries',1),('max_output_tokens',501),('input_cost_per_token',None)]:
+            gate,llm=self.fixture();setattr(llm,field,value)
+            with self.assertRaisesRegex(GateError, 'sdk_model_limits_mismatch|sdk_rate_missing'):
+                with gate.logical_call():snapshot_success_start(gate,llm)
+            self.assertEqual(0,gate.book.calls)
+            self.assertTrue(gate.guard.cancelled)
+    def test_config_mutation_during_fake_call_never_settles(self):
+        from canary_sdk_success_probe import snapshot_success_start,settle_success_from_sdk_metrics
+        gate,llm=self.fixture()
+        with self.assertRaises(GateError):
+            with gate.logical_call():
+                before=snapshot_success_start(gate,llm);self.transport(gate,llm)
+                llm.max_output_tokens=1000
+                settle_success_from_sdk_metrics(gate,llm,before,self.response(llm))
+        self.assertIsNotNone(gate.book.active)
+    def test_evidence_is_minimal_and_never_authorizes_operation(self):
+        import json
+        from canary_accounting_evidence import synthetic_accounting_evidence
+        gate,llm=self.fixture()
+        gate.secret_marker='PRIVATE_DO_NOT_PUBLISH';llm.api_key='PRIVATE_DO_NOT_PUBLISH'
+        gate.operational_go=True
+        with gate.logical_call():
+            self.transport(gate,llm)
+            gate.settle(input_tokens=100,output_tokens=100,reported_usd='.001')
+        report=synthetic_accounting_evidence(gate)
+        self.assertFalse(report['operational_go'])
+        self.assertEqual('0.001',report['verified_spent_usd'])
+        self.assertEqual('0',report['held_usd'])
+        self.assertNotIn('PRIVATE_DO_NOT_PUBLISH',json.dumps(report))
+        self.assertNotIn('model',report)
+    def test_uncertain_reservation_is_reported_without_refund(self):
+        from canary_accounting_evidence import synthetic_accounting_evidence
+        gate,llm=self.fixture()
+        with self.assertRaises(RuntimeError):
+            with gate.logical_call():
+                gate.invoke(lambda: (_ for _ in ()).throw(RuntimeError('synthetic')))
+        report=synthetic_accounting_evidence(gate)
+        self.assertEqual('closed_uncertain',report['state'])
+        self.assertEqual('0.005',report['held_usd'])
+        self.assertEqual('0.095',report['book_uncommitted_usd'])
+    def test_tampered_ledger_or_unsynthetic_report_fails_closed(self):
+        from canary_accounting_evidence import synthetic_accounting_evidence
+        for mode in ('negative','excess','nan','bool','provider'):
+            gate,llm=self.fixture()
+            if mode=='negative':gate.book.spent=Decimal('-1')
+            elif mode=='excess':gate.book.spent=Decimal('1')
+            elif mode=='nan':gate.book.spent=Decimal('NaN')
+            elif mode=='bool':gate.book.calls=True
+            else:gate.rates=RateCard('openai','fake','2','8','https://example.invalid','2026-10-11')
+            with self.assertRaises(GateError):synthetic_accounting_evidence(gate)
+            self.assertTrue(gate.guard.cancelled)
+
+    def test_demo_finishes_one_verified_synthetic_call_without_operational_go(self):
+        from canary_accounting_evidence import synthetic_demo
+        report=synthetic_demo()
+        self.assertEqual('closed_verified',report['state'])
+        self.assertEqual(1,report['book_calls'])
+        self.assertEqual('0',report['held_usd'])
+        self.assertEqual('0.001',report['verified_spent_usd'])
+        self.assertFalse(report['operational_go'])

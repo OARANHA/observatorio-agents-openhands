@@ -11,6 +11,7 @@ on:
       - scripts/canary_budget_boundary.py
       - scripts/canary_transport_probe.py
       - scripts/canary_sdk_success_probe.py
+      - scripts/canary_accounting_evidence.py
       - scripts/audit_canary_sdk_transport.py
       - tests/test_canary_accounting_hardening.py
       - tests/test_canary_transport_attempts.py
@@ -51,6 +52,9 @@ jobs:
       - name: Contabilidade adversarial sintetica sem transporte
         run: |
           "$RUNNER_TEMP/observatorio-canary-sdk/bin/python" -B -m unittest discover -s tests -p test_canary_accounting_hardening.py -v
+      - name: Evidencia contábil fictícia minimizada
+        run: |
+          "$RUNNER_TEMP/observatorio-canary-sdk/bin/python" -B scripts/canary_accounting_evidence.py
       - name: Compatibilidade do TaskManager oficial sem LLM
         run: |
           "$RUNNER_TEMP/observatorio-canary-sdk/bin/python" -B -m unittest discover -s tests -p test_canary_sdk_manager.py -v

@@ -10,7 +10,7 @@ from decimal import Decimal
 from dataclasses import dataclass
 from types import SimpleNamespace
 
-from canary_budget import MILLION, exact_money
+from canary_budget import MILLION, exact_money, validate_sdk_config
 from canary_controls import GateError
 from canary_sdk import _metrics
 
@@ -40,6 +40,7 @@ def settle_success_from_sdk_metrics(gate, llm, before, sdk_response):
     """Fail-closed exact synthetic USD calculation from SDK metrics deltas."""
     try:
         serial = gate.scope_identity()
+        validate_sdk_config(llm,gate.rates,gate.caps,live=False)
         if (not isinstance(before, SDKBaseline) or gate._sdk_baseline is not before
             or before.gate is not gate or before.llm is not llm
             or before.metrics is not llm.metrics or before.serial != serial):
@@ -81,6 +82,7 @@ def snapshot_success_start(gate, llm):
     """Get an SDK baseline for one isolated call, before any transport."""
     try:
         serial = gate.scope_identity()
+        validate_sdk_config(llm,gate.rates,gate.caps,live=False)
         if gate.attempts != 0 or gate._sdk_baseline is not None:
             raise GateError("sdk_baseline_not_before_transport")
         _cache(llm.metrics)
