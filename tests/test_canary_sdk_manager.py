@@ -24,6 +24,33 @@ def installed():
 
 @unittest.skipUnless(installed(), 'requires isolated SDK/Tools 1.53.0')
 class OfficialManager(unittest.TestCase):
+    def test_cleanup_failure_cannot_reopen_cancelled_guard(self):
+        from openhands.tools.task.manager import TaskManager,ConversationExecutionStatus,ConversationState
+        from canary_controls import GateError
+        for phase in ('metrics','pause','close'):
+            with self.subTest(phase=phase):
+                guard=Guard();callback=task_spec(guard,lambda *_:False).params['confirmation_handler']
+                manager=TaskManager(confirmation_handler=callback)
+                manager._parent_conversation=mock.Mock(_visualizer=None)
+                conversation=mock.Mock()
+                conversation.state.execution_status=ConversationExecutionStatus.WAITING_FOR_CONFIRMATION
+                task=types.SimpleNamespace(id='synthetic',conversation=conversation,
+                    set_error=mock.Mock(),model_copy=mock.Mock())
+                event=types.SimpleNamespace(action=types.SimpleNamespace(command='pwd',is_input=False))
+                if phase!='metrics':getattr(conversation,phase).side_effect=RuntimeError('SYNTHETIC_CLEANUP')
+                with mock.patch.object(ConversationState,'get_unmatched_actions',return_value=[event]), \
+                     mock.patch.object(manager,'_update_parent_metrics',side_effect=
+                         RuntimeError('SYNTHETIC_CLEANUP') if phase=='metrics' else None):
+                    with self.assertRaisesRegex(RuntimeError,'SYNTHETIC_CLEANUP'):
+                        manager._run_task(task,'synthetic public only')
+                self.assertTrue(guard.cancelled);conversation.run.assert_called_once()
+                with self.assertRaises(GateError):guard.reserve()
+                with self.assertRaises(MissionCancelled):callback('synthetic',[event])
+                task.set_error.assert_not_called()
+                # Official SDK finally is sequential: early failure skips later cleanup.
+                self.assertEqual(phase!='metrics',conversation.pause.called)
+                self.assertEqual(phase=='close',conversation.close.called)
+
     def _inert_cycle(self,mode):
         """Official manager loop, mocked conversation, fake LLM and terminal output.
 
