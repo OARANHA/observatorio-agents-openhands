@@ -56,3 +56,18 @@ GET autorizado sem mistura tenant, erros sem nó novo; cancelamento consulta ao
 teardown; RAF/resize/GPU liberados; comparação screenshot sanitizada e contraste;
 nenhum request/parâmetro adicional, nenhum agente real ou ação de escrita.
 P01 PARCIAL/P02 e P03 NÃO PROVADOS. NO-GO operacional/G12 BLOQUEADO.
+
+
+## RED real do navegador e correção proposta
+
+HEAD0c0707761606b1582620247edd268b1062d13fc7, Graph DOM run38153324520
+job114511095537: seis cenários executados, quatro PASS e dois RED. Confirmou
+foco perdido (activeElement sem node após Enter) e pan ausente. Testes
+navegação/busca/vazio, GET mockado/erro/proveniência, escape/contraste simples
+e teardown/remount passaram em Chromium com sandbox obrigatório. Não é Canvas.
+Correção na mesma branch: capturar/restaurar foco por identidade ou fallback
+mapa, toggle seleção e Esc; remover anúncio duplicado do painel; mapa focável
+com setas/pointer e pan bounded±140px, reset com zoom. Fundos opacos e fontes
+legíveis preservam contraste ao destacar seleção sem reduzir texto dimmed.
+Novo HEAD precisa reexecutar todos cenários: não antecipar GREEN. Workflow
+publica apenas duas screenshots sintéticas, retenção3dias, sem trace/payload.

@@ -71,22 +71,22 @@
 .graph-edges line[data-kind="verified"]{stroke:#55efcc;stroke-width:3}
 .graph-edges line[data-kind="manual"]{stroke:#f6c575;stroke-dasharray:6 8}
 .graph-edges line.dimmed{opacity:.25}
-.graph-node{position:absolute;z-index:2;transform:translate(-50%,-50%);width:clamp(102px,11vw,152px);min-height:64px;padding:10px 9px;background:#102845f0;border:1px solid #678aaf;color:#f1f7ff;box-shadow:0 10px 30px #040e1b99,0 0 16px #3e7caa33;border-radius:14px;cursor:pointer;text-align:center;display:grid;align-content:center;gap:4px;line-height:1.25;overflow-wrap:anywhere}
+.graph-node{position:absolute;z-index:2;transform:translate(-50%,-50%);width:clamp(102px,11vw,152px);min-height:64px;padding:10px 9px;background:#102845;border:1px solid #678aaf;color:#f1f7ff;box-shadow:0 10px 30px #040e1b99,0 0 16px #3e7caa33;border-radius:14px;cursor:pointer;text-align:center;display:grid;align-content:center;gap:4px;line-height:1.25;overflow-wrap:anywhere}
 .graph-node strong{font-size:12px;line-height:1.3}
-.graph-node small{font-size:9px;letter-spacing:.08em;color:#9bb3cb}
-.graph-node[data-kind="demo"]{border-style:dashed;border-color:#72869e9c;background:#12243bc7}
-.graph-node[data-kind="demo-hub"]{background:#1b2940ee;border-color:#9eaaaf}
-.graph-node[data-kind="verified"]{border-color:#5bdfc1;background:#113e44e8;box-shadow:0 0 25px #32b8a438}
-.graph-node[data-kind="manual"]{border-color:#e5b768;border-style:dashed;background:#373022d9}
+.graph-node small{font-size:10px;letter-spacing:.08em;color:#9bb3cb}
+.graph-node[data-kind="demo"]{border-style:dashed;border-color:#72869e9c;background:#12243b}
+.graph-node[data-kind="demo-hub"]{background:#1b2940;border-color:#9eaaaf}
+.graph-node[data-kind="verified"]{border-color:#5bdfc1;background:#113e44;box-shadow:0 0 25px #32b8a438}
+.graph-node[data-kind="manual"]{border-color:#e5b768;border-style:dashed;background:#373022}
 .graph-node.selected,.graph-node:hover{outline:2px solid #d0f7ff;outline-offset:3px}
-.graph-node.dimmed{opacity:.45}
+.graph-node.dimmed{opacity:1;box-shadow:none;border-color:#526a82}
 .graph-empty{position:absolute;z-index:3;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;max-width:360px;color:#d0e2f4;background:#0b1f36ed;border:1px solid #5f7f9d;padding:22px;border-radius:14px;line-height:1.7;font-size:12px}
 .graph-legend{position:absolute;z-index:4;bottom:156px;left:32px;right:32px;display:flex;flex-wrap:wrap;gap:14px;font-size:10px;color:#a6bed9;pointer-events:none}
 .graph-legend span:before{content:"";display:inline-block;width:10px;height:10px;border:1px solid #72869e;background:#12243b;border-radius:50%;margin-right:6px}
 .graph-legend .real:before{background:#55efcc;border-color:#55efcc}
 .graph-legend .manual:before{background:#f6c575;border-color:#f6c575}
-@media(max-width:870px){.graph-tools{top:110px;left:16px;right:16px}.graph-map{top:188px;left:8px;right:8px}.graph-node{width:115px;min-height:61px;padding:8px 5px}.graph-node strong{font-size:10px}.graph-node small{font-size:8px}.graph-legend{left:16px;right:16px}}
-@media(max-width:580px){.graph-tools{top:102px;gap:7px;padding:8px}.graph-tools input{width:120px}.graph-tools label{font-size:10px}.graph-tools select,.graph-tools input{padding:6px;font-size:10px}.graph-map{top:198px;bottom:128px}.graph-node{width:92px;min-height:52px;padding:6px 3px}.graph-node strong{font-size:9px}.graph-node small{font-size:7px}.graph-legend{bottom:139px;gap:8px;font-size:9px}}
+@media(max-width:870px){.graph-tools{top:110px;left:16px;right:16px}.graph-map{top:188px;left:8px;right:8px}.graph-node{width:115px;min-height:61px;padding:8px 5px}.graph-node strong{font-size:10px}.graph-node small{font-size:10px}.graph-legend{left:16px;right:16px}}
+@media(max-width:580px){.graph-tools{top:102px;gap:7px;padding:8px}.graph-tools input{width:120px}.graph-tools label{font-size:10px}.graph-tools select,.graph-tools input{padding:6px;font-size:10px}.graph-map{top:198px;bottom:128px}.graph-node{width:92px;min-height:52px;padding:6px 3px}.graph-node strong{font-size:10px}.graph-node small{font-size:9px}.graph-legend{bottom:139px;gap:8px;font-size:9px}}
 @media(prefers-reduced-motion:reduce){.graph-surface{transition:none}}
 
 .graph-tools button{font:inherit;font-size:11px;color:#dcf9ff;background:#154561;border:1px solid #67bddb;border-radius:8px;padding:8px 10px;cursor:pointer}
@@ -102,8 +102,8 @@
     <main class="scene-column"><div class="scene-heading"><div><span class="eyebrow" id="breadcrumb">NÍVEL 01 / UNIVERSO CENTRAL</span><h1 id="scene-title">Sua galáxia de operações</h1><p id="scene-description">Cada sistema solar representa um projeto. Entre em um deles para explorar seus agentes e tarefas.</p></div><div class="scene-actions"><button class="smallbutton" id="mode-3d" type="button" aria-pressed="false" title="Alternar modo 3D ou 2D">3D</button><button class="smallbutton" id="zoom-out" title="Reduzir zoom" aria-label="Reduzir zoom">−</button><button class="smallbutton" id="zoom-reset" title="Restaurar zoom" aria-label="Restaurar zoom">⌖</button><button class="smallbutton" id="zoom-in" title="Ampliar zoom" aria-label="Ampliar zoom">+</button></div></div>
     <div class="scene" id="scene"><div class="universe" id="universe" role="region" aria-label="Projetos disponíveis"></div><div class="graph hidden" id="graph" role="region" aria-label="Grafo de relações multiprojeto">
   <div class="graph-tools"><label>Exibir <select id="graph-scope" aria-label="Filtrar nós por origem"><option value="all">Todos</option><option value="verified">Consulta real</option><option value="demo">Exemplos</option></select></label><label>Buscar <input id="graph-search" type="search" placeholder="Projeto ou missão" autocomplete="off" aria-label="Buscar nós no grafo"></label><button type="button" id="graph-open-read" title="Consultar uma conversa real do OpenHands">☾ Consultar missão</button></div>
-  <div class="graph-map" id="graph-map" aria-label="Nós e conexões entre projetos e execuções"><div class="graph-surface" id="graph-surface"></div></div>
-  <div class="graph-legend"><span class="real">Origem confirmada</span><span class="manual">Associação manual (não atestada)</span><span>Somente demonstração</span></div>
+  <div class="graph-map" id="graph-map" tabindex="0" aria-describedby="graph-help" aria-label="Nós e conexões entre projetos e execuções"><div class="graph-surface" id="graph-surface"></div></div>
+  <div class="graph-legend"><span id="graph-help">Setas movem o mapa · Esc limpa a seleção</span><span class="real">Origem confirmada</span><span class="manual">Associação manual (não atestada)</span><span>Somente demonstração</span></div>
 </div><div class="solar hidden" id="solar" role="region" aria-label="Sistema solar de agentes"><div class="solar-background" id="solar-stage"><svg class="orbit-layer" id="orbits" aria-hidden="true"></svg><button class="sun" id="sun" title="Visão geral do sistema"><span class="sun-core"></span><span class="sun-label" id="sun-label">NÚCLEO<small>COORDENAÇÃO</small></span></button><div id="planets"></div><button type="button" class="real-mission-lua hidden" id="real-lua" aria-label="Abrir dados verificados da missão"><span class="lua-globo" aria-hidden="true"></span><span class="lua-desc"><strong>MISSÃO REAL</strong><small id="real-lua-state">Estado consultado</small></span></button></div></div><div class="scene-bottom"><div class="solar-note hidden" id="solar-note">● Planetas = agentes propostos &nbsp; ● Luas/tarefas = representação conceitual</div><footer class="metrics" id="metrics"><div class="metric"><small>PROJETOS</small><strong>04</strong><span>Ambientes conceituais</span></div><div class="metric"><small>ESTRUTURA</small><strong>Multiuniverso</strong><span>Um sistema por projeto</span></div><div class="metric"><small>CONEXÃO REAL</small><strong>Não ativa</strong><span>Interface demonstrativa</span></div></footer></div></div></main>
     <aside class="rightpanel" id="rightpanel" aria-live="polite"><div class="panel-top"><span class="panel-kicker">PAINEL DE INSPEÇÃO</span><span class="panel-icon">◎</span></div><div id="panel-content"></div></aside>
   </div>
@@ -138,7 +138,7 @@ const defs={
  {name:'DOCUMENTAÇÃO',role:'Memória técnica',color:'#8ceab7',spectrum:['#e5fff0','#74c5a5','#205b52'],orbit:3,angle:2.3,description:'Posição visual proposta para trilhas de documentação.',tasks:['Exemplo: preparar relatório'],state:'Simulação: disponível'}
  ]}
 };
-const $=id=>document.getElementById(id);const systems=Object.keys(defs);let verifiedMission=null;let current=null,selected=null,zoom=1,last=0,view='universe';let reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;let slots=[];let graphScope='all',graphQuery='',graphZoom=1,graphSelected=null;
+const $=id=>document.getElementById(id);const systems=Object.keys(defs);let verifiedMission=null;let current=null,selected=null,zoom=1,last=0,view='universe';let reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;let slots=[];let graphScope='all',graphQuery='',graphZoom=1,graphSelected=null;let graphPan={x:0,y:0},graphDrag=null;
 // Estados visuais somente demonstrativos. Nao inferir atividade real destas amostras.
 const visualScenarios=['idle','active','attention','error'];
 const visualLabels={idle:'CALMO',active:'ATIVIDADE',attention:'ATENÇÃO',error:'FALHA'};
@@ -266,6 +266,8 @@ function renderGraphPanel(){
   p.innerHTML='<div class="empty"><div class="panel-kicker">NÓ DO GRAFO · '+safe(node.tag)+'</div><h2>'+safe(node.name)+'</h2><p>'+safe(node.description)+'</p>'+extra+'<div class="notice">As linhas mostram somente relações explicitamente classificadas. Uma conversa concluída não garante sucesso da tarefa.</div></div>';
 }
 function renderGraph(){
+  const surface=$('graph-surface'),focused=surface.getRootNode().activeElement;
+  const focusId=surface.contains(focused)?focused.dataset.node:null;
   const data=graphModel();
   const nodes=data.nodes.filter(n=>(graphScope==='all'||(graphScope==='demo'?n.kind.startsWith('demo'):!n.kind.startsWith('demo')))&&(!graphQuery||(n.name+' '+n.tag).toLocaleLowerCase('pt-BR').includes(graphQuery)));
   const ids=new Set(nodes.map(n=>n.id));
@@ -280,13 +282,25 @@ function renderGraph(){
     const selectedClass=selected===n.id?' selected':selected?' dimmed':'';
     return '<button type="button" class="graph-node'+selectedClass+'" data-node="'+safe(n.id)+'" data-kind="'+safe(n.kind)+'" style="left:'+n.x+'%;top:'+n.y+'%" aria-pressed="'+String(selected===n.id)+'" title="'+safe(n.description)+'"><small>'+safe(n.tag)+'</small><strong>'+safe(n.name)+'</strong></button>';
   }).join('');
-  $('graph-surface').style.transform='scale('+graphZoom+')';
+  applyGraphTransform();
   $('graph-surface').innerHTML='<svg class="graph-edges" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true">'+lines+'</svg>'+controls+(nodes.length?'':'<div class="graph-empty">Nenhum item para este filtro. Para exibir dados reais, consulte uma missão do OpenHands ou limpe a busca.</div>');
   $('graph-surface').querySelectorAll('[data-node]').forEach(button=>{
-    button.onclick=()=>{graphSelected=button.dataset.node;renderGraph();renderGraphPanel();};
+    button.onclick=()=>{graphSelected=graphSelected===button.dataset.node?null:button.dataset.node;renderGraph();};
   });
+  if(focusId){
+    const next=Array.from(surface.querySelectorAll('[data-node]')).find(b=>b.dataset.node===focusId);
+    (next||$('graph-map')).focus({preventScroll:true});
+  }
   if(selected===null&&graphSelected!==null)graphSelected=null;
   renderGraphPanel();
+}
+function applyGraphTransform(){
+  $('graph-surface').style.transform='translate('+graphPan.x+'px,'+graphPan.y+'px) scale('+graphZoom+')';
+}
+function panGraph(dx,dy){
+  graphPan.x=Math.max(-140,Math.min(140,graphPan.x+dx));
+  graphPan.y=Math.max(-140,Math.min(140,graphPan.y+dy));
+  applyGraphTransform();
 }
 function openGraph(){
   view='graph';current=null;selected=null;stage.classList.add('graph-active');
@@ -445,7 +459,22 @@ function initStars(){const c=$('starfield'),ctx=c.getContext('2d');const render=
 function navSystem(){openSystem(current||'vigiafast')}
 function setVisualScenario(next){visualScenario=next;$('visual-demo').textContent='SIMULAR: '+visualLabels[next];$('visual-demo').setAttribute('aria-label','Cenário visual de demonstração: '+visualLabels[next]);if(view==='solar'){let system=current,previous=selected;openSystem(system);if(previous!==null&&previous<defs[system].agents.length){selected=previous;highlight();renderPanel()}}else if(view==='graph'){renderGraph();}else renderUniverse();}
 $('visual-demo').onclick=()=>setVisualScenario(visualScenarios[(visualScenarios.indexOf(visualScenario)+1)%visualScenarios.length]);$('top-universe').onclick=renderUniverse;$('rail-universe').onclick=renderUniverse;$('top-project').onclick=navSystem;$('rail-system').onclick=navSystem;$('top-graph').onclick=openGraph;$('rail-graph').onclick=openGraph;$('graph-scope').onchange=e=>{graphScope=e.target.value;graphSelected=null;renderGraph();};$('graph-search').oninput=e=>{graphQuery=e.target.value.trim().toLocaleLowerCase('pt-BR');graphSelected=null;renderGraph();};$('graph-open-read').onclick=()=>{const form=stage.querySelector('details.ob-real');if(form){form.open=true;form.querySelector('input')?.focus();}};
-$('mode-3d').onclick=()=>apply3d(!enabled3d);$('zoom-in').onclick=()=>{if(view==='graph'){graphZoom=Math.min(1.7,graphZoom+.15);renderGraph();}else{zoom=Math.min(1.38,zoom+.13);drawSolar();}};$('zoom-out').onclick=()=>{if(view==='graph'){graphZoom=Math.max(.8,graphZoom-.15);renderGraph();}else{zoom=Math.max(.65,zoom-.13);drawSolar();}};$('zoom-reset').onclick=()=>{if(view==='graph'){graphZoom=1;renderGraph();}else{zoom=1;drawSolar();}};$('real-lua').onclick=renderVerifiedPanel;$('sun').onclick=()=>{selected=null;highlight();renderPanel()};$('info-button').onclick=()=>alert('Observatório multiprojeto: Universo e Grafo. Quatro projetos ilustrativos permanecem DEMO. Conversas consultadas no OpenHands aparecem como dados reais, com projeto informado manualmente. Sem monitoramento automático, persistência ou prova de associação.');
+$('mode-3d').onclick=()=>apply3d(!enabled3d);$('zoom-in').onclick=()=>{if(view==='graph'){graphZoom=Math.min(1.7,graphZoom+.15);renderGraph();}else{zoom=Math.min(1.38,zoom+.13);drawSolar();}};$('zoom-out').onclick=()=>{if(view==='graph'){graphZoom=Math.max(.8,graphZoom-.15);renderGraph();}else{zoom=Math.max(.65,zoom-.13);drawSolar();}};$('zoom-reset').onclick=()=>{if(view==='graph'){graphZoom=1;graphPan={x:0,y:0};renderGraph();}else{zoom=1;drawSolar();}};$('real-lua').onclick=renderVerifiedPanel;$('sun').onclick=()=>{selected=null;highlight();renderPanel()};$('info-button').onclick=()=>alert('Observatório multiprojeto: Universo e Grafo. Quatro projetos ilustrativos permanecem DEMO. Conversas consultadas no OpenHands aparecem como dados reais, com projeto informado manualmente. Sem monitoramento automático, persistência ou prova de associação.');
+const graphMap=$('graph-map');
+graphMap.onkeydown=e=>{
+  const delta={ArrowLeft:[-20,0],ArrowRight:[20,0],ArrowUp:[0,-20],ArrowDown:[0,20]}[e.key];
+  if(delta){e.preventDefault();panGraph(...delta);}
+  else if(e.key==='Escape'){e.preventDefault();graphSelected=null;renderGraph();}
+};
+graphMap.onpointerdown=e=>{
+  if(e.button!==0||e.target.closest('.graph-node'))return;
+  graphDrag={x:e.clientX,y:e.clientY};graphMap.setPointerCapture(e.pointerId);
+};
+graphMap.onpointermove=e=>{
+  if(!graphDrag)return;panGraph(e.clientX-graphDrag.x,e.clientY-graphDrag.y);
+  graphDrag={x:e.clientX,y:e.clientY};
+};
+graphMap.onpointerup=graphMap.onpointercancel=()=>graphDrag=null;
 $('scene').addEventListener('wheel',e=>{if(view==='solar'&&Math.abs(e.deltaY)>0){e.preventDefault();zoom=Math.max(.65,Math.min(1.38,zoom-e.deltaY*.0008));drawSolar()}},{passive:false});
 window.addEventListener('resize',drawSolar);initStars();renderUniverse();apply3d(true);
 function tick(now){last=now;if(view==='solar'&&!reduced)drawSolar();requestAnimationFrame(tick)}requestAnimationFrame(tick);
