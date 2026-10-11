@@ -49,6 +49,17 @@ export function mountMentorDemo(container,options={}){
  const cancel=()=>{session?.close();open.disabled=true;dialog.close();el('[data-result]').textContent='Simulação cancelada. Nenhuma instrução foi enviada.';el('[data-result]').tabIndex=-1;el('[data-result]').focus();};
  el('[data-cancel]').addEventListener('click',cancel);
  dialog.addEventListener('cancel',()=>{cancel();});
+ // Chromium can leave a Shadow DOM dialog at a Tab boundary. Keep focus on
+ // enabled controls explicitly; Escape still uses the native cancel event.
+ dialog.addEventListener('keydown',event=>{
+  if(event.key!=='Tab')return;
+  const controls=[...dialog.querySelectorAll('input,button')].filter(x=>!x.disabled&&!x.hidden);
+  if(!controls.length)return;
+  event.preventDefault();const current=controls.indexOf(root.activeElement);
+  const next=current<0?(event.shiftKey?controls.length-1:0):
+   (current+(event.shiftKey?-1:1)+controls.length)%controls.length;
+  controls[next].focus();
+ });
  generate.addEventListener('click',async()=>{
   if(disposed||!session)return;
   generate.disabled=true;consent.disabled=true;fields.forEach(x=>x.disabled=true);el('[data-pending]').textContent='Gerando somente uma orientação fictícia…';

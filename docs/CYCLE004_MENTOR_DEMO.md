@@ -60,3 +60,12 @@ Testes automáticos não homologam leitor de tela, RBAC, fonte autenticada, inte
 Mentor/Work ou memória. P03 permanece NÃO PROVADA; G11 não cumprido por autorrevisão.
 Próxima etapa visual real exige escolha humana de escopo/contrato de contexto,
 revisão independente e autorização específica de instalação. **NO-GO operacional.**
+
+### Falha inicialmente reproduzida no runner
+
+HEADc5b1f0063a154667a5f2ab0b0575caaaaedf4eb0 / run38162140153 /
+job114537096182:4/5 DOM PASS, teclado/foco falhou em Tab fora do diálogo Shadow
+DOM. Sandbox/instalação/geração passaram; não é motivo para desligar isolamento.
+Corrigido o ciclo explícito Tab/Shift+Tab dos controles habilitados e acrescentada
+assertiva de wrap reverso. Mesmo teste de contenção permanece obrigatório;
+resultado final depende da nova CI, sem alegação GREEN antes dela.

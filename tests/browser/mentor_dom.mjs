@@ -48,6 +48,8 @@ test('keyboard modal focus and Escape terminate simulation without instruction',
  const f=await fixture();try{
   const p=f.page;await readyOpen(p);
   assert.equal(await p.evaluate(()=>document.querySelector('section').shadowRoot.activeElement?.dataset.field),'status');
+  await p.keyboard.press('Shift+Tab');
+  assert.equal(await p.evaluate(()=>document.querySelector('section').shadowRoot.activeElement?.hasAttribute('data-cancel')),true);
   for(let i=0;i<10;i++){await p.keyboard.press('Tab');assert.equal(await p.evaluate(()=>document.querySelector('section').shadowRoot.querySelector('dialog').contains(document.querySelector('section').shadowRoot.activeElement)),true);}
   await p.keyboard.press('Escape');assert.equal(await p.locator('dialog').evaluate(d=>d.open),false);
   assert.match(await p.locator('[data-result]').textContent(),/cancelada/);
