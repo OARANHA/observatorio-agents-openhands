@@ -224,12 +224,13 @@ class EvidencePreflight(unittest.TestCase):
         self.assertEqual('0.095',report['book_uncommitted_usd'])
     def test_tampered_ledger_or_unsynthetic_report_fails_closed(self):
         from canary_accounting_evidence import synthetic_accounting_evidence
-        for mode in ('negative','excess','nan','bool','provider'):
+        for mode in ('negative','excess','nan','bool','calls','provider'):
             gate,llm=self.fixture()
             if mode=='negative':gate.book.spent=Decimal('-1')
             elif mode=='excess':gate.book.spent=Decimal('1')
             elif mode=='nan':gate.book.spent=Decimal('NaN')
             elif mode=='bool':gate.book.calls=True
+            elif mode=='calls':gate.guard.calls=gate.guard.max_calls+1
             else:gate.rates=RateCard('openai','fake','2','8','https://example.invalid','2026-10-11')
             with self.assertRaises(GateError):synthetic_accounting_evidence(gate)
             self.assertTrue(gate.guard.cancelled)

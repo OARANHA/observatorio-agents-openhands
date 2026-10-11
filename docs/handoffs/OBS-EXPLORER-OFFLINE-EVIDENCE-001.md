@@ -72,3 +72,7 @@ SDK float pode causar recusa exata após acúmulos não representáveis; é limi
 conservadora, não motivo para tolerância automática. Referências Python não
 protegem contra código hostil no processo. Revisão humana independente continua
 recomendada antes de qualquer decisão operacional. Nenhum deploy ou outro projeto.
+
+Achado adicional da revisão: contador Guard adulterado acima do limite era
+serializado. RED reproduziu; relatório agora nega limites inválidos e contadores
+fora dos limites, abortando a prova em vez de emitir evidência enganosa.

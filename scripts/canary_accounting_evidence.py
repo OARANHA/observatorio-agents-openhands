@@ -28,9 +28,12 @@ def synthetic_accounting_evidence(gate):
             remaining=book.budget-book.spent-held
             if book.budget<=0 or remaining<0:
                 raise GateError('evidence_overcommitted')
+            limits=(book.max_calls,guard.max_calls)
+            if any(type(x) is not int or x<1 for x in limits):
+                raise GateError('evidence_limit_invalid')
             counts=(book.calls,guard.calls,guard.input_tokens,guard.output_tokens)
             if (any(type(x) is not int or x<0 for x in counts)
-                or book.calls>book.max_calls or guard.calls<book.calls
+                or book.calls>book.max_calls or guard.calls<book.calls or guard.calls>guard.max_calls
                 or type(book.closed) is not bool or type(guard.cancelled) is not bool):
                 raise GateError('evidence_state_invalid')
             stopped=book.closed or guard.cancelled
