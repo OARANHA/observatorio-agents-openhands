@@ -466,7 +466,7 @@ implantadas e envio futuro pendentes. NO-GO operacional, G11/P03 não promovidos
 
 #38 merge7c152857fae2859b6dc7cb8977ebb3cd6fa54eaf, CIs/logs antes do merge. Gateway
 só em memória: audit/session reutilizados, mensagens enum públicas DEMO-001,
-dedupe/gaps/corridas/falhas testados, sem retry.9 novos testes,210locais/182PASS/
+dedupe/gaps/corridas/falhas testados, sem retry.10 novos testes,211locais/183PASS/
 28SDKskip. Resultado sempre sintético/NO-GO; restart reaceita receipt, sem
 assinatura/store/rate limit real. Ver docs/CYCLE004_GATEWAY_DESIGN.md. Slack →
 Work ainda bloqueado. Nenhum agente/MCP/provedor/Canvas ativado.

@@ -514,7 +514,7 @@ G11 e P03 sem promoção. Nenhum handoff anterior removido.
 #38 integrada, merge7c152857fae2859b6dc7cb8977ebb3cd6fa54eaf; duas CIs/logs antes
 do merge, revisão automatizada registrada. Novo gateway em memória reutiliza
 envelope/session v1: schema fechado, alertas enum DEMO, replay/gaps, lock e
-incerteza terminal sem retry. Nove testes novos;210 locais/182PASS/28SDKskip.
+incerteza terminal sem retry. Dez testes novos;211 locais/183PASS/28SDKskip.
 Nenhum envio Slack/SDK/MCP, store ou servidor. Ver
 [CYCLE004_GATEWAY_DESIGN](CYCLE004_GATEWAY_DESIGN.md). Restart perde replay;
 origem não autenticada, estado sintético, sem exactly-once. G11/G12/P03 intactos.

@@ -81,6 +81,12 @@ class EventGatewayTests(unittest.TestCase):
         e=self.event();first=self.gateway();first.deliver(e,mock_outcome='success')
         fresh=self.gateway();self.assertEqual('simulated_delivered',fresh.deliver(e,mock_outcome='success')['state'])
         self.assertEqual('ephemeral_process_only',fresh.summary()['retention'])
+    def test_summary_exposes_closed_acceptance_but_confirmed_replay_is_harmless(self):
+        g=self.gateway(max_records=1);e=self.event();g.deliver(e,mock_outcome='success')
+        self.assertTrue(g.summary()['stopped'])
+        self.assertEqual('duplicate_ignored',g.deliver(e,mock_outcome='success')['state'])
+        self.assertEqual(1,g.summary()['mock_attempts'])
+
     def test_no_transport_or_arbitrary_callback_and_no_unknown_input(self):
         import ast
         from canary_event_gateway import __file__ as path

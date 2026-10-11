@@ -31,10 +31,10 @@ instância nova aceita novamente o mesmo receipt (lacuna explicitamente testada)
 Limite de registros/janela é teto sintético, não rate limit do Slack nem relógio
 confiável. Não alegar exactly-once, assinatura de origem ou recuperação durável.
 
-9 testes RED (módulo ausente) → GREEN: projeção minimizada, replay exato/conflito,
+9 testes RED (módulo ausente) → GREEN; um décimo verifica estado fechado: projeção minimizada, replay exato/conflito,
 gaps, binding, prompt injection/campos privados, falha/resultado incerto, janela,
 checksum/regressão/capacidade, concorrência e lacuna de reinício. Suite completa
-local:210 testes,182 PASS/28 skips SDK explícitos. Sem transporte/provedor/agente.
+local:211 testes,183 PASS/28 skips SDK explícitos. Sem transporte/provedor/agente.
 
 ## Design futuro — depende de autorização separada
 

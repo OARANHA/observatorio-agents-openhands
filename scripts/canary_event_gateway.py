@@ -71,5 +71,5 @@ class SyntheticEventGateway:
     def summary(self):
         with self._lock:
             return {'schema':'obs.synthetic.gateway.summary.v1','operational_go':False,
-                'authenticity_proven':False,'stopped':self._stopped,
+                'authenticity_proven':False,'stopped':(self._stopped or self._session.summary()['stopped']),
                 'mock_attempts':self._attempts,'retention':'ephemeral_process_only'}
