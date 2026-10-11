@@ -108,7 +108,7 @@ class BudgetBoundary(unittest.TestCase):
                 self.assertTrue(book.closed)
 
     def test_multiple_sequential_calls_and_clone_share_one_book(self):
-        guard,book=Guard(),BudgetBook("0.007")
+        guard,book=Guard(),BudgetBook("0.006")
         fake=FakeLLM()
         with synthetic_budgeted_llm_routes(FakeLLM,guard,book,rates(),caps()):
             self.assertEqual("synthetic-result",fake.completion(["a"]))
