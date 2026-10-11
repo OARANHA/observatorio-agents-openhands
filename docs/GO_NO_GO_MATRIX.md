@@ -318,3 +318,35 @@ Esta seção prevalece sobre snapshots históricos acima; detalhes/SHAs/runs e d
 | P03 | NÃO PROVADO → NÃO PROVADO | Memória persistente não testada; não confundir com acessibilidade DOM |
 
 Não promover nenhum gate operacional por GREEN sintético. Ver handoff para prioridades e decisões humanas.
+
+## Ciclo 004 — comunicação e mentoria sintéticas (2026-10-11)
+
+Sem promoção operacional. Fontes públicas SDK v1.53.0/MCP fixadas e registradas
+em [contrato](CYCLE004_CONTINUITY_CONTRACT.md). Conector Slack Wandora respondeu,
+mas criação do gatilho Work foi recusada pelo vínculo do app: nenhuma automação,
+mensagem de teste ou disparo. Não trocar por polling. Gateway só em memória,
+Mentor só HTML DEMO fora da extensão/Canvas; nenhum provider/agente/MCP acionado.
+
+| Gates | Antes → depois | Nova evidência / lacuna preservada |
+|---|---|---|
+| G01 | PROVADO → PROVADO | HEADs/CI/logs reais antes dos merges, autorrevisões identificadas |
+| G02–G04 | PROVADO OFFLINE → PROVADO OFFLINE | Guard/book/hold/zero retries reutilizados, nenhum gasto real |
+| G05/G06/G07 | PARCIAL → PARCIAL | Regressões SDK/isolamento preservadas; stop do MCP usa goal/stop, cancelamento remoto não comprovado |
+| G08 | PARCIAL DOCUMENTAL → PARCIAL DOCUMENTAL | Sem selecionar conta, modelo, tarifa/quota ou credencial |
+| G09/G11 | NÃO PROVADO → NÃO PROVADO | Conta segregada/revisão independente continuam ausentes |
+| G10 | PARCIAL → PARCIAL | Contratos/gateway/mocks minimizados; faltam fonte autenticada, replay/outbox duráveis e atomicidade |
+| G12 | BLOQUEADO → BLOQUEADO | GO humano separado continua obrigatório |
+| P01 | PARCIAL → PARCIAL | Mentor DEMO com identidade local/proveniência; sem fonte autenticada/instalação |
+| P02/P03 | NÃO PROVADO → NÃO PROVADO | Identidade local não é RBAC; memória persistente não testada |
+
+A nova prova de comunicação está **bloqueada**, não GREEN: presença nominal
+`@chatgpt` não prova o aplicativo oficial reconhecido pelo serviço Work. A
+recomendação Mentor é fixa/fictícia e não autoriza execução. API oficial no
+código não comprova versão/API implantada; sockets session/events também podem
+receber mensagens e iniciar run. Hash de receipt não autentica evento; nova
+instância do gateway reaceita receipt antigo. Sem promessa exactly-once.
+
+Detalhes/testes/HEADs/merges/CIs, falha DOM reproduzida e corrigida, limites e
+próximo plano humano no
+[handoff CYCLE004](handoffs/OBS-CYCLE-004-EVENTS-MENTORSHIP.md). Preservadas #7/#35,
+ADR Proposto, dossiês e todos os handoffs anteriores.

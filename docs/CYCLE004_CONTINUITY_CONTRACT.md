@@ -39,7 +39,7 @@ um disparo, ausência de ações e ausência de loop. Sem prova Slack → Work a
 | `POST .../{id}/pause` / `interrupt` | Pause espera chamada atual; interrupt solicita cancelamento e espera até 5s no serviço. Ambos são estados retomáveis; não equivalem a Guard terminal nem morte comprovada do worker. |
 | `POST .../{id}/goal/stop` | Para controlador de objetivo; não é garantia de interrupção de conversa ou LLM em voo. É a rota usada por `openhands_stop` no snapshot MCP. |
 | `GET .../{id}/events/search` | `next_page_id` é o ID do **primeiro item não retornado**; próxima busca é inclusiva. Cursor inexistente reinicia busca. Evento ilegível pode ser ignorado com aviso pelo servidor: detectar lacunas fora dele. |
-| `/sockets/session/{id}` | Frames duráveis possuem `seq` (índice do log); replay usa `after_seq` exclusivo. Deltas/transientes/progresso não avançam cursor. Há limites de fila/frame provisórios e desconexão do consumidor lento. |
+| `/sockets/session/{id}` | Também recebe `Message` e chama `send_message(...,True)`: não é somente leitura. Frames duráveis possuem `seq` (índice do log); replay usa `after_seq` exclusivo. Deltas/transientes/progresso não avançam cursor. Há limites de fila/frame provisórios e desconexão do consumidor lento. |
 | `/sockets/events/{id}` legado | Também recebe mensagens que podem iniciar execução. Não presumir canal somente leitura. |
 | Autenticação | HTTP valida chave de sessão somente quando configurada. WebSocket suporta query/header e primeiro frame; não inferir isolamento por projeto ou RBAC. Proposta recusa segredo em URL. |
 
