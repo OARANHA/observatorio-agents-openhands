@@ -1,0 +1,33 @@
+name: Canary Sandbox Probe
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/canary-sandbox.yml
+      - scripts/probe_canary_sandbox.py
+      - scripts/canary_controls.py
+
+permissions:
+  contents: read
+
+jobs:
+  sandbox-probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Checkout sem persistir credenciais
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Instalar Bubblewrap e perfil AppArmor restrito do Ubuntu
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends bubblewrap apparmor-profiles apparmor-utils
+          PROFILE=/usr/share/apparmor/extra-profiles/bwrap-userns-restrict
+          test -f "$PROFILE" || { echo "NO-GO: perfil específico do Bubblewrap não encontrado"; exit 1; }
+          sudo install -m 0644 "$PROFILE" /etc/apparmor.d/bwrap-userns-restrict
+          sudo apparmor_parser -r /etc/apparmor.d/bwrap-userns-restrict
+          echo "Perfil específico do bwrap carregado no runner efêmero; proteções globais preservadas."
+      - name: Provas reais de isolamento (falha = NO-GO)
+        run: python3 -B scripts/probe_canary_sandbox.py
