@@ -19,6 +19,7 @@ on:
       - scripts/canary_audit_bundle.py
       - scripts/canary_evidence_session.py
       - scripts/audit_canary_sdk_transport.py
+      - scripts/audit_canary_dependencies.py
       - tests/test_canary_accounting_hardening.py
       - tests/test_canary_transport_attempts.py
       - tests/test_canary_sdk_transport_audit.py
@@ -57,6 +58,10 @@ jobs:
           "$RUNNER_TEMP/observatorio-canary-sdk/bin/pip" install --disable-pip-version-check --no-input --no-cache-dir 'openhands-sdk==1.53.0' 'openhands-tools==1.53.0'
       - name: Isolamento negativo real no runner efêmero (sem SDK)
         run: python3 -B scripts/probe_canary_sandbox.py
+      - name: Inventário minimizado de dependências resolvidas, sem import SDK
+        run: |
+          "$RUNNER_TEMP/observatorio-canary-sdk/bin/python" -B scripts/audit_canary_dependencies.py
+          "$RUNNER_TEMP/observatorio-canary-sdk/bin/python" -B -m unittest discover -s tests -p test_canary_dependencies.py -v
       - name: Contabilidade adversarial sintetica sem transporte
         run: |
           "$RUNNER_TEMP/observatorio-canary-sdk/bin/python" -B -m unittest discover -s tests -p test_canary_accounting_hardening.py -v
