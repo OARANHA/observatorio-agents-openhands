@@ -71,3 +71,11 @@ com setas/pointer e pan bounded±140px, reset com zoom. Fundos opacos e fontes
 legíveis preservam contraste ao destacar seleção sem reduzir texto dimmed.
 Novo HEAD precisa reexecutar todos cenários: não antecipar GREEN. Workflow
 publica apenas duas screenshots sintéticas, retenção3dias, sem trace/payload.
+
+
+HEADa80f22429f5afe009813e34928080cdef3b88bdf: run38153679215, cinco DOM
+PASS/um RED. Foco/toggle/teclado passaram; o RED restante foi comparação
+textual de CSS normalizado pelo Chromium (espaço no translate), não prova
+de falha no reset. Assertion agora confere DOMMatrixReadOnly [scaleX,scaleY,
+translateX,translateY]=[1,1,0,0]; controles não foram afrouxados. Teste reforça
+pan real com setas até teto140px e arrasto pointer de40px; rerun pendente.
