@@ -1,9 +1,9 @@
 # OBSERVATÓRIO DE AGENTES — Matriz de prontidão GO/NO-GO
 
-**Data de referência:** 2026-10-11  
-**Repositório:** https://github.com/OARANHA/observatorio-agents-openhands  
-**Main verificada:** `ba38f1a0dd29110c0b1dbbc7c0c0c51a07887510`  
-**Fontes de autoridade:** `docs/PROJECT_SOURCE.md` → `AGENTS.md` → ADRs (ADR-0001: **Proposto**) → `docs/CANONICAL_STATE.md` → `MEMORY.md` → `docs/ARCHITECTURE.md` → código/CI.  
+**Data de referência:** 2026-10-11
+**Repositório:** https://github.com/OARANHA/observatorio-agents-openhands
+**Main verificada:** `ba38f1a0dd29110c0b1dbbc7c0c0c51a07887510`
+**Fontes de autoridade:** `docs/PROJECT_SOURCE.md` → `AGENTS.md` → ADRs (ADR-0001: **Proposto**) → `docs/CANONICAL_STATE.md` → `MEMORY.md` → `docs/ARCHITECTURE.md` → código/CI.
 **Decisão atual:** **NO-GO operacional**.
 
 ## Legenda
