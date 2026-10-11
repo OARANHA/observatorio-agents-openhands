@@ -35,6 +35,29 @@ class Contract(unittest.TestCase):
         self.assertIn('#starfield{position:absolute;', css)
         self.assertNotIn('position:fixed', css)
 
+    def test_nota_do_sistema_solar_nao_fica_atras_das_metricas(self):
+        # A nota e as metricas compartilham um empilhamento vertical; nenhum
+        # dos dois fica com bottom absoluto independente.
+        source = (ROOT / 'extension.js').read_text()
+        style_line = next((line for line in source.splitlines()
+                           if line.startswith('const STYLE = ')), None)
+        markup_line = next((line for line in source.splitlines()
+                            if line.startswith('const MARKUP = ')), None)
+        self.assertIsNotNone(style_line)
+        self.assertIsNotNone(markup_line)
+        css = json.loads(style_line[len('const STYLE = '):-1])
+        markup = json.loads(markup_line[len('const MARKUP = '):-1])
+        self.assertIn('.scene-bottom{position:absolute;z-index:9;bottom:24px;', css)
+        self.assertIn('.solar-note{position:static;', css)
+        self.assertIn('.solar-note.hidden{display:none}', css)
+        self.assertIn('.metrics{position:static;width:100%;', css)
+        self.assertIn('.scene-bottom{bottom:18px}', css)
+        self.assertIn('.scene-bottom{left:9px;right:9px}', css)
+        self.assertIn('class="scene-bottom"><div class="solar-note hidden" id="solar-note"', markup)
+        self.assertLess(markup.index('id="solar-note"'), markup.index('id="metrics"'))
+        self.assertIn("$('solar-note').classList.add('hidden')", source)
+        self.assertIn("$('solar-note').classList.remove('hidden')", source)
+
     def test_sintaxe(self):
         subprocess.run(['node', '--check', str(ROOT / 'extension.js')], check=True)
 
