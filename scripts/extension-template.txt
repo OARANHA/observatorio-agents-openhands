@@ -14,7 +14,7 @@ const REAL_STYLE = `
 .ob-real output p{margin:0;line-height:1.4}
 .ob-real .moon{display:inline-block;width:15px;height:15px;border-radius:50%;background:radial-gradient(circle at 30% 30%,white,#77d5f3,#23506c);box-shadow:0 0 12px #8edafa}
 `;
-function mountRealRead(stage,host) {
+function mountRealRead(stage,host,onVerified) {
   const scene=stage.querySelector('.scene-column');
   if(!scene)return ()=>{};
   const sheet=document.createElement('style');sheet.textContent=REAL_STYLE;stage.append(sheet);
@@ -48,6 +48,7 @@ function mountRealRead(stage,host) {
       if(typeof item.updated_at==='string')say('Atualizado no servidor: ',item.updated_at);
       say('Observado em (hora do navegador): ',new Date().toISOString());
       say('Associação de projeto: ','manual, não atestada pela API');
+      onVerified({conversationId:id,status:item.execution_status,project,updatedAt:typeof item.updated_at==='string'?item.updated_at:null,observedAt:new Date().toISOString()});
     } catch (_error) {
       if(active){output.replaceChildren();say('Consulta: ','indisponível/não autorizada; estado desconhecido');}
     } finally {if(active)button.disabled=false;}
@@ -70,7 +71,7 @@ function mountObservatorio({container,host}) {
   shadow.append(stage);
   container.append(wrapper);
   let destroyed=false,rafId=0;
-  const disposeRead=mountRealRead(stage,host);
+  const disposeRead=mountRealRead(stage,host,observation=>applyVerifiedMission(observation));
   const resizeCallbacks=[];
   const resize=()=>{if(destroyed)return;for(const cb of resizeCallbacks)cb();};
   const observer=typeof ResizeObserver==='function'?new ResizeObserver(resize):null;
