@@ -166,6 +166,8 @@ class GraphV050(unittest.TestCase):
         self.assertIn(".graph-node[data-kind=\"verified\"]", css)
         self.assertIn(".graph-node[data-kind=\"manual\"]", css)
         self.assertIn("graph-surface", css)
+        self.assertIn('id="graph-open-read"', markup)
+        self.assertIn("$('goto-graph').onclick=openGraph", source)
         self.assertIn("graphScope='all'", source)
         self.assertIn("graphScope==='demo'", source)
 
