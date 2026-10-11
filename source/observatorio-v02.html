@@ -87,6 +87,16 @@
 .graph-legend .manual:before{background:#f6c575;border-color:#f6c575}
 @media(max-width:870px){.graph-tools{top:110px;left:16px;right:16px}.graph-map{top:188px;left:8px;right:8px}.graph-node{width:115px;min-height:61px;padding:8px 5px}.graph-node strong{font-size:10px}.graph-node small{font-size:10px}.graph-legend{left:16px;right:16px}}
 @media(max-width:580px){.graph-tools{top:102px;gap:7px;padding:8px}.graph-tools input{width:120px}.graph-tools label{font-size:10px}.graph-tools select,.graph-tools input{padding:6px;font-size:10px}.graph-map{top:198px;bottom:128px}.graph-node{width:92px;min-height:52px;padding:6px 3px}.graph-node strong{font-size:10px}.graph-node small{font-size:9px}.graph-legend{bottom:139px;gap:8px;font-size:9px}}
+/* Mobile graph uses normal flow: wrapped headings/controls cannot overlap. */
+@media(max-width:580px){
+.scene-column:has(.graph:not(.hidden)) .scene-heading{position:relative;inset:auto;margin:20px 19px 0}
+.scene-column:has(.graph:not(.hidden)) .scene{height:auto;min-height:0}
+.graph:not(.hidden){position:relative;inset:auto;display:flex;flex-direction:column;gap:12px;padding:16px 8px}
+.graph-tools{position:relative;inset:auto}
+.graph-map{position:relative;inset:auto;height:350px;flex:none}
+.graph-legend{position:relative;inset:auto}
+.scene-column:has(.graph:not(.hidden)) .scene-bottom{position:relative;inset:auto;margin:0 9px 18px}
+}
 @media(prefers-reduced-motion:reduce){.graph-surface{transition:none}}
 
 .graph-tools button{font:inherit;font-size:11px;color:#dcf9ff;background:#154561;border:1px solid #67bddb;border-radius:8px;padding:8px 10px;cursor:pointer}

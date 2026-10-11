@@ -79,3 +79,6 @@ textual de CSS normalizado pelo Chromium (espaço no translate), não prova
 de falha no reset. Assertion agora confere DOMMatrixReadOnly [scaleX,scaleY,
 translateX,translateY]=[1,1,0,0]; controles não foram afrouxados. Teste reforça
 pan real com setas até teto140px e arrasto pointer de40px; rerun pendente.
+
+
+Inspeção dos screenshots do HEAD 6b9f7d5 detectou sobreposição entre título/descrição e controles em 390px apesar dos seis testes GREEN. Layout mobile do grafo passa a fluxo normal; adicionadas assertions geométricas de distância entre heading/toolbar/map, sem remover pan/zoom/overflow/reduced-motion. CI do novo HEAD ainda necessária; GREEN anterior não homologa layout corrigido.
