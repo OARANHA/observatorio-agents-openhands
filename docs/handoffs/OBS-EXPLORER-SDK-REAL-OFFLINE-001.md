@@ -36,3 +36,13 @@ Mesmo que essa CI aprove, continuam não demonstrados:
 - Registro/delegação de subagentes, alteração no Canvas ou qualquer trabalho real.
 
 **NO-GO para chamada LLM/registro/delegação/deploy.** Sem merge automático. A próxima decisão exige leitura de logs e revisão adversarial, autorização humana explícita para eventual merge, e gate separado para qualquer teste LLM real.
+
+## Incidente CI da PR #17 — RED e correção revisável
+
+No HEAD `529f332614927e1702028f3be24c62b0b35c80b7`, a CI principal `CI Observatorio` run `38114870538` terminou **success**. A CI `Canary Worker Inert SDK` run `38114870551`, job `114397660431`, terminou **failure** exclusivamente no passo `SDK real contra stubs isolados de rede`.
+
+O log mostrou **4/5** testes offline aprovados. `test_real_sdk_refresh_path_must_not_dispatch_twice` falhou com `AssertionError` em `openhands.sdk.llm.llm.LLM._get_api_key_value`, ao verificar que o campo `api_key` era `SecretStr`. A causa imediata foi uma **incompatibilidade na fixture**: o mock `_resolve_refreshed_api_key` forneceu texto simples, mas o contrato real de `_auth_refreshed_llm` exige `SecretStr`. Isso ocorreu **antes** da segunda tentativa stubada; a falha não demonstra bypass real nem prova de que o segundo transporte seria bloqueado. A correção na mesma branch faz o refresh fake retornar `pydantic.SecretStr`.
+
+Outra evidência: o import do LiteLLM dentro do namespace isolado **tentou acessar** `raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json`, e o DNS falhou devido à rede isolada. Logo, dizer que o SDK não tentou rede seria incorreto. A opção documentada `LITELLM_LOCAL_MODEL_COST_MAP=True` foi agora configurada **antes do import**, via `bwrap --setenv`, para usar o mapa embutido sem essa consulta; o teste exige a flag. Isso ainda **não prova** que todos os outros módulos do LiteLLM/OpenHands deixam de tentar rede nem que a tabela embutida vale como tarifa real.
+
+**Status pós-correção:** exigir nova CI no HEAD atualizado, sem polling. Enquanto ela não for examinada, permanecer `RED anterior corrigido no código, validação pendente`. Sem merge, deploy, LLM nem agentes e **NO-GO operacional**.
