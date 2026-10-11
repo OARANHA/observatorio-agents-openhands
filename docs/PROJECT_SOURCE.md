@@ -8,7 +8,7 @@ A coordenação é do ChatGPT dentro das ferramentas e permissões efetivamente 
 **Contrato de coordenação: ChatGPT planeja e valida → OpenHands executa tarefas autorizadas → Observatório apresenta relações e atividades verificáveis → GitHub registra código, decisões, PRs e evidências dos projetos.**
 O Observatório **não** é o orquestrador nem substitui GitHub, OpenHands ou documentação canônica. O grafo estilo Obsidian é uma evolução planejada, não capacidade implantada.
 
-Autoridade sobre essa separação: `docs/decisions/ADR-0002-horizontal-operations.md`. Em caso de ambiguidade, essa delimitação prevalece sobre exemplos visuais de produtos.
+Autoridade sobre essa separação: este arquivo, `AGENTS.md` e `docs/CANONICAL_STATE.md`. Em caso de ambiguidade, essa delimitação prevalece sobre exemplos visuais de produtos.
 
 ## Ordem de retomada em todo chat
 1. `docs/PROJECT_SOURCE.md` (este arquivo)
