@@ -142,3 +142,14 @@ no sink. Handoff `docs/handoffs/OBS-EXPLORER-SDK-REAL-OFFLINE-001.md`.
 Não executar LLM, não habilitar agente, não tratar o isolamento de rede
 do runner como deploy. Sem CI verificada e autorização de merge.
 **NO-GO operacional**.
+
+## PR #17 — RED isolado diagnosticado e correção proposta (2026-10-11)
+
+Falha verificada no runner SDK do HEAD `529f332614927e1702028f3be24c62b0b35c80b7`:
+`SecretStr` exigido no refresh 401, mas mock retornou `str`.
+O LiteLLM ainda tentou rede para mapa de custo na importação (DNS
+negado por namespace). Correção na mesma branch:
+`SecretStr("SYNTHETIC_REFRESH_VALUE")` +
+`LITELLM_LOCAL_MODEL_COST_MAP=True` antes do import no bwrap.
+Detalhes: `docs/handoffs/OBS-EXPLORER-SDK-REAL-OFFLINE-001.md`.
+Esperar CI do último HEAD; sem polling, merge, deploy ou inferência.
