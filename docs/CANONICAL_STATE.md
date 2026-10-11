@@ -518,3 +518,13 @@ incerteza terminal sem retry. Dez testes novos;211 locais/183PASS/28SDKskip.
 Nenhum envio Slack/SDK/MCP, store ou servidor. Ver
 [CYCLE004_GATEWAY_DESIGN](CYCLE004_GATEWAY_DESIGN.md). Restart perde replay;
 origem não autenticada, estado sintético, sem exactly-once. G11/G12/P03 intactos.
+
+## Ciclo 004 — Mentor DEMO separado (2026-10-11)
+
+#39 integrada merge9e25aa67eea7a15b9d61ed7f249202644b9ee1d8, ambas CIs/logs antes
+do merge. Mentor só em tools/mentor-demo: HTML independente, contexto revisável
+por campos fechados, consentimento da simulação, recomendação fixa, sem envio.
+Identidade local da PR35 reutilizada com hash/proveniência, sem integrar #35 ou
+mudar extensão/Canvas. Node9PASS, Python213/185PASS/28SDKskip; DOM aguardando prova
+runner. Ver [CYCLE004_MENTOR_DEMO](CYCLE004_MENTOR_DEMO.md). Sem ChatGPT presente,
+autorização ao agente, RBAC comprovado ou recuperação de memória. NO-GO vigente.

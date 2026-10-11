@@ -470,3 +470,12 @@ dedupe/gaps/corridas/falhas testados, sem retry.10 novos testes,211locais/183PAS
 28SDKskip. Resultado sempre sintético/NO-GO; restart reaceita receipt, sem
 assinatura/store/rate limit real. Ver docs/CYCLE004_GATEWAY_DESIGN.md. Slack →
 Work ainda bloqueado. Nenhum agente/MCP/provedor/Canvas ativado.
+
+## Ciclo 004 — Mentor DEMO separado (2026-10-11)
+
+#39 merge9e25aa67eea7a15b9d61ed7f249202644b9ee1d8 com CIs/logs antes do merge.
+Mentor HTML offline fora da extensão/Canvas, campos revisáveis, sem rede ou
+instruções OpenHands, recomendação fixa local. Identidade PR35 copiada sem mudar
+funções, hash/proveniência testados; #7/#35 intocadas. Node9PASS,213Python locais/
+185PASS/28SDKskip; DOM ainda depende runner. Ver docs/CYCLE004_MENTOR_DEMO.md.
+Orientação não é autorização; dados DEMO não são consulta autenticada. NO-GO.
