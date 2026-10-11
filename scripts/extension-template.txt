@@ -12,6 +12,8 @@ const REAL_STYLE = `
 .ob-real button{padding:8px;border:1px solid #7bd5ef;background:#174564;color:white;border-radius:6px;cursor:pointer}
 .ob-real output{display:grid;gap:5px;overflow-wrap:anywhere}
 .ob-real output p{margin:0;line-height:1.4}
+.graph-active .ob-real:not([open]){display:none}
+.graph-active .ob-real[open]{top:210px;right:18px;max-height:calc(100% - 230px);overflow:auto}
 .ob-real .moon{display:inline-block;width:15px;height:15px;border-radius:50%;background:radial-gradient(circle at 30% 30%,white,#77d5f3,#23506c);box-shadow:0 0 12px #8edafa}
 `;
 function mountRealRead(stage,host,onVerified) {
