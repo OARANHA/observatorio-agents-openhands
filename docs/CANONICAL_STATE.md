@@ -1,20 +1,18 @@
 # Estado canônico — Observatório de Agentes (2026-10-10)
 
 ## REAL NOW
-- Repositório `OARANHA/observatorio-agents-openhands`, produto App do OpenHands Agent Canvas.
-- `main` verificada em `15b742ad25e8a0795b530f67df8df92ca004f936` com manifesto V0.3.2 e extensão `extension.js` gerada de `source/observatorio-v02.html`.
-- PR #2 da V0.3.2 mesclada na `main`; CI do HEAD da PR foi reportada `success`, e o usuário apresentou a versão corrigida em screenshot do Canvas.
-- V0.4.0 é trabalho proposto em branch separada; validar CI e revisão antes do merge e da instalação.
+- Repositório: `OARANHA/observatorio-agents-openhands`.
+- `main` verificada em `9deda677ec382197a9cfcfa02d5a8b7bc3755eef` no início desta correção, com V0.4.0 e PR #3 mesclada.
+- V0.4.1 proposta em branch de correção; CI e revisão pendentes. Não interpretar o commit da `main` acima como estado futuro.
 
-## PROVEN EVIDENCE
-- A UI do Observatório abre dentro do Canvas, com universo 2x2, sistemas solares WebGL2 e fallback 2D, painel de inspeção e navegação nativa intacta.
-- V0.3.2 resolveu a sobreposição anterior da nota explicativa com métricas.
-- Fonte/gerador e testes de contrato conferidos; o produto ainda opera somente com dados demonstrativos locais.
-- V0.4.0 define cenários **SIMULAR** (calmo, atividade, atenção, falha) e animações responsivas que jamais devem ser relatadas como trabalho real de agentes. Modo calmo é o padrão.
-- Renderização progressiva reaproveita órbitas e shaders WebGL2 atuais, sem dependências remotas ou credenciais.
+## EVIDÊNCIA DO CANVAS REAL
+- Screenshot do usuário confirma Observatório V0.4 carregando cenário `SIMULAR: CALMO`, 4 sistemas solares, painel e menu normais.
+- Regressão visual: as órbitas SVG de cada cartão ficam quase verticais, fora de suas proporções anteriores, porque `.sys-orbits` recebe animação `transform:rotate(360deg)` no SVG inteiro.
+- Fonte previa inclinação fixa `rotate(-17 224 77)` nas elipses. Rodar o SVG completo altera a aparência, pode cortar a órbita e invadir áreas visuais.
+- Correção V0.4.1: preservar a orientação original e animar `stroke-dashoffset` somente num traço luminoso sobre a elipse externa; velocidade por cenário, opção `prefers-reduced-motion`.
 
-## GAPS, REUSE GATE E DECISÃO
-- CI da V0.4.0 e validação visual no Canvas real, inclusive navegadores e dispositivos móveis, ainda necessárias; não inventar resultados.
-- Nenhuma nova API, persistência, coleta, contagem real de tarefas ou conexão MCP neste slice.
-- Futuro uso de estados reais requer backend de leitura autenticado com autorização por projeto/tenant e origem/horário de observação verificáveis.
-- Não modificar Canvas Core, VPS, volumes, credenciais ou serviços, não fazer deploy/merge automáticos e não consultar CI repetidamente.
+## LIMITES, GATES E FUTURO
+- V0.4.1 é somente apresentação: `SIMULAR` segue identificando dados fictícios. Sem telemetria, execuções, credenciais, chamadas HTTP ou bibliotecas adicionadas.
+- CI da revisão e validação visual com screenshots desktop/mobile ainda necessárias. Não alegar validação em navegador nem alteração da instalação.
+- Integração futura com fontes reais requer BFF autenticado, RBAC por projeto/tenant e origem/horário de observação; nenhuma alteração de VPS, imagens Docker ou OpenHands Core está autorizada.
+- Fluxo de trabalho: branch + PR, revisar/aguardar CI, sem polling contínuo e sem merge/deploy automático.

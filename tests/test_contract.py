@@ -79,12 +79,31 @@ class Contract(unittest.TestCase):
         self.assertIn('uActivity', source)
         self.assertIn('Math.min(visual.tasks,2)', source)
         self.assertIn('@keyframes obStarDrift', css)
-        self.assertIn('@keyframes obOrbitRevolve', css)
+        self.assertIn('@keyframes obOrbitFlow', css)
         self.assertIn('@media(prefers-reduced-motion:reduce)', css)
         self.assertIn('.system-tile[data-activity="active"]', css)
         self.assertIn('.planet-slot[data-activity="active"]', css)
         self.assertNotIn('host.agentServer.request', source)
         self.assertNotIn('fetch(', source)
+
+
+    def test_universe_orbits_preserve_ellipse_tilt(self):
+        # A V0.4 girava o SVG inteiro: elipses ficavam verticais/cortadas.
+        # Na V0.4.1 apenas o brilho acompanha o tracado.
+        source = (ROOT / 'extension.js').read_text()
+        style_line = next(line for line in source.splitlines()
+                          if line.startswith('const STYLE = '))
+        css = json.loads(style_line[len('const STYLE = '):-1])
+        self.assertIn('class="orbit-stream"', source)
+        self.assertIn('transform="rotate(-17 224 77)"', source)
+        self.assertIn('.system-tile .sys-orbits .orbit-stream{', css)
+        self.assertIn('stroke-dashoffset:-480', css)
+        self.assertIn('.system-tile[data-activity="active"] .orbit-stream{', css)
+        self.assertIn('.system-tile[data-activity="attention"] .orbit-stream{', css)
+        self.assertIn('.system-tile[data-activity="error"] .orbit-stream{', css)
+        self.assertIn('.system-tile .sys-orbits .orbit-stream,.system-tile:before,', css)
+        self.assertNotIn('obOrbitRevolve', css)
+        self.assertNotIn('.sys-orbits{transform-box:', css)
 
     def test_sintaxe(self):
         subprocess.run(['node', '--check', str(ROOT / 'extension.js')], check=True)

@@ -2,7 +2,7 @@
   "schema_version": 1,
   "name": "observatorio-agentes",
   "display_name": "Observatório de Agentes",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Sistema solar de agentes: demonstração visual, sem ações nem dados autenticados.",
   "entrypoint": "extension.js",
   "contributes": {
