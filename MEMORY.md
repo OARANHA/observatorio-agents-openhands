@@ -5,3 +5,5 @@
 - Instalar no Canvas real somente após revisão e autorização; agentes reais exigem BFF read-only e RBAC.
 
 - 2026-10-10 — V0.4.2 proposta: painel opt-in de leitura real por UUID via Canvas Host. Preserva V0.4.1 demo. Sem instalar no Canvas, aguarda CI/revisão/validação.
+
+- PR #5 ajustada para mostrar execução verificada no próprio sistema solar do Observatório após consulta de UUID, sem inferir agentes, resultados, sucesso ou vínculo autenticado. Merge e atualização do Canvas pendentes.
