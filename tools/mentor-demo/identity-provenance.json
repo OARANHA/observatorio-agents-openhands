@@ -1,0 +1,12 @@
+{
+  "schema": "obs.public.identity.provenance.v1",
+  "classification": "public_source_copy_not_deploy",
+  "source_head": "811d5fa4c48aa9eb2cf618174b7d645039a590ac",
+  "source_path": "source/observatorio-v02.html",
+  "functions": [
+    "graphIdentityForObservation",
+    "validGraphIdentity"
+  ],
+  "transformation": "original functions unchanged; ESM exports appended",
+  "sha256": "83c2631b247e39ca4cf1ebdb2fa70c8c8540b266f0ba57262a3eec660d9ccba6"
+}
