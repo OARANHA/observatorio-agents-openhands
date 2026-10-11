@@ -149,3 +149,14 @@ Achado adicional C: utils/model_info.py faz HTTP GET de proxy /v1/model/info;
 utils/runtime_metadata.py cria task por loop/rota e resolver OpenRouter usa
 httpx Client/AsyncClient. Esses destinos não são os quatro sinks; precisariam
 de bloqueio de rede independente no worker futuro. Nada foi solicitado à API.
+
+
+### G07/G10 — ciclo e saída supervisionados
+
+TaskManager oficial + conversa mockada exercitam confirmação/Guard/Book/
+terminal e encerramento. Supervisor real e killpg continuam nas dez provas
+separadas de sandbox. A saída do worker é allowlist de nomes e valores
+factuais fixos; extra payload e counters bool são recusados. Nunca serializar
+objeto LLM, ambiente, prompt privado, exceção ou nome de cliente.
+G07 continua PARCIAL: prova integrada sintética não cria filho operacional,
+não registra code-explorer e não prova herança em delegação real.
