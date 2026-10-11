@@ -205,12 +205,13 @@ class RealSDKOfflineTests(unittest.TestCase):
 
     def _fake_success_response(self, name, *, prompt=100, output=100):
         if "responses" in name:
-            usage = ResponseAPIUsage.model_construct(
+            usage = ResponseAPIUsage(
                 input_tokens=prompt, output_tokens=output,
                 total_tokens=prompt+output,
             )
-            return ResponsesAPIResponse.model_construct(
+            return ResponsesAPIResponse(
                 id="resp_synthetic_success",
+                created_at=0,
                 model="openai/gpt-4o-mini",
                 usage=usage,
                 output=[{
