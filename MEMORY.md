@@ -42,3 +42,14 @@ chaves/ferramentas duplicadas, extras, sintaxe não suportada e iterações acim
 diagnóstico estático e loader local SDK/Tools 1.53.0 aprovados, build/sintaxe JS
 preservados. Formato e limites em `team/SDK_DIAGNOSTIC.md`.
 Não houve registro/delegação, mudança no runtime, merge ou deploy.
+
+## Gates do primeiro Explorador — 2026-10-11
+
+Main reconciliada em `789d442e586466ee7085a1724028d7e1edba7ec0` (PR #9 integrada).
+PR #10 preservada aberta. Branch independente `feat/explorer-canary-gates-v1`
+implementa controles e adaptadores oficiais SDK/Tools 1.53.0, com 45 testes
+locais e construção inerte de specs. Nenhum agente, registro ou delegação
+operacional, LLM, merge ou deploy. **NO-GO operacional**: bwrap e unshare
+falham neste ambiente; sandbox efetivo, wiring completo do worker e tarifas/modelo
+com orçamento preventivo ainda exigem prova. Evidências e critérios cumulativos:
+`docs/handoffs/OBS-EXPLORER-CANARY-GATES-001.md`.
