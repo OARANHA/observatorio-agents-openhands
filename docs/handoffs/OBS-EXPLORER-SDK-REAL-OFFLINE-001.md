@@ -46,3 +46,11 @@ O log mostrou **4/5** testes offline aprovados. `test_real_sdk_refresh_path_must
 Outra evidência: o import do LiteLLM dentro do namespace isolado **tentou acessar** `raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json`, e o DNS falhou devido à rede isolada. Logo, dizer que o SDK não tentou rede seria incorreto. A opção documentada `LITELLM_LOCAL_MODEL_COST_MAP=True` foi agora configurada **antes do import**, via `bwrap --setenv`, para usar o mapa embutido sem essa consulta; o teste exige a flag. Isso ainda **não prova** que todos os outros módulos do LiteLLM/OpenHands deixam de tentar rede nem que a tabela embutida vale como tarifa real.
 
 **Status pós-correção:** exigir nova CI no HEAD atualizado, sem polling. Enquanto ela não for examinada, permanecer `RED anterior corrigido no código, validação pendente`. Sem merge, deploy, LLM nem agentes e **NO-GO operacional**.
+
+## Segunda CI da PR #17 — resultado misto e correção da coleta
+
+No HEAD `6dfac7b9b3769005c3c3c563cb8ce74faf425e40`, ambas as CIs terminaram: workflow `Canary Worker Inert SDK` run `38115115662` **success**, incluindo **6/6 testes** de SDK real no bwrap, a prova de namespace e o refresh fake com `SecretStr`. Workflow `CI Observatorio` run `38115115652` **failure** na etapa `Contrato e sintaxe`; log do job `114398359542`: `ModuleNotFoundError: No module named 'pydantic'`, na coleta de `tests/test_sdk_real_transport_offline.py`.
+
+**Causa:** o runner principal intencionalmente não instala SDK/Pydantic, mas o arquivo novo importou `SecretStr` no escopo superior antes de testar presença do SDK. **Correção mínima**: importar `pydantic.SecretStr` dentro do bloco que importa o próprio SDK; assim o runner principal ignora apenas os testes que exigem SDK, preservando os testes que não dependem dele. O runner especializado continuará exigindo SDK 1.53.0 e o namespace de rede sem interfaces externas. Nenhuma dependência de produção ou configuração de segurança foi alterada.
+
+**Nova validação necessária:** esperar CI do HEAD posterior a esta correção; não tomar o GREEN do runner especializado anterior como aprovação automática do novo HEAD. Sem merge, deploy, agente ou chamada LLM; **NO-GO operacional**.
