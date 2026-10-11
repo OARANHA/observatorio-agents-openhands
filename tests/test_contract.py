@@ -178,7 +178,7 @@ class GraphV050(unittest.TestCase):
         self.assertIn("kind:'demo-hub'", source)
         self.assertIn("edges.push({from:'real-origin',to:'real-mission',kind:'verified'})", source)
         self.assertIn("edges.push({from:'real-mission',to:'manual-project',kind:'manual'})", source)
-        self.assertIn("O servidor não confirmou o vínculo", source)
+        self.assertIn("o servidor não confirmou o vínculo", source)
         self.assertIn("Uma conversa concluída não garante sucesso da tarefa.", source)
         self.assertNotIn("setInterval(", source)
         self.assertNotIn("fetch(", source)
