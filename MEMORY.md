@@ -529,3 +529,8 @@ Main base `e06d3b01e60d9a5503e046dc0fe2eeb269f0e403` após #42. Reuso da PR #35 
 ## Ciclo 005 — R1/R2/R3 após segunda revisão Codex (2026-10-11)
 - PR #43 histórico `83957b69dfe3e35e87e4ba6a12b7768004187012` foi reavaliado pelo Codex: R1/R2 P2 confirmados, R3 P3, sem P0/P1 demonstrados; revisão IA separada não satisfaz G11 formal.
 - Correção na branch: prazo local para GET+WebCrypto digest com guarda de validade contra resultado tardio; catch usa `shadow.querySelectorAll('canvas')` para GPU; manifesto/UI descrevem conversa, não execução. Três regressões Chromium (19 esperadas). CI novo SHA pendente, sem polling. JEV consultivo, ADR-0001 PROPOSTO, NO-GO operacional G12, RBAC P02 e memória P03 sem prova.
+
+## Continuidade após merge PR #43 — CYCLE006 (2026-10-11)
+- Reconciliado GitHub: `main` `ac9c525a7e169fe253f0f488550686491939289a` integra V0.5.1 visual/grafo; PR #43 merged, PR #35 ainda aberta e PR #7 draft. Código integrado **não é Canvas instalado**: última instalação documentada V0.4.2 em screenshot histórica, estado atual sem inspeção.
+- Provas offline do HEAD PR #43: três workflows GREEN, Chromium **19/19**, 190 Python PASS/28 skips opcionais e SDK inerte 0 operações reais; parecer Codex considerou R1–R3 resolvidos, nenhuma falha nova demonstrada. Revisão automatizada não satisfaz G11 formal.
+- Novo plano `docs/handoffs/OBS-CYCLE-006-CANVAS-VISUAL-HOMOLOGATION-PLAN.md` prepara H0 leitura do Canvas, H1 instalação desabilitada, H2 habilitação visual e H3 GET sintético somente sob **autorizações separadas**. Sem deploy, Core, VPS, LLM/agentes, merge automático ou captura de dados de clientes. G11 não provado, G12 bloqueado, P01 parcial, P02/P03 não provados.

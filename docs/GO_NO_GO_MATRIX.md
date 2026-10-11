@@ -350,3 +350,16 @@ Detalhes/testes/HEADs/merges/CIs, falha DOM reproduzida e corrigida, limites e
 próximo plano humano no
 [handoff CYCLE004](handoffs/OBS-CYCLE-004-EVENTS-MENTORSHIP.md). Preservadas #7/#35,
 ADR Proposto, dossiês e todos os handoffs anteriores.
+
+## Pós-merge CYCLE005 → preparação CYCLE006 (2026-10-11)
+| Item | Estado conservador | Prova e lacuna |
+| --- | --- | --- |
+| Código V0.5.1 na `main` | **PROVADO NO GITHUB** | PR #43 `merged=true`, main `ac9c525a7e169fe253f0f488550686491939289a` |
+| P01 — apresentação do grafo | **PARCIAL** | 19/19 Chromium sintético no HEAD da PR #43. **Sem instalação/aceite visual Canvas V0.5.1, WebGL2 físico e touch físico** |
+| G11 — revisor distinto/aceite formal | **NÃO PROVADO** | Revisor Codex é automatizado; zero prova formal de aceite independente dos riscos operacionais |
+| G12 — canário real | **BLOQUEADO** | Gates cumulativos e autorização de missão real ausentes; merge de código não muda isso |
+| P02 — RBAC multi-projeto | **NÃO PROVADO** | `local-view-not-tenant` e projeto digitado não são autorização de servidor |
+| P03 — memória | **NÃO PROVADO** | Switch ativado segundo screenshot anterior; sem escrita/leitura/isolamento comprovados |
+| ADR-0001 — App Canvas | **PROPOSTO** | Compatibilidade em Canvas instalado e segurança ainda requerem verificação autorizada |
+
+**Próximo trabalho seguro:** usar [CYCLE006 — plano de homologação visual](handoffs/OBS-CYCLE-006-CANVAS-VISUAL-HOMOLOGATION-PLAN.md) para preparar evidência minimizada; não instalar, habilitar ou executar GET na instância real sem a autorização específica H1/H2/H3, respectivamente. **NO-GO operacional continua.** PRs #7 e #35 permanecem abertas sem ação automática.
