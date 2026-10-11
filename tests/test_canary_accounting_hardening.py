@@ -125,3 +125,53 @@ class MetricsBinding(unittest.TestCase):
                     settle_success_from_sdk_metrics(gate,llm,before,self.response(llm))
             self.assertTrue(gate.guard.cancelled)
             self.assertIsNotNone(gate.book.active)
+
+class TerminalSettlement(unittest.TestCase):
+    def card(self):return RateCard('synthetic','fake','2','8','https://example.invalid','2026-10-11')
+    def test_token_caps_call_limit_closes_after_last_verified_call(self):
+        book=BudgetBook('.1');guard=Guard();caps=TokenCaps(2000,500,500,max_calls=1)
+        hold=book.reserve(guard,self.card(),caps)
+        book.settle(guard,hold,input_tokens=100,output_tokens=100,reported_usd='.001')
+        self.assertTrue(book.closed);self.assertTrue(guard.cancelled)
+        with self.assertRaises(GateError):book.reserve(guard,self.card(),caps)
+        self.assertEqual(1,book.calls)
+        self.assertIsNone(book.active)
+    def test_exact_guard_budget_exhaustion_records_known_spend_once(self):
+        book=BudgetBook('.005');guard=Guard(budget=.005)
+        hold=book.reserve(guard,self.card(),TokenCaps(2000,500,500))
+        self.assertEqual(Decimal('.005'),book.settle(guard,hold,input_tokens=500,output_tokens=500,reported_usd='.005'))
+        self.assertEqual(Decimal('.005'),book.spent)
+        self.assertIsNone(book.active);self.assertTrue(book.closed);self.assertTrue(guard.cancelled)
+        with self.assertRaises(GateError):book.settle(guard,hold,input_tokens=500,output_tokens=500,reported_usd='.005')
+        self.assertEqual(Decimal('.005'),book.spent)
+    def test_expired_reservation_is_uncertain_not_refunded(self):
+        now=[0];guard=Guard(seconds=1,clock=lambda:now[0]);book=BudgetBook('.1')
+        hold=book.reserve(guard,self.card(),TokenCaps(2000,500,500));now[0]=1
+        with self.assertRaisesRegex(GateError,'reservation_expired'):
+            book.settle(guard,hold,input_tokens=100,output_tokens=100,reported_usd='.001')
+        self.assertIs(book.active,hold);self.assertTrue(book.closed)
+    def test_a_different_guard_cannot_reset_the_mission(self):
+        book=BudgetBook('.1');guard=Guard();caps=TokenCaps(2000,500,500)
+        hold=book.reserve(guard,self.card(),caps)
+        book.settle(guard,hold,input_tokens=100,output_tokens=100,reported_usd='.001')
+        other=Guard()
+        with self.assertRaisesRegex(GateError,'guard_identity_mismatch'):book.reserve(other,self.card(),caps)
+        self.assertTrue(guard.cancelled);self.assertTrue(other.cancelled);self.assertTrue(book.closed)
+    def test_no_further_llm_or_terminal_actions_after_last_call(self):
+        from test_canary_budget_boundary import FakeLLM,rates
+        from canary_budget_boundary import synthetic_budgeted_llm_routes
+        from canary_controls import mission_confirmation,MissionCancelled
+        import types
+        book=BudgetBook('.1');guard=Guard();llm=FakeLLM()
+        with synthetic_budgeted_llm_routes(FakeLLM,guard,book,rates(),TokenCaps(2000,500,500,max_calls=1)):
+            llm.completion([])
+            with self.assertRaises(GateError):llm.completion([])
+        self.assertEqual(1,llm.dispatches)
+        event=types.SimpleNamespace(action=types.SimpleNamespace(command='pwd',is_input=False))
+        with self.assertRaises(MissionCancelled):mission_confirmation(guard,'synthetic',[event],lambda *_:True)
+
+    def test_smaller_guard_budget_is_reserved_preventively(self):
+        book=BudgetBook('.1');guard=Guard(budget=.004)
+        with self.assertRaisesRegex(GateError,'worst_case_over_guard_budget'):
+            book.reserve(guard,self.card(),TokenCaps(2000,500,500))
+        self.assertEqual(0,guard.calls);self.assertIsNone(book.active)
