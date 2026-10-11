@@ -58,6 +58,34 @@ class Contract(unittest.TestCase):
         self.assertIn("$('solar-note').classList.add('hidden')", source)
         self.assertIn("$('solar-note').classList.remove('hidden')", source)
 
+    def test_visual_v04_cenarios_e_motion_sao_demo(self):
+        source = (ROOT / 'extension.js').read_text()
+        style_line = next(line for line in source.splitlines()
+                          if line.startswith('const STYLE = '))
+        markup_line = next(line for line in source.splitlines()
+                           if line.startswith('const MARKUP = '))
+        css = json.loads(style_line[len('const STYLE = '):-1])
+        markup = json.loads(markup_line[len('const MARKUP = '):-1])
+        self.assertIn('id="visual-demo"', markup)
+        self.assertIn('PROTÓTIPO · DADOS ILUSTRATIVOS', markup)
+        self.assertIn('visualScenarios=[', source)
+        for state in ('idle', 'active', 'attention', 'error'):
+            self.assertIn("'" + state + "'", source)
+        self.assertIn('demoAgentVisual(', source)
+        self.assertIn('demoSystemVisual(', source)
+        self.assertIn('data-activity=', source)
+        self.assertIn('SIMULAÇÃO:', source)
+        self.assertIn('SIMULAR: ', source)
+        self.assertIn('uActivity', source)
+        self.assertIn('Math.min(visual.tasks,2)', source)
+        self.assertIn('@keyframes obStarDrift', css)
+        self.assertIn('@keyframes obOrbitRevolve', css)
+        self.assertIn('@media(prefers-reduced-motion:reduce)', css)
+        self.assertIn('.system-tile[data-activity="active"]', css)
+        self.assertIn('.planet-slot[data-activity="active"]', css)
+        self.assertNotIn('host.agentServer.request', source)
+        self.assertNotIn('fetch(', source)
+
     def test_sintaxe(self):
         subprocess.run(['node', '--check', str(ROOT / 'extension.js')], check=True)
 
