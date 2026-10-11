@@ -47,6 +47,15 @@ class SyntheticTransportGate:
         self._owner = None
         self.attempts = 0
         self._settled = False
+        self._logical_serial = 0
+        self._sdk_baseline = None
+
+    def scope_identity(self):
+        with self._lock:
+            if (not self._active or self._owner != _execution_owner()
+                or self.book.closed or self.guard.cancelled):
+                self._deny("metrics_outside_authorized_scope")
+            return self._logical_serial
 
     def _deny(self, code):
         self.book.abort(self.guard)
@@ -61,6 +70,8 @@ class SyntheticTransportGate:
                 self._deny("transport_mission_stopped")
             self._active = True
             self._owner = _execution_owner()
+            self._logical_serial += 1
+            self._sdk_baseline = None
             self.attempts = 0
             self._settled = False
         try:
@@ -74,6 +85,7 @@ class SyntheticTransportGate:
             with self._lock:
                 self._active = False
                 self._owner = None
+                self._sdk_baseline = None
 
     def _before_transport(self):
         with self._lock:
