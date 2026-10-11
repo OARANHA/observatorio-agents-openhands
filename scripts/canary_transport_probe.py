@@ -113,10 +113,17 @@ class SyntheticTransportGate:
                              output_tokens=output_tokens, reported_usd=reported_usd)
             self._settled = True
 
+    def _immediate_result(self, result):
+        from collections.abc import Iterator, AsyncIterator
+        from inspect import isawaitable
+        if isinstance(result,(Iterator,AsyncIterator)) or isawaitable(result):
+            self._deny('deferred_transport_forbidden')
+        return result
+
     def invoke(self, fn, *args, **kwargs):
         self._before_transport()
         try:
-            return fn(*args, **kwargs)
+            return self._immediate_result(fn(*args, **kwargs))
         except BaseException:
             self.book.abort(self.guard)
             raise
@@ -124,7 +131,7 @@ class SyntheticTransportGate:
     async def ainvoke(self, fn, *args, **kwargs):
         self._before_transport()
         try:
-            return await fn(*args, **kwargs)
+            return self._immediate_result(await fn(*args, **kwargs))
         except BaseException:
             self.book.abort(self.guard)
             raise
