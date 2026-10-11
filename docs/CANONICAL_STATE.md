@@ -178,3 +178,16 @@ tarifas/tetos. Critérios e limites em
 `docs/handoffs/OBS-EXPLORER-SDK-REAL-OFFLINE-001.md`.
 **CI por comprovar no HEAD; NO-GO operacional**. Sem merge, deploy
 ou alteração de VPS/Canvas/OpenHands Core nesta preparação.
+
+## Correção do RED — SDK real com stubs (PR #17, 2026-10-11)
+
+No HEAD `529f332614927e1702028f3be24c62b0b35c80b7`, CI principal
+GREEN, mas workflow SDK run `38114870551` RED: quatro testes SDK offline
+passaram e o caso refresh-401 falhou em `_get_api_key_value` porque
+o mock devolveu `str` em vez de `pydantic.SecretStr`. O LiteLLM
+também **tentou** baixar o mapa de custos durante import, bloqueado
+pela rede descompartilhada. A branch da PR #17 foi corrigida para
+`SecretStr` fake e `LITELLM_LOCAL_MODEL_COST_MAP=True` antes do import
+via bwrap. CI do novo HEAD pendente; não alegar GREEN antecipadamente.
+Handoff: `docs/handoffs/OBS-EXPLORER-SDK-REAL-OFFLINE-001.md`.
+**NO-GO** para LLM/registro/delegação/deploy/merge implícito.
