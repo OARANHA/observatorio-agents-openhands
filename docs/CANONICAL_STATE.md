@@ -624,3 +624,8 @@ Main pré-consolidação96ed4a3c5ce659aa55a4841716e7623d30aaeb64.
 - Em `d56b316eaaa77551851fedcbbb5687bdb087d3e9`, Graph DOM 38181224586 **RED** (22/23). Capturou em Chromium 900×700 duas colisões entre fonte, conversa e vínculo manual consultados (3,89/5,22 px). Outros workflows no SHA: CI 38181224559 e SDK inerte 38181224742 GREEN.
 - Patch posterior compacta tipografia/espacamento dos nós `verified/manual` exclusivamente em viewport desktop baixo (largura maior ou igual a 871 e altura até 760px), sem cortar texto/alterar identidade ou API; `extension.js` regenerado. Regressão de `getBoundingClientRect` mantida para 900×700 + 390×844, **23 testes esperados, CI pendente**.
 - Handoff `docs/handoffs/OBS-CYCLE-007-STELLAR-GRAPH-V052.md`, G11 NÃO PROVADO, G12 BLOQUEADO, P02/P03 NÃO PROVADOS, Canvas V0.5.1 não alterado.
+
+## CYCLE007 — correção P2 mobile ultraestreito (2026-10-11)
+- Codex revisou `29675a85523b3fb1fd7d7c22c5a03daa6c6a0563`, tree `9aa2380319ef6bbce9c791015326fb50d0d6365c`, e encontrou colisão geométrica calculada após consulta em 320/340 px entre DEMO/consultados. Nenhum P0/P1; parecer CORREÇÕES NECESSÁRIAS, revisão automatizada não promove G11.
+- Novo patch usa distribuição responsiva em **mapa móvel estreito inferior a 290 px** com grid 2×4 de nós e mapa de 540 px; curvas SVG atualizadas junto das coordenadas, re-render em resize. Sem truncamento ou reduzir os 10 px mínimos; regressão Chromium agora cobre **320,340,350,360,390 e 900**, inclusive volta a 390 e contenção no mapa narrow. Esperados 23 testes; **CI do novo HEAD PENDENTE**.
+- Evidências e riscos no handoff `docs/handoffs/OBS-CYCLE-007-STELLAR-GRAPH-V052.md`. Canvas permanece na V0.5.1; G11 NÃO PROVADO, G12 BLOQUEADO, P01 PARCIAL, P02/P03 NÃO PROVADOS.

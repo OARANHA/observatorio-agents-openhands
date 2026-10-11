@@ -302,10 +302,10 @@ test('stellar reduced-motion disables ambient animation and preserves keyboard c
   assert.equal(await p.locator('#graph-surface').evaluate(el=>new DOMMatrixReadOnly(getComputedStyle(el).transform).e),20);
  }finally{await close(f);}
 });
-test('consulted constellation nodes do not collide at 900x700 or mobile viewport',async()=>{
+test('consulted constellation nodes do not collide from 320px through desktop widths',async()=>{
  const f=await fixture({viewport:{width:900,height:700},reduced:true});try{
   const p=f.page;await consult(p);await p.locator('#top-graph').click();
-  for(const size of [{width:900,height:700},{width:390,height:844}]){
+  for(const size of [{width:900,height:700},{width:390,height:844},{width:360,height:844},{width:350,height:844},{width:340,height:844},{width:320,height:844},{width:390,height:844}]){
    await p.setViewportSize(size);
    await p.waitForTimeout(320); // Wait for stellar node position transition.
    const nodes=await p.locator('.graph-node').evaluateAll(items=>items.map(n=>{
@@ -321,6 +321,16 @@ test('consulted constellation nodes do not collide at 900x700 or mobile viewport
     if(dx>0.5&&dy>0.5)overlaps.push({a:a.label,b:b.label,width:+dx.toFixed(2),height:+dy.toFixed(2)});
    }
    assert.deepEqual(overlaps,[],'node overlap at '+size.width+'x'+size.height);
+   // Em 320–350 px, os cartões devem permanecer inteiros dentro do mapa ampliado.
+   if(size.width<=350){
+    assert.equal(await p.locator('#graph-map').getAttribute('data-layout'),'narrow-consulted');
+    const map=await p.locator('#graph-map').boundingBox();
+    assert.ok(map.height>=539,'narrow map must grow instead of shrinking labels');
+    const outside=nodes.filter(n=>n.x<map.x-1||n.right>map.x+map.width+1||n.y<map.y-1||n.bottom>map.y+map.height+1);
+    assert.deepEqual(outside,[],'no clipped nodes at '+size.width+'x'+size.height);
+   }else{
+    assert.equal(await p.locator('#graph-map').getAttribute('data-layout'),'default');
+   }
   }
  }finally{await close(f);}
 });

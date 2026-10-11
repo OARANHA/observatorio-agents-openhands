@@ -548,3 +548,6 @@ Main base `e06d3b01e60d9a5503e046dc0fe2eeb269f0e403` após #42. Reuso da PR #35 
 
 ## CYCLE007 — CSS compacto após teste geométrico RED (2026-10-11)
 - O novo teste 23 Chromium em HEAD `d56b316eaaa77551851fedcbbb5687bdb087d3e9` localizou interseções de 3,89 e 5,22 px entre os cartões consultados no viewport 900×700; Graph DOM RED 22/23, CI e SDK inerte GREEN. Corrigida a densidade de cartão `verified/manual` em viewport baixo sem mexer em consulta/identidade ou no Canvas; recompilado `extension.js`; CI do novo HEAD pendente, sem polling. G11 não provado/G12 bloqueado.
+
+## CYCLE007 — mais uma correção visual mobile (2026-10-11)
+- Revisão adversarial Codex identificou colisões mínimas em 320/340 após consulta (HEAD `29675a85523b3fb1fd7d7c22c5a03daa6c6a0563`). Implementado mapa móvel estreito com 2 colunas × 4 linhas, 540px de altura e linhas SVG seguindo o modelo, sem mudança de proveniência. Teste de colisões real ampliado 320/340/350/360/390/900 e retorno a 390; 23 DOM esperados, nova CI pendente, sem polling. G11 não provado/G12 bloqueado. Canvas V0.5.1 não alterado.
