@@ -12,6 +12,7 @@ from contextlib import ExitStack, contextmanager
 import importlib.metadata
 import os
 from pathlib import Path
+from decimal import Decimal
 import socket
 import sys
 import unittest
@@ -21,11 +22,15 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from canary_budget import BudgetBook, RateCard, TokenCaps
 from canary_controls import GateError, Guard
 from canary_transport_probe import SyntheticTransportGate
+from canary_sdk_success_probe import snapshot_success_start, settle_success_from_sdk_metrics
 
 try:
     from openhands.sdk.llm import LLM
     import openhands.sdk.llm.llm as sdk_module
-    from pydantic import SecretStr  # SDK 1.53.0 dependency; unavailable in contract runner
+    from pydantic import SecretStr  # optional in contract-only runner
+    from litellm.types.utils import ModelResponse, Usage
+    from litellm.types.llms.openai import ResponsesAPIResponse, ResponseAPIUsage
+    from openhands.sdk.llm.utils.telemetry import normalize_usage, _response_usage
     HAS_SDK = importlib.metadata.version("openhands-sdk") == "1.53.0"
 except (ImportError, importlib.metadata.PackageNotFoundError):
     LLM = None
@@ -81,12 +86,16 @@ class OfflineSDKFixture:
         )
 
     @contextmanager
-    def patch_all_four_litellm_exports(self, *, mode="halt"):
+    def patch_all_four_litellm_exports(self, *, mode="halt", response_factory=None):
         """Patch the SDK module's imported LiteLLM bindings, not real HTTP."""
         with ExitStack() as stack:
             def stop(name):
                 def fake(**_kwargs):
                     self.arrived.append(name)
+                    if mode == "success":
+                        if response_factory is None:
+                            raise GateError("fake_success_response_missing")
+                        return response_factory(name)
                     if mode == "runtime_error":
                         raise RuntimeError("synthetic transport failure")
                     raise OfflineSyntheticHalt("synthetic sink reached")
@@ -189,6 +198,135 @@ class RealSDKOfflineTests(unittest.TestCase):
                 self.assertEqual(1,fixture.book.calls)
                 self.assertTrue(fixture.guard.cancelled)
                 self.assertTrue(fixture.book.closed)
+
+    def _fake_success_response(self, name, *, prompt=100, output=100):
+        if "responses" in name:
+            usage = ResponseAPIUsage.model_construct(
+                input_tokens=prompt, output_tokens=output,
+                total_tokens=prompt+output,
+            )
+            return ResponsesAPIResponse.model_construct(
+                id="resp_synthetic_success",
+                model="openai/gpt-4o-mini",
+                usage=usage,
+                output=[{
+                    "id": "msg_synthetic",
+                    "type": "message",
+                    "status": "completed",
+                    "role": "assistant",
+                    "content": [{"type":"output_text","text":"resposta simulada"}],
+                }],
+            )
+        return ModelResponse(
+            id="chatcmpl_synthetic_success", model="openai/gpt-4o-mini",
+            choices=[{
+                "index": 0,
+                "message": {"role": "assistant", "content": "resposta simulada"},
+                "finish_reason": "stop",
+            }],
+            usage=Usage(prompt_tokens=prompt, completion_tokens=output,
+                        total_tokens=prompt+output),
+        )
+
+    def _fake_sdk_cost(self, _telemetry, response, provider_info=None):
+        normalized = normalize_usage(_response_usage(response))
+        if normalized is None or not normalized.has_tokens:
+            return None
+        return float((
+            Decimal(normalized.prompt_tokens)*Decimal("2") +
+            Decimal(normalized.completion_tokens)*Decimal("8")
+        ) / Decimal(1_000_000))
+
+    def test_four_real_sdk_successes_settle_exact_synthetic_usage(self):
+        for route in ("completion","acompletion","responses","aresponses"):
+            with self.subTest(route=route):
+                fixture=OfflineSDKFixture()
+                llm=fixture.llm()
+                llm.metrics.initialize_accumulated_token_usage()
+                async def success_async():
+                    with fixture.gate.logical_call():
+                        starting=snapshot_success_start(fixture.gate,llm)
+                        result=await getattr(llm,route)(messages=[])
+                        outcome=settle_success_from_sdk_metrics(
+                            fixture.gate,llm,starting,result)
+                        return result,outcome
+                with fixture.patch_all_four_litellm_exports(
+                    mode="success",response_factory=self._fake_success_response,
+                ), patch.object(sdk_module.Telemetry,"_compute_cost",self._fake_sdk_cost):
+                    if route.startswith("a"):
+                        response,settlement=asyncio.run(success_async())
+                    else:
+                        with fixture.gate.logical_call():
+                            starting=snapshot_success_start(fixture.gate,llm)
+                            response=getattr(llm,route)(messages=[])
+                            settlement=settle_success_from_sdk_metrics(
+                                fixture.gate,llm,starting,response)
+                self.assertEqual((100,100,Decimal("0.001")),settlement)
+                self.assertEqual("assistant",response.message.role)
+                self.assertEqual(Decimal("0.001"),fixture.book.spent)
+                self.assertIsNone(fixture.book.active)
+                self.assertFalse(fixture.book.closed)
+                self.assertFalse(fixture.guard.cancelled)
+                self.assertEqual(1,fixture.book.calls)
+                self.assertEqual(1,fixture.gate.attempts)
+                self.assertEqual(1,len(fixture.arrived))
+                self.assertEqual(100,llm.metrics.accumulated_token_usage.prompt_tokens)
+                self.assertEqual(100,llm.metrics.accumulated_token_usage.completion_tokens)
+
+    def test_successful_sdk_metrics_accumulate_across_two_real_calls(self):
+        fixture=OfflineSDKFixture()
+        llm=fixture.llm()
+        llm.metrics.initialize_accumulated_token_usage()
+        with fixture.patch_all_four_litellm_exports(
+            mode="success",response_factory=self._fake_success_response,
+        ), patch.object(sdk_module.Telemetry,"_compute_cost",self._fake_sdk_cost):
+            for _ in range(2):
+                with fixture.gate.logical_call():
+                    before=snapshot_success_start(fixture.gate,llm)
+                    response=llm.completion(messages=[])
+                    self.assertEqual(
+                        (100,100,Decimal("0.001")),
+                        settle_success_from_sdk_metrics(fixture.gate,llm,before,response))
+        self.assertEqual(2,fixture.book.calls)
+        self.assertEqual(Decimal("0.002"),fixture.book.spent)
+        self.assertEqual(200,llm.metrics.accumulated_token_usage.prompt_tokens)
+        self.assertEqual(200,llm.metrics.accumulated_token_usage.completion_tokens)
+        self.assertIsNone(fixture.book.active)
+
+    def test_successful_response_without_usage_fails_closed(self):
+        fixture=OfflineSDKFixture()
+        llm=fixture.llm()
+        llm.metrics.initialize_accumulated_token_usage()
+        def without_usage(name):
+            return self._fake_success_response(name,prompt=0,output=0)
+        with fixture.patch_all_four_litellm_exports(
+            mode="success",response_factory=without_usage,
+        ), patch.object(sdk_module.Telemetry,"_compute_cost",self._fake_sdk_cost):
+            with self.assertRaisesRegex(GateError,"sdk_success_usage_missing_or_decreased"):
+                with fixture.gate.logical_call():
+                    start=snapshot_success_start(fixture.gate,llm)
+                    result=llm.completion(messages=[])
+                    settle_success_from_sdk_metrics(fixture.gate,llm,start,result)
+        self.assertEqual(1,len(fixture.arrived))
+        self.assertTrue(fixture.book.closed)
+        self.assertIsNotNone(fixture.book.active)
+
+    def test_success_with_overstated_synthetic_cost_is_rejected(self):
+        fixture=OfflineSDKFixture()
+        llm=fixture.llm()
+        llm.metrics.initialize_accumulated_token_usage()
+        with fixture.patch_all_four_litellm_exports(
+            mode="success",response_factory=self._fake_success_response,
+        ), patch.object(sdk_module.Telemetry,"_compute_cost",return_value=0.006):
+            with self.assertRaisesRegex(GateError,"sdk_synthetic_cost_mismatch"):
+                with fixture.gate.logical_call():
+                    start=snapshot_success_start(fixture.gate,llm)
+                    response=llm.responses(messages=[])
+                    settle_success_from_sdk_metrics(fixture.gate,llm,start,response)
+        self.assertTrue(fixture.guard.cancelled)
+        self.assertTrue(fixture.book.closed)
+        self.assertIsNotNone(fixture.book.active)
+        self.assertEqual(1,len(fixture.arrived))
 
     def test_unreserved_real_sdk_call_cannot_reach_stub(self):
         fixture = OfflineSDKFixture()
