@@ -1,0 +1,27 @@
+name: Canary Sandbox Probe
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/canary-sandbox.yml
+      - scripts/probe_canary_sandbox.py
+      - scripts/canary_controls.py
+
+permissions:
+  contents: read
+
+jobs:
+  sandbox-probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Checkout sem persistir credenciais
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Instalar Bubblewrap do repositorio Ubuntu
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends bubblewrap
+      - name: Provas reais de isolamento (falha = NO-GO)
+        run: python3 -B scripts/probe_canary_sandbox.py
