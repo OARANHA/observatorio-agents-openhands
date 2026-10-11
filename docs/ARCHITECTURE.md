@@ -1,32 +1,44 @@
-# Arquitetura
+# Arquitetura — Observatório horizontal multiprojeto
 
+**Decisão vinculante:** `docs/PROJECT_SOURCE.md` e `AGENTS.md`.
+
+## Papéis e fronteiras
+```text
+          OPERADOR HUMANO (autoriza/valida)
+                        |
+      ChatGPT — coordenação técnica dentro dos acessos disponíveis
+         |                              |
+         v                              v
+ OpenHands — tarefas autorizadas     GitHub — código, ADRs, testes, PRs
+ memória auxiliar do agente          documentação viva POR PROJETO
+         |                              |
+         +-------- fontes verificáveis --+
+                        |
+                        v
+   Observatório — visualização transversal no OpenHands Canvas
+   (consultas pontuais reais + cenários marcados como DEMO)
+                        |
+     Projetos atendidos: VIGIAFAST | Wandora | ELUS | demais
 ```
+O Observatório não é filho, módulo, gestor de clientes nem runtime do VIGIAFAST. Também não é executor de tarefas, e não controla OpenHands por meio de imagens de planetas/luas.
+
+## Estado técnico real — v0.4.2
+```text
 OpenHands Agent Canvas -> Apps -> Observatório (registerPage)
-  -> Shadow DOM -> WebGL2 com fallback 2D
-  -> catálogo demonstrativo local (nenhum endpoint remoto)
+    -> Shadow DOM (WebGL2 + fallback 2D)
+       -> catálogo demo: 4 sistemas
+       -> leitura opt-in: host.agentServer.request(GET /api/conversations/{UUID})
+          -> estado da conversa, ID, horários; projeto digitado pelo operador
+          -> 1 lua de conversa, 0 agentes comprovados
 ```
+- Consulta autenticada pelo próprio Canvas, sem ler cookies, sem token embutido, sem fetch externo, sem polling e sem operação de escrita.
+- O frontend apenas observa dados aprovados pela API. Nem `finished` nem o título da conversa provam sucesso, identidade do agente, vínculo com repo ou aprovação de uma ação.
+- O teardown limpa elementos de UI, timers RAF, resize observers e contexto GPU; desenvolvimento e regeneração: `source/observatorio-v02.html` -> `node scripts/build.mjs` -> `extension.js`.
+- O modo Grafo estilo Obsidian para conexões entre projetos, agentes, missões, memória, decisões, PRs e artefatos é **planejado**; não há hoje API de arestas confiáveis nem sincronização multi-repositório.
 
-- UI não importa bibliotecas externas, não consulta tokens ou APIs; nenhuma ação operacional.
-- O teardown remove a raiz e cancela animação, observação de tamanho e contexto GPU quando disponível.
-- Planeta é representação de um **papel de agente fictício**; não deduzir agente real de conversa/LLM.
-- Futuro: BFF autenticado somente de leitura -> escopo servidor por projeto/tenant -> provedores OpenHands/Agent Mesh -> agregado minimizado e auditado com `observed_at`.
-- Sem inferir CPU, tokens, ETA, progresso, colaboração ou estado do agente sem evento comprovado.
-- Revisar políticas CSP, conexões e fonte Git fixada antes da primeira instalação real.
+## Memória não é telemetria
+Memória persistente do OpenHands (ativada na configuração do Canvas por screenshot) = notas potenciais consumíveis por conversas posteriores, dependendo de workspace/configuração. **Não equivale** a inventário de agentes, proveniência de decisões, log auditável, informação compartilhável entre projetos ou confirmação de funcionamento. Validar escrita/leitura e isolamento antes de integrar ao grafo. Documentação canônica por projeto permanece no repositório correspondente.
 
-
-## V0.4.2 proposta — primeira leitura operacional
-
-O Observatório conserva a experiência demonstrativa V0.4.1, mas inclui o painel **☾ CONSULTA DE MISSÃO REAL**. Após inserção manual do UUID, consulta pontualmente `GET /api/conversations/{id}` por `host.agentServer.request`, usando a autenticação do Canvas. Mostra somente ID, estado, horário de atualização do servidor, origem e horário da observação pelo navegador. Não lista conversas, mostra resultados/segredos, executa comandos nem faz polling.
-
-O projeto é preenchido pelo operador: associação explícita, **não validada pelo Agent Server**. A lua representa apenas a execução consultada; nenhum agente real é inferido. O acesso do Canvas não substitui RBAC por projeto/tenant. Uso interno sintético apenas, sem dados reais de clientes. **Não verificado no Canvas instalado**: aguarda CI, revisão e autorização para instalação. Testes previstos: `node scripts/build.mjs`, `node --check extension.js` e `python3 -m unittest discover -s tests -p test_contract.py`.
-
-
-## Ajuste da PR #5 — lua real dentro do Multiverso (2026-10-10)
-
-Depois de consultar manualmente um UUID via Canvas Host, a UI cria **em memória** o quinto cartão `OBSERVATÓRIO` (projeto explicitamente informado pelo operador) e abre seu sistema solar: **uma lua de execução OpenHands verificada**, zero planetas de agentes comprovados e painel lateral com UUID, status, origem, atualização do servidor e hora da consulta. Os quatro sistemas originais permanecem DEMO; o cartão real exibe `OPENHANDS REAL`.
-
-- Evidência operacional: missão sintética OBS-REAL-001 terminou em `finished`; resposta do MCP `openhands_result` continha `OBS-REAL-001|OK`. A execução real não é embutida no Git ou frontend; somente o UUID inserido pelo usuário é consultado pelo Canvas autenticado.
-- `host.agentServer.request(GET /api/conversations/{uuid})` é lido sob a sessão Canvas. Não expor resposta final, prompts nem títulos. A associação `project` é **declarada**, nunca inferida ou certificada.
-- Zero sincronização automática, zero histórico persistido, nenhuma credencial no JS, nenhum agente novo, nenhuma ação start/stop. Sem dados reais de clientes nem RBAC multi-tenant homologado.
-- Após reload do Canvas, **é necessário consultar o UUID novamente**. Para vinculação automática e durável, precisaríamos de inventário seguro do lado do servidor: fora deste primeiro slice.
-- Mudança não instalada nem mesclada. Requer CI, revisão, validação no Canvas e autorização específica. Em caso de API incompatível, não mostrar uma lua como atividade comprovada.
+## Segurança e evolução
+Identidade e autorização por projeto/tenant, política de minimização, origem e horários auditáveis, exclusão de segredos/prompts/dados de clientes e verificação de isolamento precedem descoberta de missões ou expansão de grafo. Preferir API autenticada read-only e inventário real; nunca usar associações livres digitadas como vínculo comprovado.
+Mudanças via PR e testes; implantação Canvas somente com autorização. Não modificar OpenHands Core, VPS, brokers nem outros projetos por implicação.
