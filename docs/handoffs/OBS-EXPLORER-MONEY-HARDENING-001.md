@@ -11,7 +11,7 @@ Representações monetárias limitadas a 64 caracteres, 30 dígitos, expoente
 absoluto até 18, ordem até 12; inteiros positivos limitados a 1 bilhão.
 São limites defensivos da prova, não tetos de modelo/provedor.
 
-Verificação local: 114 testes descobertos, 97 aprovados, 17 opcionais ignorados;
+Verificação local: 115 testes descobertos, 98 aprovados, 17 opcionais ignorados;
 diagnóstico estático e build/sintaxe JS aprovados, extension.js preservada.
 O runner SDK recebe a mesma suíte adversarial; CI ainda por conferir no HEAD.
 Revisão adversarial: contexto ambiente, excesso de precisão, insuficiência
@@ -23,3 +23,7 @@ não representáveis. Manter recusa, não inserir tolerância financeira arbitr�
 GO somente para provas offline após ambas CIs/revisão favorável no HEAD.
 NO-GO operacional: tarifas/modelo/caps reais, rede/worker operacional e autorização
 LLM continuam ausentes. Sem inferência, provedores, credenciais ou deploy.
+
+Achado adicional da revisão: delta monetário no adapter de rotas mocks ainda
+herdava contexto ambiente e contabilizava 0.001234567 como 0.0012. Teste
+RED reproduziu; mesmo contexto exato aplicado à subtração antes de settle.

@@ -226,6 +226,6 @@ registro/delegação, alteração de VPS, Canvas ou OpenHands Core.
 
 Base `50009d1` (PR #18 integrada). Contexto Decimal independente e exato,
 limites defensivos de representações e testes de sub-reserva implementados.
-114 testes descobertos: 97 aprovados, 17 opcionais ignorados localmente.
+115 testes descobertos: 98 aprovados, 17 opcionais ignorados localmente.
 CI/revisão do HEAD ainda por conferir; NO-GO operacional permanece.
 Handoff: `docs/handoffs/OBS-EXPLORER-MONEY-HARDENING-001.md`.

@@ -32,3 +32,18 @@ class MoneyPrecision(unittest.TestCase):
     def test_unbounded_numeric_representations_rejected(self):
         for value in ['1e999999','1e-999999','1.'+'2'*1000]:
             with self.subTest(value=value[:20]),self.assertRaises(GateError): BudgetBook(value)
+
+    def test_mock_boundary_cost_delta_is_not_rounded(self):
+        from test_canary_budget_boundary import FakeLLM,rates,caps
+        from canary_budget_boundary import synthetic_budgeted_llm_routes
+        class Fractional(FakeLLM):
+            def consume(self):
+                result=super().consume()
+                self.metrics.accumulated_cost=0.001234567
+                return result
+        with localcontext() as ambient:
+            ambient.prec=2;ambient.rounding=ROUND_DOWN
+            guard=Guard();book=BudgetBook('0.1')
+            with synthetic_budgeted_llm_routes(Fractional,guard,book,rates(),caps()):
+                Fractional().completion([])
+            self.assertEqual(Decimal('0.001234567'),book.spent)
