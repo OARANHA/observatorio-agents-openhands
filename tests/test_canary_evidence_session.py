@@ -84,5 +84,43 @@ class EvidenceSessionTests(unittest.TestCase):
         with self.assertRaises(GateError):s.accept(self.rehash(b))
         self.assertEqual(0,s.summary()['accepted_records'])
 
+    def test_non_ascii_window_digits_are_denied(self):
+        for field in ('window_start_utc','window_end_utc'):
+            with self.subTest(field=field):
+                params=dict(source_sha='a'*40,window_start_utc='2026-10-11T00:00:00Z',
+                            window_end_utc='2026-10-11T23:59:59Z')
+                params[field]='٢026-10-11T12:00:00Z'
+                with self.assertRaisesRegex(GateError,'^synthetic_session_invalid$'):
+                    self.api()(**params)
+
+    def test_non_ascii_receipt_stops_session_without_accepting_record(self):
+        s=self.session()
+        with self.assertRaisesRegex(GateError,'^synthetic_session_invalid$'):
+            s.accept(self.bundle('2026-10-11T12:00:0٠Z'))
+        self.assertEqual(0,s.summary()['accepted_records'])
+        self.assertTrue(s.summary()['stopped'])
+
+    def test_fresh_instance_can_reaccept_receipt_after_previous_instance_stops(self):
+        # Characterizes the documented restart gap, not durable replay protection.
+        receipt=self.bundle();first=self.session()
+        self.assertEqual(1,first.accept(receipt))
+        with self.assertRaises(GateError):first.accept(receipt)
+        self.assertTrue(first.summary()['stopped'])
+        fresh=self.session()
+        self.assertEqual(1,fresh.accept(receipt))
+        self.assertFalse(fresh.summary()['authenticity_proven'])
+
+    def test_leap_day_inclusive_window_and_invalid_calendar_parameters(self):
+        make=self.api()
+        leap=make(source_sha='a'*40,window_start_utc='2000-02-29T00:00:00Z',
+                  window_end_utc='2000-02-29T23:59:59Z')
+        self.assertEqual(1,leap.accept(self.bundle('2000-02-29T00:00:00Z')))
+        self.assertEqual(2,leap.accept(self.bundle('2000-02-29T23:59:59Z')))
+        for start,end in (('1900-02-29T00:00:00Z','1900-03-01T00:00:00Z'),
+                          ('2026-10-12T00:00:00Z','2026-10-11T00:00:00Z')):
+            with self.subTest(start=start,end=end):
+                with self.assertRaises(GateError):
+                    make(source_sha='a'*40,window_start_utc=start,window_end_utc=end)
+
 if __name__=='__main__':unittest.main(verbosity=2)
 

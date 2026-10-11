@@ -24,6 +24,51 @@ def installed():
 
 @unittest.skipUnless(installed(), 'requires isolated SDK/Tools 1.53.0')
 class OfficialManager(unittest.TestCase):
+    def test_paused_worker_error_and_cleanup_failure_are_distinct_with_hold_retained(self):
+        from openhands.tools.task.manager import TaskManager,ConversationExecutionStatus
+        from canary_controls import GateError
+        from test_canary_transport_attempts import setup
+        for cleanup_failure in (False,True):
+            with self.subTest(cleanup_failure=cleanup_failure):
+                gate=setup()
+                with self.assertRaises(GateError):
+                    with gate.logical_call():
+                        gate.invoke(lambda:'SYNTHETIC_UNSETTLED')
+                reservation=gate.book.active
+                self.assertIsNotNone(reservation)
+                self.assertGreater(reservation.ceiling_usd,0)
+                manager=TaskManager()
+                manager._parent_conversation=mock.Mock(_visualizer=None)
+                conversation=mock.Mock()
+                conversation.state.execution_status=ConversationExecutionStatus.PAUSED
+                conversation.state.events=[]
+                task=types.SimpleNamespace(id='synthetic',conversation=conversation,
+                    set_error=mock.Mock(),set_result=mock.Mock(),model_copy=mock.Mock())
+                if cleanup_failure:
+                    conversation.close.side_effect=RuntimeError('SYNTHETIC_CLEANUP')
+                with mock.patch.object(manager,'_update_parent_metrics') as metrics, \
+                     mock.patch('openhands.tools.task.manager.get_agent_final_response',
+                                return_value='SYNTHETIC_PARTIAL'):
+                    if cleanup_failure:
+                        with self.assertRaisesRegex(RuntimeError,'^SYNTHETIC_CLEANUP$'):
+                            manager._run_task(task,'synthetic public only')
+                    else:
+                        self.assertIs(task,manager._run_task(task,'synthetic public only'))
+                # A paused worker is an SDK error, even when it has partial output.
+                task.set_error.assert_called_once_with(
+                    'Sub-agent stopped without finishing (status: paused).\n'
+                    'Partial result:\nSYNTHETIC_PARTIAL')
+                task.set_result.assert_not_called()
+                conversation.run.assert_called_once()
+                metrics.assert_called_once()
+                conversation.pause.assert_called_once();conversation.close.assert_called_once()
+                self.assertEqual(not cleanup_failure,task.model_copy.called)
+                self.assertIs(reservation,gate.book.active)
+                self.assertTrue(gate.book.closed);self.assertTrue(gate.guard.cancelled)
+                with self.assertRaises(GateError):
+                    with gate.logical_call():gate.invoke(lambda:'FORBIDDEN')
+                self.assertIs(reservation,gate.book.active)
+
     def test_cleanup_failure_cannot_reopen_cancelled_guard(self):
         from openhands.tools.task.manager import TaskManager,ConversationExecutionStatus,ConversationState
         from canary_controls import GateError

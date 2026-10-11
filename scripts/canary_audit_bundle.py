@@ -55,7 +55,7 @@ def verify_synthetic_audit_bundle(bundle):
         _require(parsed.version==4 and str(parsed)==ident[10:])
         stamp=bundle['observed_at_utc']
         _require(type(stamp) is str and re.fullmatch(
-            r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z',stamp) is not None)
+            r'[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z',stamp) is not None)
         datetime.strptime(stamp,'%Y-%m-%dT%H:%M:%SZ')
         report=bundle['accounting']
         _require(type(report) is dict and frozenset(report)==REPORT_FIELDS)
