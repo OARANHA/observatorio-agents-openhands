@@ -2,8 +2,8 @@
   "schema_version": 1,
   "name": "observatorio-agentes",
   "display_name": "Observatório de Agentes",
-  "version": "0.4.1",
-  "description": "Sistema solar de agentes: demonstração visual, sem ações nem dados autenticados.",
+  "version": "0.4.2",
+  "description": "Universo demonstrativo com consulta manual e somente leitura de missão OpenHands.",
   "entrypoint": "extension.js",
   "contributes": {
     "pages": [
