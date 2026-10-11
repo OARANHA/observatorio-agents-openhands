@@ -25,7 +25,9 @@ class SDKBaseline:
 
 
 def _cache(metrics):
-    usage = metrics.accumulated_token_usage
+    usage = getattr(metrics,'accumulated_token_usage',None)
+    if usage is None:
+        raise GateError('usage_missing')
     counts = (getattr(usage, "cache_read_tokens", None),
               getattr(usage, "cache_write_tokens", None))
     if any(type(x) is not int or x < 0 for x in counts):
