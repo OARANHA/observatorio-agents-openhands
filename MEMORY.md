@@ -369,3 +369,19 @@ model_info em threads/subprocess só serão comprovadas no netns do runner.
 171 locais: 146 PASS/25 opcionais SDK skip. AST de fontes SDK disponível
 em docs/SDK_AUXILIARY_EGRESS_INVENTORY.md; não certifica dependências.
 G05/G06/G07 PARCIAIS. Sem provedor, credencial, registro/delegação. NO-GO.
+
+
+## Sessão de evidências e pacote de revisão — 2026-10-11
+
+PR #31 integrada f749f5918b86ab0ce6624d220e4354e2e69ef5d2. Runs
+38145217813 / 38145217812 GREEN; logs SDK: 15 testes reais com stubs e
+HTTP auxiliar/threads/filho e 3 deferred negativos PASS, nenhum provedor.
+Consumidor SyntheticEvidenceSession reutiliza envelope v1: cap 1–64, SHA/
+janela declarados, UUID/hash replay, tempo/finanças/counters regressivos
+negados. Recusa/cap/receipt fechado são terminais. Oito testes: contrato
+ausente RED; parada tardia no cap RED corrigida; 179 locais, 154 PASS/25
+opcionais SDK skip. CI deste incremento pendente. Pacote em
+docs/INDEPENDENT_REVIEW_PACKET.md: ameaças/checklists/conta/limites/revisão,
+parada/revogação e autorização única; não provisiona nada. Sem autenticação
+fictícia; replay só em memória, perdido no restart. G10 PARCIAL, G11 NÃO
+PROVADO e G12 bloqueado. NO-GO operacional mantido.
