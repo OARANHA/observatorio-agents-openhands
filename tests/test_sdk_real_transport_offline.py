@@ -150,7 +150,7 @@ class RealSDKOfflineTests(unittest.TestCase):
         # flags and namespace comparison are the primary evidence.
         cls.namespace_identity = current
 
-    def test_litellm_does_not_fetch_remote_price_map_at_import(self):
+    def test_litellm_local_price_map_flag_present(self):
         self.assertEqual(
             "True", os.environ["LITELLM_LOCAL_MODEL_COST_MAP"]
         )
