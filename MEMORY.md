@@ -479,3 +479,18 @@ instruções OpenHands, recomendação fixa local. Identidade PR35 copiada sem m
 funções, hash/proveniência testados; #7/#35 intocadas. Node9PASS,213Python locais/
 185PASS/28SDKskip; DOM ainda depende runner. Ver docs/CYCLE004_MENTOR_DEMO.md.
 Orientação não é autorização; dados DEMO não são consulta autenticada. NO-GO.
+
+## Fechamento CYCLE004 — eventos e mentoria (2026-10-11)
+
+Ver docs/handoffs/OBS-CYCLE-004-EVENTS-MENTORSHIP.md e GO_NO_GO_MATRIX.md para
+HEADs/CIs/logs/merges, fontes fixadas, negativos e limites. Slack conectado,
+aprovações de teste criado; Work recusou evento por app oficial, sem tarefa/
+mensagem/disparo e sem polling substituto. Gateway/continuidade/Mentor fictícios,
+sem execução/presença ChatGPT/Canvas/MCP real. Ambos sockets aceitam mensagens;
+stop goal/stop não garante encerramento. DOMTabRED reproduzido/corrigido sem
+reduzir sandbox; prova final no handoff. NO-GO/G11/P02/P03 preservados. #7/#35
+intocadas abertas; documentação anterior preservada. SHA final na PR de fechamento.
+
+#40 integrada96ed4a3c5ce659aa55a4841716e7623d30aaeb64 após3CIs HEADb3ee40f...
+GREEN/logs reais/QA antesmerge:213Python185PASS28SDKskip;125SDK/9Node/5DOMPASS.
+Mentor somente standaloneDEMO, sem Canvas. Main pré-consolidação96ed4a3... .

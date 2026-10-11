@@ -69,3 +69,14 @@ DOM. Sandbox/instalação/geração passaram; não é motivo para desligar isola
 Corrigido o ciclo explícito Tab/Shift+Tab dos controles habilitados e acrescentada
 assertiva de wrap reverso. Mesmo teste de contenção permanece obrigatório;
 resultado final depende da nova CI, sem alegação GREEN antes dela.
+
+### Resultado final efetivamente comprovado
+
+HEADb3ee40f9f1a08f674ad456106e6bcc46e1f4ada0: principal38162575498,
+SDK38162575476 e DOM38162575506 GREEN; logs reais antes do merge
+96ed4a3c5ce659aa55a4841716e7623d30aaeb64. DOM5/5 e Node9/9 semskip,
+SDK125/125; principal213/185PASS/28SDKskip explícitos. Capturas finalHEAD
+examinadas/checksum conferido, artefato11711135617 expira2026-10-14.
+Diálogo mobile contido com scroll interno; sem certificação de leitor de tela
+ou RBAC. Nenhum teste/sandbox afrouxado, nenhuma instalação Canvas. Detalhes
+e IDs corretos no handoff CYCLE004.

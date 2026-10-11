@@ -528,3 +528,20 @@ Identidade local da PR35 reutilizada com hash/proveniência, sem integrar #35 ou
 mudar extensão/Canvas. Node9PASS, Python213/185PASS/28SDKskip; DOM aguardando prova
 runner. Ver [CYCLE004_MENTOR_DEMO](CYCLE004_MENTOR_DEMO.md). Sem ChatGPT presente,
 autorização ao agente, RBAC comprovado ou recuperação de memória. NO-GO vigente.
+
+## Fechamento CYCLE004 — eventos e mentoria (2026-10-11)
+
+Handoff [OBS-CYCLE-004-EVENTS-MENTORSHIP](handoffs/OBS-CYCLE-004-EVENTS-MENTORSHIP.md)
+consolida fontes oficiais fixadas, #38/#39/#40 e PR de documentação, HEADs/CIs/
+logs/merges e limites. Slack Wandora consultado/aprovações de teste criado; Work
+recusou gatilho por app oficial não reconhecido, nenhuma tarefa/mensagem/disparo.
+MCP público já possui events; stop usa goal/stop; ambos sockets podem iniciar run.
+Contratos/gateway/Mentor apenas sintéticos/inertes, sem patch MCP ou instalação.
+Mentor DOM inicial4/5RED no focoTab, corrigido mantendo sandbox/testes; prova final
+no handoff. Matriz GO/NO-GO atualizada sem promover G11/G12/P02/P03. #7/#35 abertas,
+sem alterações; todos os handoffs preservados. SHA final da consolidação na PR.
+
+#40 integrada96ed4a3c5ce659aa55a4841716e7623d30aaeb64, HEADb3ee40f...:3CIs
+GREEN,213Python/185PASS/28SDKskip,125SDK/9Node/5DOMPASS semskip dedicado. Logs
+reais e capturas fictícias examinados antes do merge; nenhuma instalação.
+Main pré-consolidação96ed4a3c5ce659aa55a4841716e7623d30aaeb64.
