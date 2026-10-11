@@ -313,7 +313,7 @@ Esta seção prevalece sobre snapshots históricos acima; detalhes/SHAs/runs e d
 | G09/G11 | NÃO PROVADO → NÃO PROVADO | Nenhum provisionamento/review independente; autorrevisão automatizada identificada |
 | G10 | PARCIAL → PARCIAL | UTC/UUID mais estritos; replay em memória não persiste no restart, hash não autentica |
 | G12 | BLOQUEADO → BLOQUEADO | NO-GO; autorização operacional separada ausente |
-| P01 | PARCIAL → PARCIAL | #35 seis cenários DOM sintéticos GREEN; #7 intocada, #35 aberta, sem Canvas instalado |
+| P01 | PARCIAL → PARCIAL | #35 seis cenários DOM sintéticos GREEN; #7 intocada, #35 aberta, sem instalar esta versão no Canvas |
 | P02 | NÃO PROVADO → NÃO PROVADO | IDs locais compostos não comprovam tenant/RBAC/autorização |
 | P03 | NÃO PROVADO → NÃO PROVADO | Memória persistente não testada; não confundir com acessibilidade DOM |
 
