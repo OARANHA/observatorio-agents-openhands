@@ -55,3 +55,17 @@ chaves/ferramentas duplicadas, extras, sintaxe não suportada e iterações acim
 diagnóstico estático e loader local SDK/Tools 1.53.0 aprovados, build/sintaxe JS
 preservados. Formato e limites em `team/SDK_DIAGNOSTIC.md`.
 Não houve registro/delegação, mudança no runtime, merge ou deploy.
+
+## Preparação do primeiro canário Explorer — 2026-10-11
+
+PR #9 integrada à main `789d442e586466ee7085a1724028d7e1edba7ec0`,
+confirmada por Git e metadados GitHub. Snapshot local separado/limpo preparado
+nesse SHA. SDK/Tools 1.53.0: descoberta oficial code-explorer (terminal),
+registry vazio antes/depois, 27 testes e diagnóstico estático aprovados.
+**Nenhum registro, delegação ou tarefa LLM foi iniciado.**
+Plano: `docs/handoffs/OBS-EXPLORER-CANARY-PLAN-001.md`.
+Execução bloqueada até definir modelo/tarifas/credencial autorizada e homologar
+isolamento, callback de confirmação e limite global. bwrap falhou localmente;
+worktree não é sandbox. Orçamento/iterações do SDK têm limites documentados.
+Aguardará autorização explícita após apresentar condições concretas.
+Nenhuma mudança no Canvas/VPS/Core ou projetos atendidos; sem merge/deploy.
