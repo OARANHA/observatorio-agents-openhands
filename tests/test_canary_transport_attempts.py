@@ -49,24 +49,29 @@ def fake_sinks(*, raises=False):
     return module, attempts
 
 
+async def dispatch(module, name):
+    if name.startswith("litellm_a"):
+        return await getattr(module, name)(messages=[])
+    return getattr(module, name)(messages=[])
+
+
 class TransportAttemptGateTests(unittest.TestCase):
     def test_each_of_four_sinks_gets_reservation_before_fake_dispatch(self):
         for name in SINK_NAMES:
             with self.subTest(name=name):
                 gate=setup()
                 module, attempts=fake_sinks()
-                with synthetic_litellm_sinks(module, gate):
+                async def scenario():
                     with gate.logical_call():
-                        if name.startswith("litellm_a"):
-                            result=asyncio.run(getattr(module, name)(messages=[]))
-                        else:
-                            result=getattr(module, name)(messages=[])
+                        result=await dispatch(module,name)
                         self.assertEqual("fake_response", result)
                         self.assertEqual(1, gate.book.calls)
                         self.assertEqual(1, gate.guard.calls)
                         self.assertEqual(1, len(attempts))
                         gate.settle(input_tokens=100, output_tokens=100,
                                     reported_usd="0.001")
+                with synthetic_litellm_sinks(module, gate):
+                    asyncio.run(scenario())
                 self.assertEqual(1,gate.attempts)
                 self.assertEqual("0.001", str(gate.book.spent))
                 self.assertIsNone(gate.book.active)
@@ -90,14 +95,13 @@ class TransportAttemptGateTests(unittest.TestCase):
             with self.subTest(first=first,second=second):
                 gate=setup()
                 module, attempts=fake_sinks()
+                async def scenario():
+                    with gate.logical_call():
+                        for name in (first,second):
+                            await dispatch(module,name)
                 with synthetic_litellm_sinks(module,gate):
                     with self.assertRaisesRegex(GateError,"second_transport_attempt_forbidden"):
-                        with gate.logical_call():
-                            for name in (first,second):
-                                if name.startswith("litellm_a"):
-                                    asyncio.run(getattr(module,name)(messages=[]))
-                                else:
-                                    getattr(module,name)(messages=[])
+                        asyncio.run(scenario())
                 self.assertEqual(1,len(attempts))
                 self.assertEqual(1,gate.book.calls)
                 self.assertTrue(gate.book.closed)
@@ -173,10 +177,12 @@ class TransportAttemptGateTests(unittest.TestCase):
             attempts.append("cancelled")
             raise asyncio.CancelledError()
         module.litellm_aresponses=cancelled
+        async def scenario():
+            with gate.logical_call():
+                await module.litellm_aresponses(messages=[])
         with synthetic_litellm_sinks(module,gate):
             with self.assertRaises(asyncio.CancelledError):
-                with gate.logical_call():
-                    asyncio.run(module.litellm_aresponses(messages=[]))
+                asyncio.run(scenario())
         self.assertEqual(1,len(attempts))
         self.assertTrue(gate.book.closed)
 
