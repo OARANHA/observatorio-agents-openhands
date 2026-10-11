@@ -74,6 +74,7 @@ jobs:
             --setenv PATH /usr/bin:/bin \
             --setenv HOME /tmp \
             --setenv PYTHONDONTWRITEBYTECODE 1 \
+            --setenv LITELLM_LOCAL_MODEL_COST_MAP True \
             --setenv OBS_CANARY_HOST_NETNS "$HOST_NS" \
             --chdir "$GITHUB_WORKSPACE" \
             -- "$RUNNER_TEMP/observatorio-canary-sdk/bin/python" -B -m unittest discover \
