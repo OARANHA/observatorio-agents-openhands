@@ -191,3 +191,16 @@ pela rede descompartilhada. A branch da PR #17 foi corrigida para
 via bwrap. CI do novo HEAD pendente; não alegar GREEN antecipadamente.
 Handoff: `docs/handoffs/OBS-EXPLORER-SDK-REAL-OFFLINE-001.md`.
 **NO-GO** para LLM/registro/delegação/deploy/merge implícito.
+
+## Segunda falha CI da PR #17 — compatibilidade de coleta sem SDK (2026-10-11)
+
+HEAD `6dfac7b9b3769005c3c3c563cb8ce74faf425e40`:
+SDK runner `38115115662` GREEN, com 6/6 testes reais de método SDK
+em transporte stubado/namespace isolado. CI principal `38115115652`
+RED: `ModuleNotFoundError: No module named 'pydantic'` ao importar
+`tests/test_sdk_real_transport_offline.py`. O runner principal
+intencionalmente não instala SDK/Pydantic. Ajustado import de
+`SecretStr` para ocorrer apenas junto da importação opcional do SDK.
+Revalidar o HEAD posterior antes de merge. Contexto:
+`docs/handoffs/OBS-EXPLORER-SDK-REAL-OFFLINE-001.md`.
+**NO-GO operacional**.
