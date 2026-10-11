@@ -3,7 +3,7 @@ from contextlib import contextmanager
 import importlib.metadata
 import inspect
 import math
-from canary_controls import GateError, confirm
+from canary_controls import GateError, mission_confirmation
 
 
 def sdk_bindings():
@@ -14,10 +14,11 @@ def sdk_bindings():
     return Tool, TaskToolSet, register_builtins_agents
 
 
-def task_spec(approval=None):
+def task_spec(guard, approval=None):
     """Return official tool spec with explicit fail-closed callback; does not execute."""
     Tool, TaskToolSet, _register=sdk_bindings()
-    def callback(task_id,pending): return confirm(task_id,pending,approval)
+    def callback(task_id,pending):
+        return mission_confirmation(guard,task_id,pending,approval)
     return Tool(name=TaskToolSet.name,params={'confirmation_handler':callback,
                'sub_agent_scope':{'tools':True,'mcp_servers':True}})
 

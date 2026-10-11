@@ -6,7 +6,7 @@ import types
 import unittest
 from unittest import mock
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / 'scripts'))
-from canary_controls import GateError, Guard, confirm, ALLOWED, sandbox_argv, snapshot, supervise, terminal_executor, quote
+from canary_controls import GateError, MissionCancelled, Guard, confirm, ALLOWED, sandbox_argv, snapshot, supervise, terminal_executor, quote
 from canary_sdk import guarded_llm, task_spec, sdk_bindings
 
 class Controls(unittest.TestCase):
@@ -73,12 +73,12 @@ class Controls(unittest.TestCase):
         g=Guard(); action=types.SimpleNamespace(command='cat AGENTS.md',is_input=False)
         with mock.patch('canary_controls.supervise',return_value='public') as run:
             execute=terminal_executor(pathlib.Path('/snapshot'),g)
-            with self.assertRaises(GateError): execute(action)
+            with self.assertRaises(MissionCancelled): execute(action)
             run.assert_not_called()
             execute=terminal_executor(pathlib.Path('/snapshot'),Guard(),lambda *_:True)
             self.assertEqual('public',execute(action))
             action.command='env'
-            with self.assertRaises(GateError): execute(action)
+            with self.assertRaises(MissionCancelled): execute(action)
             self.assertEqual(1,run.call_count)
 
     def test_only_one_delegation_can_be_reserved(self):
@@ -129,7 +129,7 @@ class Wiring(unittest.TestCase):
         sdk=types.ModuleType('openhands.sdk'); sdk.Tool=mock.Mock(side_effect=lambda **kw:kw)
         tools=types.ModuleType('openhands.tools');tools.register_builtins_agents=register;tools.TaskToolSet=types.SimpleNamespace(name='TaskToolSet')
         with mock.patch.dict(sys.modules,{'openhands.sdk':sdk,'openhands.tools':tools}),mock.patch('importlib.metadata.version',return_value='1.53.0'):
-            spec=task_spec(lambda *_:False)
+            spec=task_spec(Guard(),lambda *_:False)
             self.assertTrue(callable(spec['params']['confirmation_handler']))
             self.assertEqual({'tools':True,'mcp_servers':True},spec['params']['sub_agent_scope'])
         register.assert_not_called()
@@ -172,3 +172,74 @@ class Wiring(unittest.TestCase):
             (root/'outside').mkdir()
             (root/'link').symlink_to(root/'outside',target_is_directory=True)
             with self.assertRaises(GateError): snapshot(source,root/'link'/'state')
+
+class MissionDenial(unittest.TestCase):
+    def test_official_callback_denial_stops_manager_before_second_run(self):
+        from canary_controls import MissionCancelled
+        guard=Guard()
+        event=types.SimpleNamespace(action=types.SimpleNamespace(command='pwd',is_input=False))
+        with mock.patch('canary_sdk.sdk_bindings',return_value=(lambda **kw:kw,types.SimpleNamespace(name='TaskToolSet'),mock.Mock())):
+            callback=task_spec(guard,lambda *_:False)['params']['confirmation_handler']
+        conversation=mock.Mock()
+        def manager_flow():
+            conversation.run()
+            if callback('synthetic',[event]):
+                conversation.run()
+            else:
+                conversation.reject_pending_actions('User rejected the actions')
+                conversation.run()
+        with self.assertRaises(MissionCancelled): manager_flow()
+        self.assertTrue(guard.cancelled)
+        conversation.run.assert_called_once()
+        conversation.reject_pending_actions.assert_not_called()
+        with guarded_llm(FakeLLM,guard):
+            llm=FakeLLM()
+            with self.assertRaises(GateError): llm.completion()
+            self.assertEqual(0.,llm.metrics.accumulated_cost)
+        with mock.patch('canary_controls.supervise') as run:
+            with self.assertRaises(MissionCancelled):
+                terminal_executor(pathlib.Path('/snapshot'),guard,lambda *_:True)(event.action)
+            run.assert_not_called()
+
+    def test_missing_invalid_or_exceptional_approval_cancels_permanently(self):
+        from canary_controls import MissionCancelled, mission_confirmation
+        event=types.SimpleNamespace(action=types.SimpleNamespace(command='pwd',is_input=False))
+        for approval in [None,lambda *_:False,lambda *_:'yes',lambda *_:1/0]:
+            guard=Guard()
+            with self.assertRaises(MissionCancelled): mission_confirmation(guard,'synthetic',[event],approval)
+            self.assertTrue(guard.cancelled)
+            later=mock.Mock(return_value=True)
+            with self.assertRaises(MissionCancelled): mission_confirmation(guard,'synthetic',[event],later)
+            later.assert_not_called()
+
+    def test_direct_terminal_denial_cancels_guard_and_blocks_later_llm(self):
+        from canary_controls import MissionCancelled
+        guard=Guard();action=types.SimpleNamespace(command='env',is_input=False)
+        with mock.patch('canary_controls.supervise') as run:
+            with self.assertRaises(MissionCancelled): terminal_executor(pathlib.Path('/snapshot'),guard,lambda *_:True)(action)
+            run.assert_not_called()
+        with guarded_llm(FakeLLM,guard):
+            with self.assertRaises(GateError): FakeLLM().responses()
+        self.assertEqual(0,guard.calls)
+
+    def test_approved_callback_keeps_shared_guard_active(self):
+        from canary_controls import mission_confirmation
+        guard=Guard();event=types.SimpleNamespace(action=types.SimpleNamespace(command='pwd',is_input=False))
+        self.assertTrue(mission_confirmation(guard,'synthetic',[event],lambda *_:True))
+        self.assertFalse(guard.cancelled)
+
+    def test_denial_blocks_every_llm_route_and_supervisor_kills_worker(self):
+        import asyncio
+        guard=Guard();guard.cancel()
+        llm=FakeLLM()
+        with guarded_llm(FakeLLM,guard):
+            for route in ('completion','responses'):
+                with self.assertRaises(GateError): getattr(llm,route)()
+            for route in ('acompletion','aresponses'):
+                with self.assertRaises(GateError): asyncio.run(getattr(llm,route)())
+        self.assertEqual(0.,llm.metrics.accumulated_cost)
+        proc=mock.Mock(pid=123)
+        proc.communicate.side_effect=[MissionCancelled('synthetic'),('','')]
+        with mock.patch('canary_controls.os.killpg') as kill:
+            with self.assertRaises(GateError): supervise(['synthetic'],1,popen=mock.Mock(return_value=proc))
+        kill.assert_called_once()

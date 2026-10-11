@@ -16,6 +16,14 @@ ALLOWED = {'pwd': ['/usr/bin/pwd'], **{
 class GateError(RuntimeError):
     """A gate prevented continuation; messages contain no operational payloads."""
 
+class MissionCancelled(BaseException):
+    """Terminal worker signal, deliberately outside SDK's recoverable Exception path.
+
+    The official TaskManager catches Exception in _run_task. This signal must
+    escape that handler while its finally cleanup still runs. Never resume the
+    worker after catching it; the shared Guard is cancelled before it is raised.
+    """
+
 class Guard:
     def __init__(self, max_calls=6, seconds=120., budget=.10, clock=time.monotonic):
         if type(max_calls) is not int or max_calls < 1:
@@ -67,6 +75,22 @@ def confirm(task_id, pending, approval=None):
         return True
     except Exception:
         return False
+
+
+def mission_confirmation(guard, task_id, pending, approval=None):
+    """Approval callback: first denial permanently terminates the whole mission."""
+    if guard.cancelled or guard.clock() >= guard.deadline or guard.cost >= guard.budget:
+        guard.cancel()
+        raise MissionCancelled('mission_stopped')
+    try:
+        accepted = confirm(task_id, pending, approval)
+    except BaseException:
+        guard.cancel()
+        raise
+    if not accepted or guard.cancelled or guard.clock() >= guard.deadline:
+        guard.cancel()
+        raise MissionCancelled('approval_denied_mission_stopped')
+    return True
 
 
 def snapshot(source: Path, state: Path) -> Path:
@@ -127,10 +151,7 @@ def terminal_executor(root,guard,approval=None):
     """Callback usable by the official TerminalTool executor adapter, no shell."""
     from types import SimpleNamespace
     def execute(action):
-        if guard.cancelled or guard.clock() >= guard.deadline:
-            raise GateError('terminal_deadline')
-        if not confirm('terminal',[SimpleNamespace(action=action)],approval):
-            raise GateError('approval_missing_or_command_denied')
+        mission_confirmation(guard, 'terminal', [SimpleNamespace(action=action)], approval)
         try:
             return supervise(sandbox_argv(root,action.command),
                              min(30.,guard.deadline-guard.clock()))
