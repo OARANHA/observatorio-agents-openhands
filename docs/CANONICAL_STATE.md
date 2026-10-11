@@ -11,7 +11,7 @@
 - Sem descoberta de missões automática, monitoramento contínuo, grafo Obsidian operacional, agentes reais identificados, inventário multi-projeto verificado, controle de execução pela UI ou RBAC multi-tenant comprovado.
 
 ## IDENTIDADE E FRONTEIRAS — regra canônica
-Consulte `docs/decisions/ADR-0002-horizontal-operations.md`.
+Consulte `docs/PROJECT_SOURCE.md` e `AGENTS.md`.
 **ChatGPT coordena → OpenHands executa tarefas autorizadas → Observatório exibe o que for verificável → GitHub registra histórico e decisões**.
 **VIGIAFAST e demais produtos são PROJETOS ATENDIDOS; não são donos, camadas-base ou sinônimos de OpenHands/Observatório.**
 Nenhuma memória do OpenHands ou conteúdo dos projetos deve ser compartilhado transversalmente sem controle de escopo.
