@@ -9,7 +9,7 @@ GitHub = documentação viva, código, testes, PRs e histórico dos projetos ate
 **VIGIAFAST, Wandora, ELUS e outros são projetos independentes atendidos**. Nunca converter requisito horizontal em funcionalidade de VIGIAFAST apenas porque o chat usa o projeto CRISEDIGITAL.
 
 Leia PRIMEIRO `docs/PROJECT_SOURCE.md` → este arquivo → `docs/decisions/` → `docs/CANONICAL_STATE.md` e `MEMORY.md` → `docs/ARCHITECTURE.md` → `README.md` → código/testes → estado real.
-Leia `docs/decisions/ADR-0002-horizontal-operations.md` antes de sugerir nova função, agente, integração ou módulo.
+Leia `docs/PROJECT_SOURCE.md` e `docs/CANONICAL_STATE.md` antes de sugerir nova função, agente, integração ou módulo.
 
 ## REALIDADE E GOVERNANÇA
 - Separar **demo**, **consultado e autenticado**, **declarado manualmente**, **inferido** e **planejado**.
