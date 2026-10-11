@@ -25,6 +25,68 @@ EXPECTED = {
 }
 HEADER = re.compile(r"\A---\r?\n(.*?)\r?\n---(?:\r?\n|\Z)", re.DOTALL)
 
+# Recognizer for this project's six-field contract, NOT a general YAML parser.
+# Unsupported YAML forms fail closed; the SDK remains the authoritative loader.
+ROLE_LIMITS = {
+    "observatorio-construtor": ({"terminal", "file_editor"}, 12),
+    "observatorio-verificador": ({"terminal"}, 10),
+}
+FIELDS = {"name", "description", "tools", "model", "permission_mode", "max_iteration_per_run"}
+
+
+def valid_contract_header(header: str, name: str) -> bool:
+    """Accept only unique plain keys, block tool lists and plain/folded descriptions."""
+    if any(ord(char) < 32 and char != "\n" for char in header):
+        return False
+    lines = header.splitlines()
+    values = {}
+    index = 0
+    while index < len(lines):
+        match = re.fullmatch(r"([a-z_]+):(?: (.*))?", lines[index])
+        if not match:
+            return False
+        key, value = match.groups()
+        if key not in FIELDS or key in values:
+            return False
+        index += 1
+        if key == "tools":
+            if value is not None:
+                return False
+            tools = []
+            while index < len(lines) and lines[index].startswith(" "):
+                item = re.fullmatch(r"  - ([a-z_]+)", lines[index])
+                if not item:
+                    return False
+                tools.append(item.group(1))
+                index += 1
+            if len(tools) != len(set(tools)):
+                return False
+            values[key] = set(tools)
+        elif key == "description":
+            if value == ">":
+                start = index
+                while index < len(lines) and lines[index].startswith(" "):
+                    if not re.fullmatch(r"  \S.*", lines[index]):
+                        return False
+                    index += 1
+                if index == start:
+                    return False
+            elif (not value or not re.fullmatch(r"[A-Za-zÀ-ÖØ-öø-ÿ][\w .,;()/+-]*", value)
+                  or value.lower() in {"null", "true", "false", "yes", "no", "on", "off"}):
+                return False
+            values[key] = value
+        else:
+            values[key] = value
+    tools, ceiling = ROLE_LIMITS[name]
+    iterations = values.get("max_iteration_per_run") or ""
+    return (set(values) == FIELDS
+            and values["name"] == name
+            and values["model"] == "inherit"
+            and values["permission_mode"] == "always_confirm"
+            and values["tools"] == tools
+            and re.fullmatch(r"[1-9][0-9]?", iterations) is not None
+            and int(iterations) <= ceiling)
+
 
 def inspect_definitions(workspace: Path) -> dict:
     """Inspeciona somente arquivos de agentes conhecidos, sem acesso transversal."""
@@ -38,14 +100,8 @@ def inspect_definitions(workspace: Path) -> dict:
         raw = path.read_text(encoding="utf-8")
         found = HEADER.match(raw)
         header = found.group(1) if found else ""
-        required = all((
-            re.search(r"(?m)^name:[ \t]*" + re.escape(name) + r"[ \t]*$", header),
-            re.search(r"(?m)^description:[ \t]*", header),
-            re.search(r"(?m)^model:[ \t]*inherit[ \t]*$", header),
-            re.search(r"(?m)^permission_mode:[ \t]*always_confirm[ \t]*$", header),
-            re.search(r"(?m)^max_iteration_per_run:[ \t]*[1-9][0-9]*[ \t]*$", header),
-            re.search(r"(?m)^tools:[ \t]*\n[ \t]+-[ \t]+(?:terminal|file_editor)[ \t]*$", header),
-        )) and not re.search(r"(?m)^mcp_servers:[ \t]*", header) and "never_confirm" not in raw
+        required = (found is not None and valid_contract_header(header, name)
+                    and bool(raw[found.end():].strip()) and "never_confirm" not in raw)
         agents[name] = {
             "path": relative,
             "status": "contrato_estatico_valido" if required else "contrato_estatico_invalido",

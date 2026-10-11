@@ -58,3 +58,40 @@ A prova valida parsing/carregamento local, não registro, ferramentas habilitada
 execução ou delegação no OpenHands instalado. Agent Server não foi instalado nem
 validado localmente. O catálogo permanece não ativado. A autorização desta tarefa
 abrange integração, commits e PR, não merge/deploy ou missão com custo LLM.
+
+## Correção da revisão #5481728232 — 2026-10-11
+
+REAL NOW: PR #9 aberta; main `1fb8575bc55778130d8e8c6184e8939c54aa6bab`,
+HEAD de retomada `94d5123bf4715282b97d39c430ffb862e5d8ed10`.
+PROVEN EVIDENCE: testes reproduziram 21 falsos positivos do validador anterior.
+REUSE GATE: SDK 1.53.0 usa `python-frontmatter` para carregar YAML; seu schema
+não impõe unicidade de chaves, ferramentas exatas ou os tetos deste projeto.
+DECISION: conservar stdlib e reconhecer somente o contrato restrito abaixo;
+não implementar nem alegar suporte a YAML genérico. O loader oficial é mantido
+no modo `--sdk` para comprovar compatibilidade local das definições existentes.
+
+Formato aceito pelo modo estático:
+- Exatamente seis chaves simples, únicas, no nível raiz, em qualquer ordem:
+  `name`, `description`, `tools`, `model`, `max_iteration_per_run`, `permission_mode`.
+- `name` deve corresponder ao papel; `model: inherit` e
+  `permission_mode: always_confirm` devem aparecer sem aspas/comentários.
+- `tools:` sem valor inline, seguido por itens `  - nome` (dois espaços).
+  Construtor exige exatamente terminal e file_editor; Verificador exatamente
+  terminal. Ordem irrelevante; extras, ausências e duplicatas são inválidos.
+- Iterações: inteiro decimal positivo sem aspas, no máximo 12/10 por papel.
+- Descrição simples não vazia, começando com letra e usando letras/números,
+  espaços e pontuação limitada (`.,;()/+-`); palavras YAML booleanas/null
+  não são descrições. Ou `description: >` com linhas não vazias iniciadas
+  por exatamente dois espaços. As descrições folded existentes são preservadas.
+- Delimitadores de frontmatter e corpo não vazio são obrigatórios.
+- Tabs, comentários no header, chaves adicionais/duplicadas, tags, anchors,
+  aliases, merges, listas inline, aspas e quaisquer formas não reconhecidas
+  são rejeitados. YAML válido mais amplo pode ser recusado deliberadamente;
+  ampliá-lo exige revisão do contrato e testes, não fallback permissivo.
+
+Validação após correção: **27 testes aprovados**, diagnóstico estático saída 0,
+loader SDK/Tools 1.53.0 saída 0 com os dois nomes e preset nativo, build
+reprodutível e sintaxe JS aprovados. Nenhuma definição ou política real foi
+alterada, nenhum registro/delegação executado. CI do novo HEAD consultada uma
+vez após publicação; resultado informado na resposta à revisão e na entrega.
+Esta validação de arquivos não é sandbox, RBAC ou prova de agentes operacionais.

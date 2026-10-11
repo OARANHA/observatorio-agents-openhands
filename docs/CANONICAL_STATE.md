@@ -45,3 +45,13 @@ Relato histórico de OBS-TEAM-CANARY-001 veio do ZIP; MCP original não relido.
 Evidências e limites: `docs/handoffs/OBS-TEAM-CANARY-001.md` e
 `team/SDK_DIAGNOSTIC.md`. Catálogo segue não ativado; app instalado não atualizado.
 Nenhum merge/deploy realizado. PR #7 do grafo continua separada.
+
+## PR #9 — correção da revisão técnica em 2026-10-11
+
+Revisão `5481728232` atendida a partir do HEAD `94d5123` na branch existente.
+Validação estática reconhece o contrato restrito de seis campos, rejeita
+chaves/ferramentas duplicadas, extras, sintaxe não suportada e iterações acima
+12/10; confirmação permanece `always_confirm`. **27 testes aprovados**,
+diagnóstico estático e loader local SDK/Tools 1.53.0 aprovados, build/sintaxe JS
+preservados. Formato e limites em `team/SDK_DIAGNOSTIC.md`.
+Não houve registro/delegação, mudança no runtime, merge ou deploy.

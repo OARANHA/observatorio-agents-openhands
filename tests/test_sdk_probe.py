@@ -16,7 +16,7 @@ GOOD_HEADER = """---
 name: {name}
 description: Teste sintético.
 tools:
-  - terminal
+{tools}
 model: inherit
 max_iteration_per_run: 10
 permission_mode: always_confirm
@@ -30,7 +30,7 @@ class DiagnosticContract(unittest.TestCase):
         target = root / ".agents" / "agents"
         target.mkdir(parents=True)
         for name in ("observatorio-construtor", "observatorio-verificador"):
-            (target / (name + ".md")).write_text(GOOD_HEADER.format(name=name), encoding="utf-8")
+            (target / (name + ".md")).write_text(GOOD_HEADER.format(name=name, tools="  - terminal" + ("\n  - file_editor" if name.endswith("construtor") else "")), encoding="utf-8")
 
     def test_arquivo_ausente_nao_eh_ativacao(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -47,6 +47,79 @@ class DiagnosticContract(unittest.TestCase):
             target = root / ".agents" / "agents" / "observatorio-verificador.md"
             target.write_text(target.read_text().replace("always_confirm", "never_confirm"))
             self.assertFalse(inspect_definitions(root)["valid"])
+
+    def assert_rejected(self, transform, role="verificador"):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            self.fill(root)
+            target = root / ".agents/agents" / ("observatorio-" + role + ".md")
+            target.write_text(transform(target.read_text(encoding="utf-8")), encoding="utf-8")
+            self.assertFalse(inspect_definitions(root)["valid"])
+
+    def test_tools_extras_desconhecidas_ou_de_outro_papel(self):
+        for role, tool in (("construtor", "browser"), ("verificador", "file_editor")):
+            with self.subTest(role=role):
+                self.assert_rejected(lambda s: s.replace("  - terminal", "  - terminal\n  - " + tool), role)
+
+    def test_tools_duplicadas(self):
+        for role in ("construtor", "verificador"):
+            with self.subTest(role=role):
+                self.assert_rejected(lambda s: s.replace("  - terminal", "  - terminal\n  - terminal"), role)
+
+    def test_chaves_duplicadas_inclusive_valores_iguais(self):
+        for line in ("name: observatorio-verificador", "tools:",
+                     "permission_mode: always_confirm", "permission_mode: never_confirm",
+                     "max_iteration_per_run: 10", "description: Outra", "model: inherit"):
+            with self.subTest(line=line):
+                self.assert_rejected(lambda s: s.replace("\n---\n#", "\n" + line + "\n---\n#"))
+
+    def test_iteracoes_invalidas_ou_acima_do_teto(self):
+        for role, value in (("construtor", "13"), ("verificador", "11"),
+                            ("verificador", "999999"), ("construtor", "0"),
+                            ("verificador", "-1"), ("construtor", "true"),
+                            ("verificador", "1.5"), ("verificador", '"10"')):
+            with self.subTest(role=role, value=value):
+                self.assert_rejected(lambda s: s.replace("max_iteration_per_run: 10", "max_iteration_per_run: " + value), role)
+
+    def test_campos_obrigatorios_ausentes_ou_invalidos(self):
+        for line in ("name: observatorio-verificador", "description: Teste sintético.",
+                     "tools:\n  - terminal", "model: inherit", "max_iteration_per_run: 10",
+                     "permission_mode: always_confirm"):
+            with self.subTest(missing=line):
+                self.assert_rejected(lambda s: s.replace(line + "\n", ""))
+        for old, new in (("description: Teste sintético.", "description:"),
+                         ("model: inherit", "model: other"),
+                         ("permission_mode: always_confirm", "permission_mode: confirm_risky"),
+                         ("name: observatorio-verificador", "name: other"),
+                         ("  - terminal", "  - file_editor")):
+            with self.subTest(invalid=new):
+                self.assert_rejected(lambda s: s.replace(old, new))
+
+    def test_sintaxe_malformada_ou_nao_suportada(self):
+        for transform in (
+            lambda s: s.replace("\n---\n#", "\n#"),
+            lambda s: s.replace("tools:\n  - terminal", "tools: [terminal]"),
+            lambda s: s.replace("  - terminal", "\t- terminal"),
+            lambda s: s.replace("model: inherit", "hooks: {}\nmodel: inherit"),
+            lambda s: s.replace("model: inherit", "<<: *defaults\nmodel: inherit"),
+            lambda s: s.replace("name: observatorio-verificador", '"name": observatorio-verificador'),
+            lambda s: s.replace("description: Teste sintético.", "description: !custom value"),
+            lambda s: s.replace("description: Teste sintético.", "description: [value]"),
+            lambda s: s.replace("description: Teste sintético.", "description: null"),
+            lambda s: s.replace("description: Teste sintético.", "description: >\n  Texto\n    permission_mode: never_confirm"),
+        ):
+            with self.subTest(transform=transform):
+                self.assert_rejected(transform)
+
+    def test_limites_e_descricao_folded_preservados(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            self.fill(root)
+            path = root / ".agents/agents/observatorio-construtor.md"
+            text = path.read_text().replace("max_iteration_per_run: 10", "max_iteration_per_run: 12")
+            text = text.replace("description: Teste sintético.", "description: >\n  Descrição sintética.\n  <example>Teste</example>")
+            path.write_text(text, encoding="utf-8")
+            self.assertTrue(inspect_definitions(root)["valid"])
 
     def test_sdk_loader_nao_chama_registro_ou_delegacao(self):
         with tempfile.TemporaryDirectory() as tmp:
