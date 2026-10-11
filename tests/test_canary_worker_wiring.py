@@ -22,6 +22,13 @@ GOOD = {
 
 
 class WorkerContract(unittest.TestCase):
+    def test_parent_rejects_boolean_counters_or_extra_private_fields(self):
+        for payload in ({**GOOD,'actual_llm_calls':False},
+                        {**GOOD,'api_key':'SYNTHETIC_PRIVATE_MARKER'},
+                        {**GOOD,'snapshot':'private-client-workspace'},[]):
+            with self.subTest(payload=payload),mock.patch.object(worker,'supervise',return_value=json.dumps(payload)):
+                with self.assertRaises(GateError):worker.main(['--supervise-synthetic-worker'])
+
     def test_parent_supervises_entire_worker_without_llm(self):
         with mock.patch.object(worker, "supervise", return_value=json.dumps(GOOD)) as run:
             self.assertEqual(worker.main(["--supervise-synthetic-worker"]), 0)

@@ -161,7 +161,11 @@ def main(argv=None) -> int:
         "actual_agent_registrations": 0,
         "actual_task_dispatches": 0,
     }
-    if any(result.get(k) != v for k, v in expected.items()):
+    optional={'sdk':'1.53.0','snapshot':'synthetic_only','command':'sandboxed_public_read'}
+    if (type(result) is not dict or not set(expected)<=set(result)
+        or not set(result)<=set(expected)|set(optional)
+        or any(type(result.get(k)) is not type(v) or result.get(k)!=v for k,v in expected.items())
+        or any(k in result and result[k]!=v for k,v in optional.items())):
         raise GateError("inert_worker_contract_failed")
     print(json.dumps(result, sort_keys=True))
     return 0

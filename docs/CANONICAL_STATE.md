@@ -313,3 +313,18 @@ Métricas parciais negadas antes do stub; ausência de usage vira GateError.
 144 testes locais: 127 PASS/17 opcionais skip. CI deste HEAD por conferir.
 Proteção contra código hostil no mesmo processo continua fora da garantia.
 NO-GO operacional mantido.
+
+
+## Ciclo supervisionado inerte — 2026-10-11
+
+PR #26 integrada d32483da5300c17d4e556c7f3b7d7166e196a32a, CIs 38121045562 /
+38121045552 GREEN. Quatro cenários novos percorrem _run_task oficial com
+conversa mockada, FakeLLM, Book/Guard compartilhados e terminal com saída
+fictícia: leitura seguida de recusa, aprovação ausente, expiração durante
+aprovação e última chamada global. Depois da parada nenhum novo stub ou
+subprocesso roda; pause/close no finally, sem recuperação por task.set_error.
+Nenhum Agent/Conversation real, start_task, TaskExecutor dispatch ou registro.
+Contrato do pai rejeita bool como contador e campos extras potencialmente
+privados antes de imprimir JSON (RED reproduzido). 149 testes locais: 128
+PASS/21 opcionais SDK skip; manager oficial local: 6 PASS. CI por conferir.
+Worker continua inerte; não certifica wiring operacional ou cgroup. NO-GO.
