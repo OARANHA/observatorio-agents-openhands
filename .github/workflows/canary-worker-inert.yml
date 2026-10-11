@@ -59,6 +59,9 @@ jobs:
       - name: Contabilidade adversarial sintetica sem transporte
         run: |
           "$RUNNER_TEMP/observatorio-canary-sdk/bin/python" -B -m unittest discover -s tests -p test_canary_accounting_hardening.py -v
+      - name: Falhas de supervisão e cleanup sem operações
+        run: |
+          "$RUNNER_TEMP/observatorio-canary-sdk/bin/python" -B -m unittest discover -s tests -p test_canary_supervisor_failures.py -v
       - name: Evidencia contábil fictícia minimizada
         run: |
           "$RUNNER_TEMP/observatorio-canary-sdk/bin/python" -B scripts/canary_accounting_evidence.py

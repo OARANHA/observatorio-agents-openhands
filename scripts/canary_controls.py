@@ -132,16 +132,26 @@ def supervise(argv, seconds, popen=None):
     """Hard wall-clock kill for an isolated worker; never retry or inherit env/FDs."""
     if type(seconds) not in (int,float) or not math.isfinite(seconds) or seconds<=0:
         raise ValueError('invalid_timeout')
-    proc=(popen or subprocess.Popen)(argv,env={},close_fds=True,start_new_session=True,
-                                    stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE,text=True)
+    try:
+        proc=(popen or subprocess.Popen)(argv,env={},close_fds=True,start_new_session=True,
+                                        stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,
+                                        stderr=subprocess.PIPE,text=True)
+    except BaseException:
+        raise GateError('worker_start_failed') from None
     try:
         stdout, _stderr=proc.communicate(timeout=seconds)
-    except BaseException as error:
+    except BaseException:
+        cleanup_failed=False
         try: os.killpg(proc.pid,signal.SIGKILL)
         except ProcessLookupError: pass
-        proc.communicate()
-        raise GateError('worker_interrupted_or_timed_out') from error
+        except BaseException: cleanup_failed=True
+        try:
+            # Independent bounded grace: a stuck inherited pipe cannot hang cleanup.
+            proc.communicate(timeout=1)
+        except BaseException:
+            cleanup_failed=True
+        raise GateError('worker_cleanup_failed' if cleanup_failed else
+                        'worker_interrupted_or_timed_out') from None
     if proc.returncode!=0:
         raise GateError('worker_failed_no_fallback')
     return stdout
