@@ -21,3 +21,18 @@
 - A inspeção visual do artefato `11711998610` (390px) revelou `DEMONSTRAÇÃO` quebrado em duas linhas nos quatro nós DEMO, defeito não coberto pelo teste anterior. Capturas offline, não Canvas instalado.
 - Correção subsequente na própria PR draft: rótulo sucinto `DEMO` preserva classificação explícita e cabe em uma linha, mantendo legendas/proveniência; teste Chromium confere quatro nós, texto e altura de uma linha. **Requer nova CI e nova revisão do screenshot no HEAD corrigido**.
 - Não usar GREEN anterior para aprovar o HEAD corrigido; **NO-GO** operacional e G11/P02/P03 inalterados. Sem autorização de merge/Canvas.
+
+## Passagem adversarial com JEV — preparação de revisão do HEAD a94d269c614d059879b367546a91f1856a312177 (2026-10-11)
+
+**Natureza:** JEV typesafe `jev-1.13.0` é árbitro consultivo probabilístico, **não** revisor independente e não promotor do gate G11. A consulta anterior ao ciclo de correção classificou próximo passo como `block` 0,56 (confiança 0,41), e objetivo de integração como `incomplete` 0,64 (confiança 0,46); são julgamentos consultivos, não métricas objetivas de defeitos.
+
+Nesta passagem foram submetidos **trechos reais do HEAD**, e o `jev_select_context` priorizou: origem/identidade 0,86, consulta GET 0,89, desmontagem 0,66, mobile 0,72, testes/rede 0,82. `jev_guard_action` considerou aceitável preparar **somente** patch reversível em branch e documentação (`allow` 0,67, confiança 0,56). Decisão final permaneceu sob política determinística/proprietário.
+
+**Constatações de código (não inferidas exclusivamente do JEV):**
+- Confirmado: CSS mobile tinha `max-width:105px;overflow:hidden;text-overflow:ellipsis` herdado do viewport intermediário e truncava `SIMULAR: CALMO`. A tela corrigida usa textos separados: desktop `SIMULAR: [estado]`, mobile `DEMO: [estado]` e `aria-label` completo. Novo teste Chromium sintético verifica os estados após clique, dimensões e overflow em 390px.
+- Contrato `host.agentServer.request(GET /api/conversations/{UUID})` usa projeto declarado manualmente. Nomeação visual como “missão real” merece cautela: retorno da conversa **não** comprova execução/sucesso semântico nem vínculo autorizado; manter P02 NÃO PROVADO. Orientar o revisor a verificar textos de proveniência antes de Canvas.
+- O `active=false` impede que GET tardio altere DOM desmontado no caso testado; não aborta request da camada host nem valida cancelamento de transporte.
+- Fixture de navegador força fallback2D, não atesta WebGL2 real, dispositivo touch físico, tela leitora, Canvas autenticado ou sandbox do host. Contraste testado é pontual.
+- O workflow do HEAD anterior `a94d269c614d059879b367546a91f1856a312177` comprovou 3 CIs GREEN (CI Observatorio `38167894448`, Graph DOM `38167894440` 8/8, Canary Worker `38167894511`), sem chamadas LLM/agentes reais; **esses resultados NÃO homologam o novo commit**.
+
+**PENDÊNCIAS:** CI no novo HEAD, screenshot atualizado e análise de revisor distinto (G11). `ADR-0001` PROPOSTO, G12 BLOQUEADO, P02/P03 NÃO PROVADOS. Sem merge, deploy, Canvas, OpenHands ou credenciais.

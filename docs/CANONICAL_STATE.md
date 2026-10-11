@@ -569,3 +569,10 @@ Main pré-consolidação96ed4a3c5ce659aa55a4841716e7623d30aaeb64.
 - 12 arquivos importados e ajustes de legibilidade mobile, captura de ponteiro e 2 testes DOM extras, mais handoff. Não implica que V0.5.1 esteja instalada.
 - `extension.js` regenerada com algoritmo idêntico ao build existente; **CI nova pendente de comprovação no HEAD da PR draft**.
 - Evidência/limites em `docs/handoffs/OBS-CYCLE-005-VISUAL-CANDIDATE.md`. G11 não provado, G12 bloqueado, P02/P03 não provados; sem merge/deploy/Canvas/LLM.
+
+## Ciclo 005 — passagem adversarial JEV sobre candidata V0.5.1 (2026-10-11)
+
+- PR #43 estava pronta para revisão, HEAD `a94d269c614d059879b367546a91f1856a312177`, CI Observatorio `38167894448`, Graph DOM `38167894440` 8/8, SDK inerte `38167894511` GREEN. Provas e riscos em `docs/handoffs/OBS-CYCLE-005-VISUAL-CANDIDATE.md`.
+- JEV `jev-1.13.0` foi usado para priorização adversarial de código **real** e preflight de patch limitado; juízo consultivo, não substitui revisor separado/G11.
+- Correção adicional proposta na mesma branch: botão de cenários visuais completo em mobile (abreviação `DEMO:` apenas visual, `aria-label` completo) + novo teste Chromium 390px. Regerar extensão; verificar CI **no novo HEAD** antes de alegar GREEN.
+- Sem merge/deploy/Canvas/OpenHands; G11 não provado, G12 bloqueado, P02/P03 não provados.

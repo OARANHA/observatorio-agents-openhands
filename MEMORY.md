@@ -508,3 +508,9 @@ Mentor somente standaloneDEMO, sem Canvas. Main pré-consolidação96ed4a3... .
 ## Ciclo 005 — candidata visual offline (2026-10-11)
 
 Main base `e06d3b01e60d9a5503e046dc0fe2eeb269f0e403` após #42. Reuso da PR #35 HEAD `811d5fa4c48aa9eb2cf618174b7d645039a590ac` em nova branch draft, sem merge #7/#35 e sem Canvas. Mobile/pointer lifecycle e testes Chromium sintéticos adicionais. Geração do build pré-validada estaticamente; CI do novo HEAD **a verificar**. Ver `docs/handoffs/OBS-CYCLE-005-VISUAL-CANDIDATE.md`. Mentor DEMO #40 preservado standalone. NO-GO, G11/G12/P02/P03 inalterados.
+
+## Ciclo 005 — JEV adversarial retomado (2026-10-11)
+
+- PR #43 HEAD anterior `a94d269c614d059879b367546a91f1856a312177` com 3 GREEN (CI `38167894448`, DOM `38167894440` 8/8, SDK `38167894511`). JEV `jev-1.13.0` priorizou código GET/proveniência/testes/mobile; consultivo, **não** revisão G11.
+- Confirmado truncamento `SIMULAR` no mobile; patch limitado `SIMULAR:` desktop / `DEMO:` mobile com `aria-label` completo + regressão Chromium. Nova CI pendente. Registro completo em `docs/handoffs/OBS-CYCLE-005-VISUAL-CANDIDATE.md`.
+- Riscos GET in-flight não cancelado, RBAC/memória/Canvas/WebGL2 não provados. NO-GO operacional, sem merge/deploy/LLM/infra.

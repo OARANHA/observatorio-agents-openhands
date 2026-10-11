@@ -88,3 +88,21 @@ test('pending synthetic GET cannot repopulate UI after teardown',async()=>{
   assert.equal(await p.evaluate(()=>fixtureReads.length),1);
  }finally{await close(f);}
 });
+test('mobile simulation control has complete compact text and accessible scenario',async()=>{
+ const f=await fixture({mobile:true,reduced:true});
+ try{
+  const p=f.page,button=p.locator('#visual-demo');
+  await p.locator('#rail-graph').click();
+  assert.equal(await p.locator('.scenario-compact').isVisible(),true);
+  assert.equal((await button.innerText()).trim(),'DEMO: CALMO');
+  assert.equal(await button.getAttribute('aria-label'),'Cenário visual de demonstração: calmo');
+  const initial=await button.evaluate(el=>({scroll:el.scrollWidth,client:el.clientWidth}));
+  assert.ok(initial.scroll<=initial.client+1,'the simulation label may not be clipped in mobile');
+  await button.click();
+  assert.equal((await button.innerText()).trim(),'DEMO: ATIVIDADE');
+  assert.equal(await button.getAttribute('aria-label'),'Cenário visual de demonstração: ATIVIDADE');
+  const box=await button.boundingBox();
+  assert.ok(box&&box.x>=0&&box.x+box.width<=390,'the simulation control must fit the mobile viewport');
+  assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+ }finally{await close(f);}
+});
