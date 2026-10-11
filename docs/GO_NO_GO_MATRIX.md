@@ -219,3 +219,17 @@ REUSE GATE: Guard/Book/terminal/supervisor oficial e código existente.
 DECISION: até seis PRs offline condicionadas aos gates; priorizar lifecycle,
 egress auxiliar, auditoria/replay e contratos visuais. Não habilitar worker.
 Handoff novo: docs/handoffs/OBS-ENGINEERING-OFFLINE-002.md.
+
+
+## Egress auxiliares e respostas adiadas — 2026-10-11
+
+PR #30 integrada em 84b48a3198daa8f3191522709eaa6aa4ace363b4, CIs
+38144819354 principal, 38144819359 SDK e 38144819350 sandbox GREEN.
+Logs SDK comprovam 7 supervisor/7 TaskManager sem skips; cleanup sequencial
+oficial falho não reabre Guard, mas pode pular close (risco G07 preservado).
+Gate de fakes agora rejeita Iterator/AsyncIterator/awaitable sem consumi-los;
+três REDs→GREEN, hold incerto preservado. Novas provas HTTPx/urllib/SDK
+model_info em threads/subprocess só serão comprovadas no netns do runner.
+171 locais: 146 PASS/25 opcionais SDK skip. AST de fontes SDK disponível
+em docs/SDK_AUXILIARY_EGRESS_INVENTORY.md; não certifica dependências.
+G05/G06/G07 PARCIAIS. Sem provedor, credencial, registro/delegação. NO-GO.

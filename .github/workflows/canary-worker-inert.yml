@@ -80,6 +80,7 @@ jobs:
       - name: Provas negativas de tentativas sinteticas de transporte (sem provedor)
         run: |
           "$RUNNER_TEMP/observatorio-canary-sdk/bin/python" -B -m unittest discover -s tests -p test_canary_transport_attempts.py -v
+          "$RUNNER_TEMP/observatorio-canary-sdk/bin/python" -B -m unittest discover -s tests -p test_canary_deferred_transport.py -v
       - name: SDK real contra stubs isolados de rede (zero provedor)
         env:
           OBS_CANARY_HOST_NETNS: unused

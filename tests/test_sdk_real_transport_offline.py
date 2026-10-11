@@ -146,6 +146,49 @@ class OfflineSDKFixture:
 
 @unittest.skipUnless(HAS_SDK, "requires SDK 1.53.0 in isolated runner")
 class RealSDKOfflineTests(unittest.TestCase):
+    def test_auxiliary_proxy_metadata_http_is_blocked_without_litellm_sinks(self):
+        import httpx
+        from openhands.sdk.llm.utils import model_info
+        # Actual SDK auxiliary GET, no API key, no LLM construction or provider URL.
+        with patch.object(model_info.httpx,'get',wraps=httpx.get) as get:
+            result=model_info._get_model_info_from_litellm_proxy(
+                None,'http://127.0.0.1:9','synthetic_no_provider',cache_key=-9001)
+        self.assertIsNone(result)
+        get.assert_called_once_with('http://127.0.0.1:9/v1/model/info',headers={})
+        # SDK metadata tolerates failure; this is a residual gap, never a GO.
+
+    def test_httpx_sync_async_and_stream_fail_in_isolated_namespace(self):
+        import httpx
+        target='http://127.0.0.1:9/synthetic-only'
+        with httpx.Client(trust_env=False,timeout=.3) as client:
+            with self.assertRaises(httpx.RequestError):client.get(target)
+            with self.assertRaises(httpx.RequestError):
+                with client.stream('GET',target):self.fail('stream connected')
+        async def check():
+            async with httpx.AsyncClient(trust_env=False,timeout=.3) as client:
+                with self.assertRaises(httpx.RequestError):await client.get(target)
+        asyncio.run(check())
+
+    def test_thread_and_subprocess_cannot_bypass_network_namespace(self):
+        from concurrent.futures import ThreadPoolExecutor
+        import subprocess
+        from urllib.request import build_opener,ProxyHandler
+        from urllib.error import URLError
+        def blocked():
+            with self.assertRaises(URLError):
+                build_opener(ProxyHandler({})).open('http://127.0.0.1:9/synthetic',timeout=.3)
+            return os.readlink('/proc/self/ns/net')
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            self.assertEqual(self.namespace_identity,pool.submit(blocked).result(timeout=2))
+        code=("import os,sys\nfrom urllib.request import build_opener,ProxyHandler\n"
+              "from urllib.error import URLError\n"
+              "assert os.readlink('/proc/self/ns/net')==sys.argv[1]\n"
+              "try: build_opener(ProxyHandler({})).open('http://127.0.0.1:9/synthetic',timeout=.3)\n"
+              "except URLError: pass\nelse: raise AssertionError('egress permitted')\n")
+        result=subprocess.run([sys.executable,'-I','-c',code,self.namespace_identity],
+            env={},close_fds=True,stdin=subprocess.DEVNULL,capture_output=True,text=True,timeout=3)
+        self.assertEqual(0,result.returncode)
+        self.assertEqual('',result.stdout)
     @classmethod
     def setUpClass(cls):
         # Independent of the Python mocks. Bubblewrap --unshare-all creates a
