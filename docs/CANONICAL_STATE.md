@@ -1,20 +1,20 @@
 # Estado canônico — Observatório de Agentes (2026-10-10)
 
-## REAL NOW — GitHub
-- Repositório: `OARANHA/observatorio-agents-openhands`.
-- PR #1 da V0.3.1 integrada à `main` no commit `6305e725da0ee2121831e57ae085f43f085e48dd` após CI concluída com sucesso no HEAD `1a82439c7bc21f55d3b9c429657baf2c5785eaa3`.
-- Evolução V0.3.2 em branch de correção; integração na `main` depende de CI e revisão humana. Não presumir instalação real antes da validação no Canvas.
+## REAL NOW
+- Repositório `OARANHA/observatorio-agents-openhands`, produto App do OpenHands Agent Canvas.
+- `main` verificada em `15b742ad25e8a0795b530f67df8df92ca004f936` com manifesto V0.3.2 e extensão `extension.js` gerada de `source/observatorio-v02.html`.
+- PR #2 da V0.3.2 mesclada na `main`; CI do HEAD da PR foi reportada `success`, e o usuário apresentou a versão corrigida em screenshot do Canvas.
+- V0.4.0 é trabalho proposto em branch separada; validar CI e revisão antes do merge e da instalação.
 
 ## PROVEN EVIDENCE
-- Extensão por manifesto `canvas-extension.json`, ESM e `activate(host)`/`registerPage`, com Shadow DOM e WebGL2/fallback 2D.
-- A V0.3.1 já foi exibida pelo usuário no Canvas real (screenshot) após a correção anterior da sidebar.
-- Captura da visualização WANDORA mostrou a caixa explicativa parcialmente coberta pelo painel de métricas.
-- Causa no código: `.solar-note` e `.metrics` tinham `position:absolute`, com `bottom:93px` e `bottom:24px` respectivamente; seus intervalos verticais se sobrepunham.
-- Correção V0.3.2: um `.scene-bottom` organiza nota e métricas verticalmente, mantém a nota oculta no universo e reposiciona o conjunto nos breakpoints existentes; testes de contrato cobrem CSS, DOM e controle de visibilidade.
-- Projetos, papéis, tarefas e estados são **dados demonstrativos**, não telemetria real.
+- A UI do Observatório abre dentro do Canvas, com universo 2x2, sistemas solares WebGL2 e fallback 2D, painel de inspeção e navegação nativa intacta.
+- V0.3.2 resolveu a sobreposição anterior da nota explicativa com métricas.
+- Fonte/gerador e testes de contrato conferidos; o produto ainda opera somente com dados demonstrativos locais.
+- V0.4.0 define cenários **SIMULAR** (calmo, atividade, atenção, falha) e animações responsivas que jamais devem ser relatadas como trabalho real de agentes. Modo calmo é o padrão.
+- Renderização progressiva reaproveita órbitas e shaders WebGL2 atuais, sem dependências remotas ou credenciais.
 
-## GAPS E GATES
-- CI e validação visual da nova revisão no Canvas real, inclusive desktop e mobile; nenhum resultado presumido.
-- Futuro inventário de agentes reais requer BFF de leitura, origem, observação temporal, RBAC por projeto/tenant e auditoria. Não expor credenciais, sessões ou conteúdo de clientes.
-- Nenhuma operação de deploy/restart, escrita em VPS ou alteração de outros produtos está autorizada por este slice.
-- Não realizar merge/deploy automáticos nem polling contínuo de CI.
+## GAPS, REUSE GATE E DECISÃO
+- CI da V0.4.0 e validação visual no Canvas real, inclusive navegadores e dispositivos móveis, ainda necessárias; não inventar resultados.
+- Nenhuma nova API, persistência, coleta, contagem real de tarefas ou conexão MCP neste slice.
+- Futuro uso de estados reais requer backend de leitura autenticado com autorização por projeto/tenant e origem/horário de observação verificáveis.
+- Não modificar Canvas Core, VPS, volumes, credenciais ou serviços, não fazer deploy/merge automáticos e não consultar CI repetidamente.
