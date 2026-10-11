@@ -47,3 +47,81 @@ class MoneyPrecision(unittest.TestCase):
             with synthetic_budgeted_llm_routes(Fractional,guard,book,rates(),caps()):
                 Fractional().completion([])
             self.assertEqual(Decimal('0.001234567'),book.spent)
+
+class MetricsBinding(unittest.TestCase):
+    def fixture(self):
+        import types
+        from canary_transport_probe import SyntheticTransportGate
+        guard=Guard();book=BudgetBook('0.1')
+        gate=SyntheticTransportGate(guard,book,RateCard('synthetic','fake','2','8','https://example.invalid','2026-10-11'),TokenCaps(2000,500,500))
+        llm=types.SimpleNamespace(metrics=types.SimpleNamespace(accumulated_cost=0.,accumulated_token_usage=types.SimpleNamespace(prompt_tokens=0,completion_tokens=0,cache_read_tokens=0,cache_write_tokens=0)))
+        return gate,llm
+    def response(self,llm):
+        import copy,types
+        return types.SimpleNamespace(metrics=copy.deepcopy(llm.metrics))
+    def transport(self,gate,llm):
+        def fake():
+            llm.metrics.accumulated_cost+=.001
+            llm.metrics.accumulated_token_usage.prompt_tokens+=100
+            llm.metrics.accumulated_token_usage.completion_tokens+=100
+        gate.invoke(fake)
+    def test_baseline_requires_active_logical_scope(self):
+        from canary_sdk_success_probe import snapshot_success_start
+        gate,llm=self.fixture()
+        with self.assertRaises(GateError):snapshot_success_start(gate,llm)
+        self.assertTrue(gate.book.closed)
+    def test_invalid_or_unpriced_cache_denied_before_transport(self):
+        from canary_sdk_success_probe import snapshot_success_start
+        for value in (-1,True,None,1):
+            gate,llm=self.fixture();llm.metrics.accumulated_token_usage.cache_read_tokens=value
+            with self.assertRaises(GateError):
+                with gate.logical_call():
+                    with self.assertRaisesRegex(GateError, "sdk_cache_"):snapshot_success_start(gate,llm)
+            self.assertEqual(0,gate.book.calls)
+    def test_baseline_from_other_llm_never_settles(self):
+        import copy
+        from canary_sdk_success_probe import snapshot_success_start,settle_success_from_sdk_metrics
+        gate,llm=self.fixture();other=copy.deepcopy(llm)
+        with self.assertRaises(GateError):
+            with gate.logical_call():
+                before=snapshot_success_start(gate,llm)
+                self.transport(gate,other)
+                settle_success_from_sdk_metrics(gate,other,before,self.response(other))
+        self.assertIsNotNone(gate.book.active)
+        self.assertEqual(Decimal(0),gate.book.spent)
+    def test_forged_or_stale_baseline_cannot_be_reused(self):
+        from canary_sdk_success_probe import snapshot_success_start,settle_success_from_sdk_metrics
+        gate,llm=self.fixture()
+        with gate.logical_call():
+            before=snapshot_success_start(gate,llm);self.transport(gate,llm)
+            settle_success_from_sdk_metrics(gate,llm,before,self.response(llm))
+        with self.assertRaises(GateError):
+            with gate.logical_call():
+                self.transport(gate,llm)
+                settle_success_from_sdk_metrics(gate,llm,before,self.response(llm))
+        self.assertEqual(Decimal('.001'),gate.book.spent)
+    def test_response_cache_snapshot_must_match(self):
+        from canary_sdk_success_probe import snapshot_success_start,settle_success_from_sdk_metrics
+        gate,llm=self.fixture()
+        with self.assertRaises(GateError):
+            with gate.logical_call():
+                before=snapshot_success_start(gate,llm);self.transport(gate,llm)
+                response=self.response(llm)
+                response.metrics.accumulated_token_usage.cache_read_tokens=1
+                settle_success_from_sdk_metrics(gate,llm,before,response)
+        self.assertTrue(gate.book.closed)
+
+    def test_forged_tuple_and_replaced_metrics_are_denied(self):
+        import copy
+        from canary_sdk_success_probe import snapshot_success_start,settle_success_from_sdk_metrics
+        for mode in ('tuple','replaced'):
+            gate,llm=self.fixture()
+            with self.assertRaisesRegex(GateError,'sdk_baseline_not_authoritative'):
+                with gate.logical_call():
+                    before=snapshot_success_start(gate,llm)
+                    self.transport(gate,llm)
+                    if mode=='tuple':before=(0.,0,0)
+                    else:llm.metrics=copy.deepcopy(llm.metrics)
+                    settle_success_from_sdk_metrics(gate,llm,before,self.response(llm))
+            self.assertTrue(gate.guard.cancelled)
+            self.assertIsNotNone(gate.book.active)

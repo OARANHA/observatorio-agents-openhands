@@ -229,3 +229,11 @@ limites defensivos de representações e testes de sub-reserva implementados.
 115 testes descobertos: 98 aprovados, 17 opcionais ignorados localmente.
 CI/revisão do HEAD ainda por conferir; NO-GO operacional permanece.
 Handoff: `docs/handoffs/OBS-EXPLORER-MONEY-HARDENING-001.md`.
+
+## Vínculo de métricas por chamada — 2026-10-11
+
+PR #19 integrada em main `91f8bed`, duas CIs e revisão favoráveis no HEAD exato.
+Baseline agora vinculado à identidade de LLM/Metrics e geração de chamada,
+cache não precificado negado antes do stub. 121 testes descobertos: 104
+aprovados/17 opcionais ignorados localmente; CI deste incremento por conferir.
+NO-GO operacional permanece. Handoff METRICS-BINDING-001 em docs/handoffs.
