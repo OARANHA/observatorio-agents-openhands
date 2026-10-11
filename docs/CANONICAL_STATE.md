@@ -31,3 +31,27 @@ Nenhuma memória do OpenHands ou conteúdo dos projetos deve ser compartilhado t
 - Consultar estado atual e reutilizar o que funciona. Branch + PR + testes.
 - Sem merge/deploy automáticos, sem acesso a dados reais de clientes, sem alterações em VPS, Docker, OpenHands Core ou projetos atendidos sem autorização separada.
 - Documento vivo mantém decisões e evidências **com data**; não tratar notas históricas de propostas como estado atual.
+
+## Diagnóstico da equipe — integração local em 2026-10-11
+
+Base GitHub reconciliada: `1fb8575bc55778130d8e8c6184e8939c54aa6bab`
+(PR #8 integrada). Branch: `feat/observatorio-team-sdk-diagnostic-v1`.
+O loader oficial SDK/Tools **1.53.0** carregou localmente as definições
+Construtor/Verificador; preset `code-explorer` presente. Registry SDK vazio
+antes/depois. **Nenhum agente registrado, executado ou delegado.**
+20 testes unittest, diagnóstico estático/SDK, build e sintaxe JS aprovados.
+Isso não comprova integração na sessão Canvas nem execução remota.
+Relato histórico de OBS-TEAM-CANARY-001 veio do ZIP; MCP original não relido.
+Evidências e limites: `docs/handoffs/OBS-TEAM-CANARY-001.md` e
+`team/SDK_DIAGNOSTIC.md`. Catálogo segue não ativado; app instalado não atualizado.
+Nenhum merge/deploy realizado. PR #7 do grafo continua separada.
+
+## PR #9 — correção da revisão técnica em 2026-10-11
+
+Revisão `5481728232` atendida a partir do HEAD `94d5123` na branch existente.
+Validação estática reconhece o contrato restrito de seis campos, rejeita
+chaves/ferramentas duplicadas, extras, sintaxe não suportada e iterações acima
+12/10; confirmação permanece `always_confirm`. **27 testes aprovados**,
+diagnóstico estático e loader local SDK/Tools 1.53.0 aprovados, build/sintaxe JS
+preservados. Formato e limites em `team/SDK_DIAGNOSTIC.md`.
+Não houve registro/delegação, mudança no runtime, merge ou deploy.

@@ -54,3 +54,11 @@ As transições de missão são propostas, não automação. Nenhum webhook, pol
 JEV recomendou `deep_review` como rota **consultiva**, não como autorização. Context7 e a documentação oficial do GitHub confirmaram o formato de subagente. Não foi realizada prova de execução do SDK ou da delegação.
 
 **Não confundir dois conceitos:** *skills* são conhecimentos/procedimentos carregados por agente; *subagentes* são delegados definidos por perfil. Para o primeiro time, usamos o agente nativo e definimos dois subagentes em Markdown, evitando implementar novo runtime.
+
+## Diagnóstico local sem ativação
+
+O loader SDK/Tools 1.53.0 foi validado em ambiente local isolado, sem registro
+ou delegação. Use `python3 -B scripts/check_team_sdk.py` para contrato estático;
+`--sdk` exige ambas as distribuições na versão exata 1.53.0.
+Procedimento e provas em [SDK_DIAGNOSTIC.md](SDK_DIAGNOSTIC.md).
+Registro e funcionamento na instalação Canvas continuam não comprovados.
