@@ -495,3 +495,16 @@ G12 BLOQUEADO. Não houve agente/LLM/provedor/credencial ou mudança Core.
 ## Fechamento do ciclo 003 — 2026-10-11
 
 Main pré-fechamento 4c0f5f0f7559bbe8b2ab7476387fbe700894de9c; #34/#36 integradas, #35 visual aberta e #7 draft intocada. CIs dos HEADs GREEN, evidência/limites e desvio de inspeção tardia dos logs #34 registrados em [OBS-CYCLE-003-CONTINUITY](handoffs/OBS-CYCLE-003-CONTINUITY.md). SDK/transportes reais só em provas inertes; DOM Chromium com fixtures na #35, sem instalar esta versão no Canvas. Autorrevisão automatizada não substitui G11. G12 BLOQUEADO/NO-GO; P03 memória persistente NÃO PROVADA. SHA do merge desta documentação na descrição da PR de fechamento.
+
+## Ciclo 004 — continuidade inerte (2026-10-11)
+
+Main inicial 242856c523b1880328b6bb985f6fcedf0a7c58c2; #7/#35 preservadas abertas.
+Slack Wandora consultado; canal de aprovações criado para teste. Gatilho Work
+recusado por vínculo do aplicativo oficial, sem tarefa criada/mensagem enviada.
+Fontes SDK v1.53.0 e MCP públicas fixadas; MCP já possui events. Stop usa goal/stop,
+sem prova de cancelamento de missão. Contrato sintético reutiliza Guard/book,
+reserva fictícia, recusa terminal, zero dispatch; 9 negativas/concurrency verdes.
+Ver [contrato/evidências](CYCLE004_CONTINUITY_CONTRACT.md) e
+[plano](plans/OBS-CYCLE-004-PLAN.md). Código público não comprova API implantada,
+tools expostos, autorização nem agentes operacionais. NO-GO/G12 bloqueado;
+G11 e P03 sem promoção. Nenhum handoff anterior removido.
