@@ -9,6 +9,10 @@ on:
       - scripts/canary_controls.py
       - scripts/canary_budget.py
       - scripts/canary_budget_boundary.py
+      - scripts/canary_transport_probe.py
+      - scripts/audit_canary_sdk_transport.py
+      - tests/test_canary_transport_attempts.py
+      - tests/test_canary_sdk_transport_audit.py
       - tests/test_canary_budget_boundary.py
       - tests/test_canary_budget_sdk_surface.py
       - tests/test_canary_worker_wiring.py
@@ -47,6 +51,12 @@ jobs:
       - name: Assinaturas oficiais SDK LLM sem transporte/provedor
         run: |
           "$RUNNER_TEMP/observatorio-canary-sdk/bin/python" -B -m unittest discover -s tests -p test_canary_budget_sdk_surface.py -v
+      - name: Inventario da fonte oficial de transportes SDK 1.53.0 (sem chamadas)
+        run: |
+          "$RUNNER_TEMP/observatorio-canary-sdk/bin/python" -B -m unittest discover -s tests -p test_canary_sdk_transport_audit.py -v
+      - name: Provas negativas de tentativas sinteticas de transporte (sem provedor)
+        run: |
+          "$RUNNER_TEMP/observatorio-canary-sdk/bin/python" -B -m unittest discover -s tests -p test_canary_transport_attempts.py -v
       - name: Worker supervisionado com TaskToolSet real e terminal bwrap restrito
         run: |
           "$RUNNER_TEMP/observatorio-canary-sdk/bin/python" -B scripts/probe_canary_worker.py --supervise-synthetic-worker
