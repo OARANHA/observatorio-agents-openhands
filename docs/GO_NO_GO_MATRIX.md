@@ -168,3 +168,33 @@ Contrato em [SYNTHETIC_EVIDENCE_SCHEMA.md](SYNTHETIC_EVIDENCE_SCHEMA.md):
 campos fechados, hash de integridade e SHA declarado, sem autenticidade
 independente ou anti-replay. Oito negativas/roundtrips offline. G10 PARCIAL;
 G11 NÃO PROVADO. Nunca constitui autorização para canário real.
+
+
+## Matriz ao fechar os incrementos A–H (2026-10-11)
+
+Main de referência pré-PR documental: b95ea8c44f9fe95ee24fdec6e32c2bea00c8451a.
+Baseline do anexo preservada acima; abaixo prevalece o estado atualizado.
+
+| Gate | Antes | Depois e prova | Aceite ainda ausente |
+|---|---|---|---|
+| G01 | PROVADO | PROVADO: #23–#28, SHAs e runs no handoff noturno | Manter rastreabilidade de cada HEAD |
+| G02 | PROVADO OFFLINE | Igual: 12 testes AST, 2 de superfície, SDK/Tools 1.53.0 | Drift transitivo/dinâmico fora do inventário |
+| G03/G04 | PROVADO OFFLINE | Igual, mais fortes: 29 testes financeiros e hold incerto/concorrência/métricas parciais | Tarifas, tokenização, métrica e faturamento reais |
+| G05 | PARCIAL | PARCIAL: dez probes DNS/TCP/Unix/RO/FD/env/descendentes/killpg GREEN no runner efêmero | Mesmo isolamento no ambiente futuro; kernel/canais/ameaças residuais |
+| G06 | PARCIAL | PARCIAL: aliases novos recusados; stream/cache/fallback/refresh/extras negados nominalmente | Toda rota auxiliar/dependência/metadata HTTP e processo isolado futuro |
+| G07 | PARCIAL | PARCIAL: 6 testes TaskManager oficial, ciclo mockado e contrato de saída fechado | Herança e cancelamento num único filho operacional, sem autorizar execução agora |
+| G08 | NÃO PROVADO | PARCIAL DOCUMENTAL: modelos, preços e ressalvas oficiais datados | Modelo/snapshot/rota atual disponível, cap e orçamento efetivos; não selecionados |
+| G09 | NÃO PROVADO | Igual: nenhuma conta ou credencial consultada | Identidade não produtiva, segregação, quotas e revogação autorizadas |
+| G10 | PARCIAL | PARCIAL: envelope v1/8 testes, hash e SHA declarado, payload fechado | Assinatura/proveniência confiável, consumidor/anti-replay/retenção/redaction operacional |
+| G11 | NÃO PROVADO | Igual: somente autorrevisões automatizadas identificadas | Revisor distinto e aceite de riscos |
+| G12 | BLOQUEADO | Igual: zero LLM, registros/dispatches operacionais | Todos gates pertinentes e autorização separada para missão congelada |
+| P01 | PARCIAL | Igual: #7 revisada estaticamente e mantida aberta/draft | DOM/visual/Canvas autorizado, CI e aprovação específica |
+| P02/P03 | NÃO PROVADO | Igual: identidade/RBAC/memória sem prova operacional | Contratos segregados e validação pertinente |
+
+Fontes: [handoff noturno](handoffs/OBS-NIGHT-OFFLINE-001.md),
+[dossiê público](PUBLIC_PROVIDER_DOSSIER.md), [revisão #7](GRAPH_PR7_REVIEW.md),
+[esquema sintético](SYNTHETIC_EVIDENCE_SCHEMA.md). Autoridade noturna permite
+merges estritamente offline; não substitui a autorização específica de G12.
+Nenhum GREEN deste ciclo muda a decisão operacional **NO-GO**.
+
+Inventário de fontes/hashes e dependências: [SDK_TRANSPORT_INVENTORY.md](SDK_TRANSPORT_INVENTORY.md).
