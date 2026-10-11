@@ -130,3 +130,36 @@ sintéticas sem reserva e bloqueiam segunda tentativa na mesma execução.
 **Esses testes não provam segurança contra todo egress**: o SDK real
 não é instrumentado nem há execução de modelo. Estado: PR sob revisão,
 CI a confirmar, **NO-GO operacional**, sem merge/deploy/VPS/Canvas.
+
+## Handoff — teste de SDK real 1.53.0 com rede negada (2026-10-11)
+
+PR #16 integrada, main `7a6fdc2faa1fc41ff8d4c1d5696c4b65b0ca641d`.
+Próxima branch `test/explorer-sdk-real-offline-egress-v1` procura
+provar que os quatro métodos públicos SDK reais chegam a stubs
+cobertos por `BudgetBook` num processo com namespace de rede próprio.
+Exercita caminho de retry em falha sintética e recusa segunda tentativa
+no sink. Handoff `docs/handoffs/OBS-EXPLORER-SDK-REAL-OFFLINE-001.md`.
+Não executar LLM, não habilitar agente, não tratar o isolamento de rede
+do runner como deploy. Sem CI verificada e autorização de merge.
+**NO-GO operacional**.
+
+## PR #17 — RED isolado diagnosticado e correção proposta (2026-10-11)
+
+Falha verificada no runner SDK do HEAD `529f332614927e1702028f3be24c62b0b35c80b7`:
+`SecretStr` exigido no refresh 401, mas mock retornou `str`.
+O LiteLLM ainda tentou rede para mapa de custo na importação (DNS
+negado por namespace). Correção na mesma branch:
+`SecretStr("SYNTHETIC_REFRESH_VALUE")` +
+`LITELLM_LOCAL_MODEL_COST_MAP=True` antes do import no bwrap.
+Detalhes: `docs/handoffs/OBS-EXPLORER-SDK-REAL-OFFLINE-001.md`.
+Esperar CI do último HEAD; sem polling, merge, deploy ou inferência.
+
+## PR #17 — check de workflow e segundo RED (2026-10-11)
+
+No HEAD `6dfac7b9b3769005c3c3c563cb8ce74faf425e40`:
+workflow SDK `38115115662` green (6/6 testes SDK offline);
+CI Observatorio `38115115652` red por importar `pydantic`
+fora da guarda opcional de SDK no runner principal. Corrigido
+movendo `SecretStr` para import condicional, sem mexer em transportes.
+Aguardar CI do novo HEAD, não fazer polling/merge/deploy.
+Handoff: `docs/handoffs/OBS-EXPLORER-SDK-REAL-OFFLINE-001.md`.

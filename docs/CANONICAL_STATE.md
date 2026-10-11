@@ -159,3 +159,48 @@ A CI desta branch ainda precisa ser validada por logs do HEAD exato.
 **NO-GO operacional** até controle independente de rede, teste SDK com
 transporte stubado, modelo/tarifas/tokens e autorização específica.
 Nenhuma chamada LLM, merge, deploy ou alteração na VPS/Canvas/Core.
+
+## SDK 1.53.0 real com transporte fictício e egress negado — 2026-10-11
+
+Base reconciliada: main `7a6fdc2faa1fc41ff8d4c1d5696c4b65b0ca641d`
+(PR #16 integrada). Branch `test/explorer-sdk-real-offline-egress-v1`
+propõe PR #17: invocar métodos públicos reais da classe SDK LLM 1.53.0
+com quatro aliases LiteLLM stubados, compartilhando reserva preventiva
+`SyntheticTransportGate`/`BudgetBook`. CI do runner SDK executará
+os testes dentro de Bubblewrap com `--unshare-all` e verificará
+namespace de rede separado, sem segredos, chamada a provedor ou LLM.
+Falha ao tentar sem reserva e ao retornar para transporte em fallback
+de cache/refresh (cenários induzidos). O modelo nominal nos testes é
+identificador público com credencial artificial não válida; não executa
+inferência. O namespace não é sandbox multi-tenant, e os testes
+não cobrem todos os egress internos/HTTP de dependências nem validam
+tarifas/tetos. Critérios e limites em
+`docs/handoffs/OBS-EXPLORER-SDK-REAL-OFFLINE-001.md`.
+**CI por comprovar no HEAD; NO-GO operacional**. Sem merge, deploy
+ou alteração de VPS/Canvas/OpenHands Core nesta preparação.
+
+## Correção do RED — SDK real com stubs (PR #17, 2026-10-11)
+
+No HEAD `529f332614927e1702028f3be24c62b0b35c80b7`, CI principal
+GREEN, mas workflow SDK run `38114870551` RED: quatro testes SDK offline
+passaram e o caso refresh-401 falhou em `_get_api_key_value` porque
+o mock devolveu `str` em vez de `pydantic.SecretStr`. O LiteLLM
+também **tentou** baixar o mapa de custos durante import, bloqueado
+pela rede descompartilhada. A branch da PR #17 foi corrigida para
+`SecretStr` fake e `LITELLM_LOCAL_MODEL_COST_MAP=True` antes do import
+via bwrap. CI do novo HEAD pendente; não alegar GREEN antecipadamente.
+Handoff: `docs/handoffs/OBS-EXPLORER-SDK-REAL-OFFLINE-001.md`.
+**NO-GO** para LLM/registro/delegação/deploy/merge implícito.
+
+## Segunda falha CI da PR #17 — compatibilidade de coleta sem SDK (2026-10-11)
+
+HEAD `6dfac7b9b3769005c3c3c563cb8ce74faf425e40`:
+SDK runner `38115115662` GREEN, com 6/6 testes reais de método SDK
+em transporte stubado/namespace isolado. CI principal `38115115652`
+RED: `ModuleNotFoundError: No module named 'pydantic'` ao importar
+`tests/test_sdk_real_transport_offline.py`. O runner principal
+intencionalmente não instala SDK/Pydantic. Ajustado import de
+`SecretStr` para ocorrer apenas junto da importação opcional do SDK.
+Revalidar o HEAD posterior antes de merge. Contexto:
+`docs/handoffs/OBS-EXPLORER-SDK-REAL-OFFLINE-001.md`.
+**NO-GO operacional**.
