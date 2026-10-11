@@ -119,7 +119,9 @@ class Contract(unittest.TestCase):
 
     def test_lua_real_separada_das_simulacoes(self):
         source = (ROOT / 'extension.js').read_text()
-        self.assertIn('id="real-lua"', source)
+        markup_line = next(line for line in source.splitlines() if line.startswith('const MARKUP = '))
+        markup = json.loads(markup_line[len('const MARKUP = '):-1])
+        self.assertIn('id="real-lua"', markup)
         self.assertIn('function openVerifiedSystem()', source)
         self.assertIn('function renderVerifiedPanel()', source)
         self.assertIn('function applyVerifiedMission(observation)', source)
