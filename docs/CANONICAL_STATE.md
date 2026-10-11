@@ -16,3 +16,14 @@
 - CI da revisão e validação visual com screenshots desktop/mobile ainda necessárias. Não alegar validação em navegador nem alteração da instalação.
 - Integração futura com fontes reais requer BFF autenticado, RBAC por projeto/tenant e origem/horário de observação; nenhuma alteração de VPS, imagens Docker ou OpenHands Core está autorizada.
 - Fluxo de trabalho: branch + PR, revisar/aguardar CI, sem polling contínuo e sem merge/deploy automático.
+
+## Reconciliação e slice V0.4.2 (2026-10-10)
+- `main` publicada verificada: `3c97c9427df9462f16a1f7fc3fd0d3004e6dd977` (V0.4.1); snapshot anterior acima é histórico.
+- MCP OpenHands read saudável; list/status/result disponíveis. Missão sintética nova aguardava `waiting_for_confirmation` (gate humano) na última consulta.
+- Código V0.4.2 proposto em branch: leitura pontual e manual pelo host autenticado, sem mudança de backend; vínculo ao projeto declarado, não atestado.
+- Pendente: CI, revisão, teste real no Canvas e autorização de instalação; sem RBAC multi-tenant, sem clientes reais, sem deploy.
+
+## Ajuste visual integrado à PR #5
+- Missão OBS-REAL-001 verificada como `finished` e resultado `OBS-REAL-001|OK` pela leitura MCP, sem escrita no CRISE.
+- Nova proposta: após GET da conversa via Canvas, o Multiverso cria em memória sistema Observatório com uma lua real, sem planetas de agentes falsos. Não há conexão contínua nem persistência.
+- **PENDENTE:** CI do novo HEAD, teste autenticado no Canvas, aprovação de merge/instalação. Dados de outros projetos continuam demonstrativos.

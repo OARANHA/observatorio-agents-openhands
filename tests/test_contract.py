@@ -18,7 +18,7 @@ class Contract(unittest.TestCase):
         source = (ROOT / 'extension.js').read_text()
         self.assertIn("host.registerPage('observatorio'", source)
         for forbidden in ['fetch(', 'XMLHttpRequest', 'WebSocket(', 'localStorage',
-                          'sessionStorage', 'document.cookie', 'host.agentServer.request']:
+                          'sessionStorage', 'document.cookie']:
             self.assertNotIn(forbidden, source)
         self.assertIn('attachShadow', source)
         self.assertIn('cancelAnimationFrame', source)
@@ -83,7 +83,7 @@ class Contract(unittest.TestCase):
         self.assertIn('@media(prefers-reduced-motion:reduce)', css)
         self.assertIn('.system-tile[data-activity="active"]', css)
         self.assertIn('.planet-slot[data-activity="active"]', css)
-        self.assertNotIn('host.agentServer.request', source)
+        self.assertIn('host.agentServer.request', source)
         self.assertNotIn('fetch(', source)
 
 
@@ -104,6 +104,36 @@ class Contract(unittest.TestCase):
         self.assertIn('.system-tile .sys-orbits .orbit-stream,.system-tile:before,', css)
         self.assertNotIn('obOrbitRevolve', css)
         self.assertNotIn('.sys-orbits{transform-box:', css)
+
+
+    def test_real_read_requires_manual_uuid_without_secrets(self):
+        source = (ROOT / 'extension.js').read_text()
+        self.assertIn("method:'GET',path:'/api/conversations/'+id", source)
+        self.assertIn("Projeto declarado:", source)
+        self.assertIn("não atestada pela API", source)
+        self.assertIn("Observado em (hora do navegador):", source)
+        self.assertNotIn('fetch(', source)
+        self.assertNotIn('localStorage', source)
+        self.assertNotIn('setInterval(', source)
+
+
+    def test_lua_real_separada_das_simulacoes(self):
+        source = (ROOT / 'extension.js').read_text()
+        markup_line = next(line for line in source.splitlines() if line.startswith('const MARKUP = '))
+        markup = json.loads(markup_line[len('const MARKUP = '):-1])
+        self.assertIn('id="real-lua"', markup)
+        self.assertIn('function openVerifiedSystem()', source)
+        self.assertIn('function renderVerifiedPanel()', source)
+        self.assertIn('function applyVerifiedMission(observation)', source)
+        self.assertIn("systems.push('observado')", source)
+        self.assertIn('AGENTES COMPROVADOS', source)
+        self.assertIn('Manual', source)
+        self.assertIn('Os demais planetas são demonstrações.', source)
+        self.assertIn('SIMULAÇÃO:', source)
+        self.assertIn("host.agentServer.request({method:'GET',path:'/api/conversations/'+id})", source)
+        self.assertNotIn('fetch(', source)
+        self.assertNotIn('setInterval(', source)
+        self.assertNotIn('document.cookie', source)
 
     def test_sintaxe(self):
         subprocess.run(['node', '--check', str(ROOT / 'extension.js')], check=True)
