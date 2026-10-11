@@ -237,6 +237,13 @@ def validate_sdk_config(llm,rates: RateCard,caps: TokenCaps,*,live: bool=False,
     """Only inert SDK field comparison, not proof of provider enforcement."""
     caps.validate(live=live)
     irate,orate=rates.validate(live=live,today=today)
+    # Nominal only: these observations never prove provider/network enforcement.
+    if (getattr(llm,'stream',False) is not False
+        or getattr(llm,'caching_prompt',False) is not False
+        or getattr(llm,'fallback_strategy',None) is not None
+        or getattr(llm,'_api_key_refresh_hook',None) is not None
+        or getattr(llm,'litellm_extra_body',{}) != {}):
+        raise GateError('sdk_unreviewed_route')
     for key,expected in {
         "model":rates.model,"num_retries":0,
         "max_output_tokens":caps.max_output_tokens

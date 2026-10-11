@@ -37,6 +37,16 @@ def check_source(source: str) -> dict:
     if len(llms) != 1:
         raise GateError("sdk_llm_class_changed")
     llm=llms[0]
+    properties={x.name for x in llm.body if isinstance(x,ast.FunctionDef)
+                and any(isinstance(d,ast.Name) and d.id=='property' for d in x.decorator_list)}
+    # Official typing.overload signatures precede one executable implementation.
+    method_nodes=[x for x in llm.body if isinstance(x,(ast.FunctionDef,ast.AsyncFunctionDef))
+                  and not any((isinstance(d,ast.Name) and d.id=='overload')
+                    or (isinstance(d,ast.Attribute) and isinstance(d.value,ast.Name)
+                        and d.value.id==x.name and x.name in properties and d.attr=='setter')
+                    for d in x.decorator_list)]
+    if len({x.name for x in method_nodes}) != len(method_nodes):
+        raise GateError('sdk_duplicate_method')
     methods={
         x.name:x for x in llm.body
         if isinstance(x, (ast.FunctionDef, ast.AsyncFunctionDef))
@@ -45,10 +55,22 @@ def check_source(source: str) -> dict:
         raise GateError("sdk_method_inventory_changed")
 
     imported={}
+    module_aliases={'litellm'}
+    for node in ast.walk(root):
+        if isinstance(node,ast.Import):
+            module_aliases.update(alias.asname or alias.name for alias in node.names
+                                  if alias.name=='litellm')
+        if isinstance(node,ast.ImportFrom) and node.module in ('litellm','litellm.responses.main'):
+            for alias in node.names:
+                if alias.name in ('completion','acompletion','responses','aresponses'):
+                    if alias.asname not in EXPECTED:
+                        raise GateError('sdk_unreviewed_transport_alias')
+    alias_counts={name:0 for name in EXPECTED}
     for node in root.body:
         if isinstance(node,ast.ImportFrom):
             for alias in node.names:
                 if alias.asname in EXPECTED:
+                    alias_counts[alias.asname]+=1
                     imported[alias.asname]=(node.module,alias.name)
     required_imports={
         "litellm_completion": ("litellm","completion"),
@@ -56,8 +78,16 @@ def check_source(source: str) -> dict:
         "litellm_responses": ("litellm.responses.main","responses"),
         "litellm_aresponses": ("litellm.responses.main","aresponses"),
     }
-    if imported != required_imports:
+    if imported != required_imports or alias_counts != {name:1 for name in EXPECTED}:
         raise GateError("sdk_litellm_alias_inventory_changed")
+
+    # All scopes, including module helpers, must not add a direct module sink.
+    for node in ast.walk(root):
+        if (isinstance(node,ast.Call) and isinstance(node.func,ast.Attribute)
+            and isinstance(node.func.value,ast.Name)
+            and node.func.value.id in module_aliases
+            and node.func.attr in ('completion','acompletion','responses','aresponses')):
+            raise GateError('sdk_new_direct_litellm_call')
 
     locations={name:[] for name in EXPECTED}
     for method, definition in methods.items():

@@ -45,6 +45,28 @@ class LLM:
 
 
 class SyntheticAstAudit(unittest.TestCase):
+    def test_new_transport_import_alias_is_not_silently_ignored(self):
+        for extra in (
+            '\nfrom litellm import completion as extra_sink\ndef outside():\n    return extra_sink()\n',
+            '\nfrom litellm.responses.main import responses as extra_sink\n',
+            '\nfrom litellm import completion as litellm_completion\n',
+        ):
+            with self.subTest(extra=extra), self.assertRaises(GateError):
+                check_source(synthetic_sdk_source()+extra)
+
+    def test_module_alias_calls_outside_llm_are_detected(self):
+        code=synthetic_sdk_source()+'\nimport litellm as backend\ndef outside():\n    return backend.completion()\n'
+        with self.assertRaises(GateError):check_source(code)
+
+    def test_duplicate_sdk_method_names_are_rejected(self):
+        code=synthetic_sdk_source().replace('    def completion(self):\n        pass',
+            '    def completion(self):\n        pass\n    def completion(self):\n        pass')
+        with self.assertRaises(GateError):check_source(code)
+
+    def test_property_getter_setter_is_not_duplicate_executable_method(self):
+        code=synthetic_sdk_source()+'\n    @property\n    def flag(self):\n        return False\n    @flag.setter\n    def flag(self,value):\n        pass\n'
+        self.assertEqual('1.53.0',check_source(code)['sdk'])
+
     def test_exact_approved_sink_inventory(self):
         out=check_source(synthetic_sdk_source())
         self.assertEqual(4,len(out["reviewed_sinks"]))
