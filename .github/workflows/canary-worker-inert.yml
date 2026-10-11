@@ -10,6 +10,7 @@ on:
       - scripts/canary_budget.py
       - scripts/canary_budget_boundary.py
       - scripts/canary_transport_probe.py
+      - scripts/canary_sdk_success_probe.py
       - scripts/audit_canary_sdk_transport.py
       - tests/test_canary_transport_attempts.py
       - tests/test_canary_sdk_transport_audit.py
