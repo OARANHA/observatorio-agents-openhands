@@ -65,3 +65,51 @@ docs/INDEPENDENT_REVIEW_PACKET.md: ameaças/checklists/conta/limites/revisão,
 parada/revogação e autorização única; não provisiona nada. Sem autenticação
 fictícia; replay só em memória, perdido no restart. G10 PARCIAL, G11 NÃO
 PROVADO e G12 bloqueado. NO-GO operacional mantido.
+
+
+## Fechamento offline do ciclo de engenharia 002 — 2026-10-11
+
+Main inicial b0ce4333d8c5e4ce22e32f3ebc1aeba7d08c838f; PR #10 fechada
+sem merge, handoff preservado. PR #7 permanece draft, HEAD
+48f898d99a8979ef2c794513131506b028772666; não integrada ou instalada.
+Três incrementos já integrados com SHA esperado, duas CIs e logs:
+
+| PR | HEAD | Merge | CI principal / SDK |
+|---|---|---|---|
+| #30 | 5b9c8d3f2ed3f7b35496e3887374173260b5ec22 | 84b48a3198daa8f3191522709eaa6aa4ace363b4 | 38144819354 / 38144819359 |
+| #31 | 79bac7d57a09cbe21b0c04dc514f9f1bd88842c6 | f749f5918b86ab0ce6624d220e4354e2e69ef5d2 | 38145217813 / 38145217812 |
+| #32 | b1d27cc51cac4813bd18f948a473167b2ffb9574 | 70ab4b35a452660f13c9c6e50e38159b1a6c56bf | 38145670004 / 38145670090 |
+
+Todas GREEN; sandbox adicional #30 run38144819350 GREEN. SDK sem skips
+relevantes: 15 transport/stubs auxiliares; supervisor 7; TaskManager 7;
+sessão sintética 8. Não houve registro/delegação/chamada LLM real.
+Quarto incremento independente: fixture congelada de graphModel da #7,
+extraída sem alteração e hashes declarados em tests/fixtures/. Seis testes
+Node executam o modelo com entradas fictícias, sem DOM, host ou rede.
+Preservam DEMO/manual/consultado, não inventam agente/sucesso e demonstram
+colisão dos IDs entre vistas. Esse teste PASS caracteriza lacuna aberta,
+não prova RBAC. Wrapper Python: RED por reporter Node variável; corrigido
+com TAP explícito, sem enfraquecer assertions. Suite local: 180 testes,
+155 PASS/25 SDK opcionais skip; mais 6 subtestes Node PASS. Geração e
+sintaxe JS e diagnóstico estático válidos, sem ativação. CI deste quarto
+incremento ainda pendente no momento desta documentação.
+
+| Gate | Antes → depois | Prova adicional / limite mantido |
+|---|---|---|
+| G05/G06 | PARCIAL → PARCIAL | HTTP auxiliar negado no netns; inventário AST não cobre todas dependências/dynamic imports |
+| G07 | PARCIAL → PARCIAL | kill/reap bounded e cancelamento terminal; cleanup sequencial oficial pode pular close |
+| G10 | PARCIAL → PARCIAL | replay/ordem/cap em memória; hash não autentica, restart perde replay |
+| G11 | NÃO PROVADO → NÃO PROVADO | pacote independente preparado; autorrevisões não são review independente |
+| G12 | BLOQUEADO → BLOQUEADO | autorização específica de missão real ausente |
+| P01 | PARCIAL → PARCIAL | contratos do modelo congelado testados; fonte autenticada não foi consultada |
+| P02/P03 | NÃO PROVADO → NÃO PROVADO | colisões caracterizadas; DOM/RBAC/contraste/foco não homologados |
+
+Demais gates sem promoção. NO-GO operacional preservado. Ver
+docs/INDEPENDENT_REVIEW_PACKET.md para checklist executável offline e
+campos da autorização futura: conta segregada, modelo/rota/tarifa/quota,
+provisionamento/revogação, limites globais, parada/rollback, janela e
+responsável. Nenhuma conta/credencial foi escolhida ou provisionada.
+Navegador local indisponível; nenhuma instalação foi tentada. Sem deploy,
+Canvas, infraestrutura, provider ou outros projetos. Revisões favoráveis
+automáticas são autorrevisões, não certificação humana independente.
+Quatro PRs úteis bastam: não criar duas artificiais para atingir seis.
