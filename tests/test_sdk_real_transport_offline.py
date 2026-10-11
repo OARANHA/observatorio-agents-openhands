@@ -32,6 +32,10 @@ except (ImportError, importlib.metadata.PackageNotFoundError):
     HAS_SDK = False
 
 
+if os.environ.get("OBS_CANARY_HOST_NETNS") and not HAS_SDK:
+    raise RuntimeError("sdk_153_missing_in_isolated_runner")
+
+
 class OfflineSyntheticHalt(BaseException):
     """Not caught by the SDK's provider-error fallback/retry handlers."""
 
@@ -140,6 +144,14 @@ class RealSDKOfflineTests(unittest.TestCase):
         # This does not itself prove absolute no-egress; CI's explicit bwrap
         # flags and namespace comparison are the primary evidence.
         cls.namespace_identity = current
+
+    def test_network_namespace_is_independent_of_sdk_stubs(self):
+        host = os.environ["OBS_CANARY_HOST_NETNS"]
+        self.assertNotEqual(host,self.namespace_identity)
+        # Both checks must be independent of any patch of LiteLLM functions.
+        self.assertLessEqual(
+            {name for _index,name in socket.if_nameindex()}, {"lo"}
+        )
 
     def test_four_public_sdk_routes_reach_the_guarded_stub_once(self):
         routes = {
