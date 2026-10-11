@@ -135,6 +135,27 @@ class Contract(unittest.TestCase):
         self.assertNotIn('setInterval(', source)
         self.assertNotIn('document.cookie', source)
 
+    def test_doutrina_operacional_horizontal(self):
+        """Protege a separacao entre as ferramentas e os produtos atendidos."""
+        paths = [
+            'docs/PROJECT_SOURCE.md', 'AGENTS.md',
+            'docs/CANONICAL_STATE.md', 'docs/ARCHITECTURE.md',
+            'MEMORY.md', 'README.md',
+        ]
+        for path in paths:
+            with self.subTest(path=path):
+                data = (ROOT / path).read_text(encoding='utf-8')
+                self.assertIn('VIGIAFAST', data)
+                self.assertIn('OpenHands', data)
+                self.assertIn('Observatório', data)
+                self.assertNotIn('ADR-0002-horizontal-operations.md', data)
+        source = (ROOT / 'docs/PROJECT_SOURCE.md').read_text(encoding='utf-8')
+        self.assertIn('ferramentas de trabalho horizontais', source)
+        self.assertIn('ChatGPT planeja e valida', source)
+        self.assertIn('não prova', source)
+        self.assertIn('não prova armazenamento/recuperação', source)
+        self.assertIn('não alterar OpenHands Core', source)
+
     def test_sintaxe(self):
         subprocess.run(['node', '--check', str(ROOT / 'extension.js')], check=True)
 
