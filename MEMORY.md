@@ -153,3 +153,13 @@ negado por namespace). Correção na mesma branch:
 `LITELLM_LOCAL_MODEL_COST_MAP=True` antes do import no bwrap.
 Detalhes: `docs/handoffs/OBS-EXPLORER-SDK-REAL-OFFLINE-001.md`.
 Esperar CI do último HEAD; sem polling, merge, deploy ou inferência.
+
+## PR #17 — check de workflow e segundo RED (2026-10-11)
+
+No HEAD `6dfac7b9b3769005c3c3c563cb8ce74faf425e40`:
+workflow SDK `38115115662` green (6/6 testes SDK offline);
+CI Observatorio `38115115652` red por importar `pydantic`
+fora da guarda opcional de SDK no runner principal. Corrigido
+movendo `SecretStr` para import condicional, sem mexer em transportes.
+Aguardar CI do novo HEAD, não fazer polling/merge/deploy.
+Handoff: `docs/handoffs/OBS-EXPLORER-SDK-REAL-OFFLINE-001.md`.
