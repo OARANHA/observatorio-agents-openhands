@@ -20,3 +20,6 @@ Arquivo `tests/point_read_validation.test.mjs`: metadados mínimos, ID divergent
 RBAC, listagem de conversas, inventário de agentes, relação projeto/repositório, API autenticada, eventos, retorno de tarefa, LLM, deploy e Canvas. Permissões de leitura e erros HTTP 401/403/404 dependem da interface host; a UI conserva a mensagem genérica, falhando de modo fechado.
 
 **G11 NÃO PROVADO; G12 BLOQUEADO; P02/P03 NÃO PROVADOS; NO-GO operacional.** A CI da PR requer conferência no HEAD exato quando o proprietário informar GREEN/RED.
+
+## Correção de cobertura CI — 2026-10-12
+A execução inicial dos três workflows da PR #56 ficou GREEN no commit `f69b6e49277d1893c5d6521dad7e5cbb03d891c6`, porém a inspeção de `.github/workflows/ci.yml` provou que o novo teste JavaScript não estava na lista de comandos executados. A CI passou a executar `node --test tests/point_read_validation.test.mjs` em uma etapa específica. **O novo HEAD ainda requer resultado da CI; o GREEN anterior não valida essa alteração.** Sem polling contínuo, merge ou deploy.
