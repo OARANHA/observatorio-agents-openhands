@@ -30,3 +30,6 @@ jobs:
 
       - name: Gate estático de autoridade CYCLE011-B05 (offline)
         run: node --test tests/cycle011_b05_authority_gate.test.mjs
+
+      - name: Identidade e RBAC sintéticos CYCLE011-B08 (offline)
+        run: node --test tests/cycle011_b08_identity_rbac.test.mjs
