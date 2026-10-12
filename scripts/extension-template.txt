@@ -106,6 +106,17 @@ function mountRealRead(stage,host,onVerified,onReset) {
     for(const task of observedTasks){
       const item=document.createElement('li');
       item.textContent=task.project+' · '+task.status+' · '+task.id+' · observado: '+task.observedAt+' (projeto manual; estado pontual, não monitoramento)';
+      const refresh=document.createElement('button');
+      refresh.type='button';
+      refresh.textContent='Reconsultar agora';
+      refresh.setAttribute('aria-label','Reconsultar conversa '+task.id);
+      refresh.addEventListener('click',()=>{
+        if(!active||button.disabled)return;
+        get('.id').value=task.id;
+        get('.project').value=task.project;
+        button.click(); // Reutiliza o GET pontual, iniciado por clique explícito.
+      });
+      item.append(' ',refresh);
       list.append(item);
     }
   };
