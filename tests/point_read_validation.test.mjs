@@ -12,7 +12,7 @@ const validate=runInNewContext(functionSource+'\nvalidateConversationObservation
 const uuid='00000000-0000-4000-8000-000000000001';
 const valid={id:uuid,execution_status:'finished',updated_at:'2026-10-11T00:00:00Z'};
 test('accepts matched conversation, returns minimal safe metadata',()=>{
- assert.deepEqual(JSON.parse(JSON.stringify(validate({...valid,secret:'PRIVATE'},uuid))),{status:'finished',updatedAt:'2026-10-11T00:00:00Z'});
+ assert.deepEqual(JSON.parse(JSON.stringify(validate({...valid,secret:'PRIVATE'},uuid))),{status:'finished',updatedAt:'2026-10-11T00:00:00Z',title:null});
 });
 test('rejects mismatched ID, missing status, empty status and control characters',()=>{
  for(const data of [{...valid,id:'another'},{id:uuid},{...valid,execution_status:''},{...valid,execution_status:'\nfinished'},{...valid,execution_status:1},{...valid,execution_status:'x'.repeat(129)}]){
@@ -30,4 +30,11 @@ test('malformed, missing and untrusted timestamps are not displayed as server ti
   assert.equal(validate({...valid,updated_at},uuid).updatedAt,null);
  }
  assert.equal(validate({id:uuid,execution_status:'running'},uuid).updatedAt,null);
+});
+
+test('accepts API title only within safe limits; ignores malformed or oversized titles',()=>{
+ assert.equal(validate({...valid,title:'Missão autorizada'},uuid).title,'Missão autorizada');
+ for(const title of ['',42,'x'.repeat(161),'texto\ninjetado']){
+  assert.equal(validate({...valid,title},uuid).title,null);
+ }
 });
