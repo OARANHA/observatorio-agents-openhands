@@ -110,7 +110,6 @@ function mountRealRead(stage,host,onVerified,onReset) {
       refresh.type='button';
       refresh.textContent='Reconsultar agora';
       refresh.setAttribute('aria-label','Reconsultar conversa '+task.id);
-      refresh.disabled=!active||button?.disabled;
       refresh.addEventListener('click',()=>{
         if(!active||button.disabled)return;
         get('.id').value=task.id;
