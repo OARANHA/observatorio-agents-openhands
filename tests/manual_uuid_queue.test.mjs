@@ -12,7 +12,7 @@ const id1='00000000-0000-4000-8000-000000000001';
 const id2='00000000-0000-4000-8000-000000000002';
 
 test('accepts multiple explicitly supplied UUIDs and deduplicates',()=>{
- const ids=parse(id1+'\\n'+id2+', '+id1);
+ const ids=parse(id1+'\n'+id2+', '+id1);
  assert.deepEqual(Array.from(ids),[id1,id2]);
 });
 test('fails closed for invalid items and oversized input',()=>{
@@ -24,6 +24,6 @@ test('fails closed for invalid items and oversized input',()=>{
 test('does not issue network requests when preparing local selection',()=>{
  const panel=template.slice(template.indexOf('const queue=document.createElement'),template.indexOf('const get=s=>detail.querySelector'));
  assert.match(panel,/parseExplicitConversationIds/);
- assert.doesNotMatch(panel,/agentServer\\.request|fetch\\(|setInterval/);
- assert.match(template,/queue\\.remove\\(\\)/);
+ assert.doesNotMatch(panel,/agentServer\.request|fetch\(|setInterval/);
+ assert.match(template,/queue\.remove\(\)/);
 });
