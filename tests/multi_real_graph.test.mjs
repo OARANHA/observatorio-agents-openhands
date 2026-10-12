@@ -24,3 +24,10 @@ test('each new authorized read invalidates only its UUID and graph list never fl
  }
  assert.match(ext,/id=>forgetConsultedObservation\(id\)/);
 });
+
+test('reorganization retains manual dragging controls',()=>{
+ assert.match(html,/function reorganizeGraph\(\)/);
+ assert.match(html,/graphNodePositions\.clear\(\)/);
+ assert.match(html,/graph-organize/);
+ assert.match(ext,/reorganizeGraph/);
+});
