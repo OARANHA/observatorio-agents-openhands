@@ -259,6 +259,13 @@ function orbitalSVG(color){let circles='';for(let i=0;i<3;i++){const a=46+i*25,b
 function realMissionActivity(status){
   return status==='running'?'active':status==='waiting_for_confirmation'?'attention':status==='error'?'error':'idle';
 }
+function realMissionStateLabel(status){
+  if(status==='waiting_for_confirmation')return 'AGUARDANDO APROVAÇÃO';
+  if(status==='running')return 'EM EXECUÇÃO';
+  if(status==='finished')return 'ENCERRADA (SUCESSO NÃO ATESTADO)';
+  if(status==='error')return 'ERRO INFORMADO';
+  return 'ESTADO INFORMADO: '+status;
+}
 function clearConsultedObservation(){
   verifiedMission=null;graphSelected=null;
   delete defs.observado;
@@ -290,7 +297,7 @@ function openVerifiedSystem(){
   $('planets').replaceChildren();
   const moon=$('real-lua');
   moon.classList.remove('hidden');
-  $('real-lua-state').textContent=verifiedMission.status+' · '+verifiedMission.conversationId.slice(0,8);
+  $('real-lua-state').textContent=realMissionStateLabel(verifiedMission.status)+' · '+verifiedMission.conversationId.slice(0,8);
   $('solar-note').textContent='☾ Lua = conversa OpenHands consultada; nenhum agente individual identificado. Outros sistemas permanecem demonstrativos.';
   $('metrics').innerHTML='<div class="metric"><small>CONVERSAS CONSULTADAS</small><strong>01</strong><span>Fonte: OpenHands</span></div><div class="metric"><small>AGENTES COMPROVADOS</small><strong>00</strong><span>Nenhum agente registrado nesta prova</span></div><div class="metric"><small>VÍNCULO AO PROJETO</small><strong>Manual</strong><span>Sem validação no servidor</span></div>';
   drawSolar();setNav();renderPanel();
@@ -303,7 +310,8 @@ function renderVerifiedPanel(){
     <div class="panel-kicker">CONVERSA OPENHANDS · ESTADO RECEBIDO</div>
     <div class="agent-hero" style="display:flex"><div class="hero-planet" style="--hero-light:#e8fcff;--hero-mid:#86d5ed;--hero-dark:#124b72;--hero-glow:#71dbffa8"></div></div>
     <h2>Lua · conversa consultada</h2>
-    <div class="section"><h3>STATUS CONSULTADO</h3><p class="panel-text">${safe(v.status)}</p></div>
+    <div class="section"><h3>STATUS CONSULTADO</h3><p class="panel-text">${safe(realMissionStateLabel(v.status))}</p><p class="panel-text">Valor bruto: ${safe(v.status)}</p></div>
+    <div class="section"><h3>TÍTULO DA CONVERSA</h3><p class="panel-text">${safe(v.title||'Não informado pela API')}</p></div>
     <div class="section"><h3>IDENTIFICADOR DA CONVERSA</h3><p class="panel-text">${safe(v.conversationId)}</p></div>
     <div class="section"><h3>PROJETO INFORMADO PELO OPERADOR</h3><p class="panel-text">${safe(v.project)}</p></div>
     <div class="section"><h3>ORIGEM E HORÁRIOS</h3><p class="panel-text">OpenHands Agent Server · GET /api/conversations/{id}</p><p class="panel-text">Servidor: ${safe(v.updatedAt||'Não fornecido')}</p><p class="panel-text">Observado no navegador: ${safe(v.observedAt)}</p></div>
@@ -351,7 +359,7 @@ function graphModel(narrowConsulted=false){
   if(hasConsulted){
     const ids=verifiedMission.graphIdentity;
     nodes.push({id:ids.source,role:'source',name:'OpenHands',tag:'FONTE CONSULTADA',kind:'verified',x:narrowConsulted?75:83,y:narrowConsulted?62:19,description:'Origem: GET de conversa pela sessão autenticada do Canvas.'});
-    nodes.push({id:ids.mission,role:'mission',name:'Conversa '+verifiedMission.conversationId.slice(0,8),tag:'ESTADO: '+verifiedMission.status,kind:'verified',x:narrowConsulted?25:83,y:narrowConsulted?87:49,description:'Conversa consultada pontualmente, não sucesso de tarefa ou agente comprovado.'});
+    nodes.push({id:ids.mission,role:'mission',name:verifiedMission.title||('Conversa '+verifiedMission.conversationId.slice(0,8)),tag:realMissionStateLabel(verifiedMission.status),kind:'verified',x:narrowConsulted?25:83,y:narrowConsulted?87:49,description:'Conversa consultada pontualmente, não sucesso de tarefa ou agente comprovado.'});
     nodes.push({id:ids.project,role:'project',name:verifiedMission.project.split('/').pop().slice(0,22),tag:'PROJETO INFORMADO',kind:'manual',x:narrowConsulted?75:83,y:narrowConsulted?87:81,description:'Associação informada pelo operador; o servidor não confirmou o vínculo.'});
     edges.push({from:ids.source,to:ids.mission,kind:'verified'});
     edges.push({from:ids.mission,to:ids.project,kind:'manual'});
