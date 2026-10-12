@@ -603,3 +603,43 @@ Main pré-consolidação96ed4a3c5ce659aa55a4841716e7623d30aaeb64.
 - **GAPS:** nenhum acesso demonstrado à instância Canvas atual neste ciclo. Última instalação em screenshot histórica: V0.4.2, ref `7212c51c38fc34cd195afb4db99ee35808e67cb5`; não tratar como estado atual. WebGL2 real, touch físico, leitor de tela, vínculo RBAC e memória persistente continuam sem homologação.
 - **REUSE GATE:** Apps nativo e contrato `host.registerPage`; nada de fork Canvas, alteração Core, nova autenticação, BFF improvisado ou implantação implícita.
 - **DECISION:** próximo incremento exclusivamente documental `docs/handoffs/OBS-CYCLE-006-CANVAS-VISUAL-HOMOLOGATION-PLAN.md`; separar H0 inspeção read-only de H1 instalação desabilitada, H2 habilitação visual e H3 GET sintético autorizado, mantendo H4 operacional bloqueado. **G11 NÃO PROVADO; G12 BLOQUEADO; P01 PARCIAL; P02/P03 NÃO PROVADOS; ADR-0001 PROPOSTO; NO-GO operacional.** Nenhuma instalação/deploy executada por esta preparação.
+
+## CYCLE007 — candidata visual V0.5.2 Grafo Estelar (2026-10-11)
+- Base confirmada no GitHub: `main` `5cedc0eada928fcd1f46cc50e2144d02822181be`; #43/#44 integradas, PR #7 draft e #35 aberta e intocadas.
+- O operador enviou duas evidências novas do Canvas real: **App Observatório V0.5.1 ativado**, ref `5cedc0eada928fcd1f46cc50e2144d02822181be`, e captura do grafo DEMO efetivamente renderizado no Canvas. Evidência é de instalação e renderização básica, não de inspeção abrangente H0–H3 ou GO operacional.
+- Novo trabalho autorizado: **V0.5.2 em PR draft**, redesign CSS/SVG do grafo estelar reaproveitando V0.5.1 (sem mudanças no host, rede, autorização, dados e projetos). Novo manifesto `0.5.2`, `extension.js` regenerado, três cenários Chromium adicionais; esperado **22 testes DOM**, CI **não verificada no novo HEAD**.
+- Arquivo de autoridade: `docs/handoffs/OBS-CYCLE-007-STELLAR-GRAPH-V052.md`. G11 NÃO PROVADO, G12 BLOQUEADO, P01 PARCIAL, P02/P03 NÃO PROVADOS, NO-GO operacional; **Canvas V0.5.1 não foi atualizado por este trabalho**.
+
+## CYCLE007 — diagnóstico da CI RED e correção no teste do grafo (2026-10-11)
+- PR #45 V0.5.2 HEAD histórico `7105dcf0154aa6bcc6d6677a6c7e6cbeae54b735`: CI Observatorio `38179029418` RED devido exclusivamente à asserção textual antiga em `tests/test_contract.py:197`; Graph DOM Offline `38179029437` **22/22 GREEN**, Canary Worker Inert SDK `38179029414` GREEN.
+- Condição `verifiedMission&&validGraphIdentity` foi extraída em `hasConsulted` e permanece sendo a guarda real para a criação de nós consultados. Correção **somente de asserção do contrato e docs**, sem alterar código de produção, geração ou Canvas. Nova CI aguardando `green`/`red` sem polling.
+- Handoff `docs/handoffs/OBS-CYCLE-007-STELLAR-GRAPH-V052.md`; G11 NÃO PROVADO, G12 BLOQUEADO, P02/P03 NÃO PROVADOS; NO-GO operacional.
+
+## CYCLE007 — correção de colisão responsiva P2 (2026-10-11)
+- Revisão Codex do HEAD histórico `73d035542e30fd256dfa16bd59498ce92ae7b46c` reportou P2: hub DEMO e VIGIAFAST DEMO podem colidir após consulta em 900×700 devido a cartões maiores. Não foram demonstrados P0/P1; a revisão é automatizada e **não promove G11**.
+- Patch no layout consultado (hub x40,y50, DEMO direito y15/y85) e teste Chromium medindo rects sem colisão em 900×700/390×844. `extension.js` regenerada, código de proveniência/host inalterado. **23 testes DOM esperados, nova CI pendente**.
+- Handoff `docs/handoffs/OBS-CYCLE-007-STELLAR-GRAPH-V052.md`, Canvas V0.5.1 não modificado, G11 NÃO PROVADO, G12 BLOQUEADO, P02/P03 NÃO PROVADOS, NO-GO operacional.
+
+## CYCLE007 — RED de geometria da coluna consultada (2026-10-11)
+- Em `d56b316eaaa77551851fedcbbb5687bdb087d3e9`, Graph DOM 38181224586 **RED** (22/23). Capturou em Chromium 900×700 duas colisões entre fonte, conversa e vínculo manual consultados (3,89/5,22 px). Outros workflows no SHA: CI 38181224559 e SDK inerte 38181224742 GREEN.
+- Patch posterior compacta tipografia/espacamento dos nós `verified/manual` exclusivamente em viewport desktop baixo (largura maior ou igual a 871 e altura até 760px), sem cortar texto/alterar identidade ou API; `extension.js` regenerado. Regressão de `getBoundingClientRect` mantida para 900×700 + 390×844, **23 testes esperados, CI pendente**.
+- Handoff `docs/handoffs/OBS-CYCLE-007-STELLAR-GRAPH-V052.md`, G11 NÃO PROVADO, G12 BLOQUEADO, P02/P03 NÃO PROVADOS, Canvas V0.5.1 não alterado.
+
+## CYCLE007 — correção P2 mobile ultraestreito (2026-10-11)
+- Codex revisou `29675a85523b3fb1fd7d7c22c5a03daa6c6a0563`, tree `9aa2380319ef6bbce9c791015326fb50d0d6365c`, e encontrou colisão geométrica calculada após consulta em 320/340 px entre DEMO/consultados. Nenhum P0/P1; parecer CORREÇÕES NECESSÁRIAS, revisão automatizada não promove G11.
+- Novo patch usa distribuição responsiva em **mapa móvel estreito inferior a 290 px** com grid 2×4 de nós e mapa de 540 px; curvas SVG atualizadas junto das coordenadas, re-render em resize. Sem truncamento ou reduzir os 10 px mínimos; regressão Chromium agora cobre **320,340,350,360,390 e 900**, inclusive volta a 390 e contenção no mapa narrow. Esperados 23 testes; **CI do novo HEAD PENDENTE**.
+- Evidências e riscos no handoff `docs/handoffs/OBS-CYCLE-007-STELLAR-GRAPH-V052.md`. Canvas permanece na V0.5.1; G11 NÃO PROVADO, G12 BLOQUEADO, P01 PARCIAL, P02/P03 NÃO PROVADOS.
+
+## CYCLE007 — CI RED pós-correção mobile e separação de modelo/apresentação (2026-10-11)
+- HEAD `1a5e902593e717cf5b27a2fc9dfdf5fa998aa7ee` CI Observatorio 38182469648 RED (3/8 contrato `graph_identity_contract.mjs` falharam por `$ is not defined` em VM pura) e Graph DOM 38182469596 RED 21/23 (valores de estilo vazios nos testes mobile de fonte/animation). O cenário 23 de não-colisão **PASS**, SDK inerte GREEN.
+- Ajustado `graphModel(narrowConsulted=false)` sem DOM/window e `narrowGraphViewport()` na apresentação. Resize só re-renderiza quando `data-layout` realmente muda, preservando DOM/foco e evitando desmontagens transitórias. Incluído teste Chromium adicional estabilidade foco/DOM durante 390→400→390, mantendo testes de identidade e não-colisões. **24 DOM esperados, nova CI PENDENTE.**
+- Detalhes em `docs/handoffs/OBS-CYCLE-007-STELLAR-GRAPH-V052.md`. PR Draft sem merge, Canvas V0.5.1 intocado, G11 NÃO PROVADO/G12 BLOQUEADO/P02/P03 NÃO PROVADOS.
+
+## CYCLE007 — correção de extração de graphModel na CI, sem código de produção (2026-10-11)
+- No SHA `dea4090c643045744b3c74b50003bb23aad7e141`, Graph DOM #38182836680 **24/24 GREEN** e Canary SDK #38182836686 **GREEN**, CI principal #38182836678 **RED** por 2 contratos de teste com assinatura literal antiga de `graphModel()`. Python 218 descobertos, 28 SDK opcionais skipped.
+- Ajustados apenas `tests/test_contract.py` e `tests/graph_identity_contract.mjs` para `graphModel(narrowConsulted=false)`, mantendo invariantes de identidade e adicionando prova de layout narrow fail-closed. Documentação viva atualizada. **Nova CI pendente; sem polling.**
+- Próxima frente distinta: tarefas de desenvolvimento delegáveis ao OpenHands devem ser definidas com escopo, evidências e gates; nenhum agente/LLM real executado/registrado. G11 não provado/G12 bloqueado.
+
+## CYCLE007 — contador TAP Python desatualizado (2026-10-11)
+- HEAD `cc989bbe2e7b81a7b15d0b6314ab6c11ae90a554`: CI #38184239577 RED por wrapper Python exigir `# pass 8` após 9 casos Node, enquanto Graph DOM #38184239576 24/24 GREEN e Canary Inert #38184239594 GREEN. Wrapper agora exige `# tests N == # pass N`, `N>=9`, zero falhas/skips. **Código de produção inalterado; nova CI PENDENTE**.
+- Issues #46/#47/#48 são fila offline OpenHands **não atribuída nem despachada**, sem LLM real. G11 não provado/G12 bloqueado; sem merge/Canvas.

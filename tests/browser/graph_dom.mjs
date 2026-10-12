@@ -36,8 +36,8 @@ const artifacts='test-artifacts/graph';mkdirSync(artifacts,{recursive:true});
 let browser;
 test.before(async()=>{browser=await chromium.launch({headless:true,chromiumSandbox:true});});
 test.after(async()=>{await browser?.close();});
-async function fixture({mobile=false,reduced=false,fault=null}={}){
- const context=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1440,height:1000},reducedMotion:reduced?'reduce':'no-preference',serviceWorkers:'block'});
+async function fixture({mobile=false,reduced=false,fault=null,viewport=null}={}){
+ const context=await browser.newContext({viewport:viewport||(mobile?{width:390,height:844}:{width:1440,height:1000}),reducedMotion:reduced?'reduce':'no-preference',serviceWorkers:'block'});
  const unexpected=[];
  await context.route('**/*',async route=>{
    const url=route.request().url();
@@ -75,7 +75,7 @@ test('project navigation, demo source, search and empty filter keep search focus
  const f=await fixture();try{const p=f.page;await p.locator('.system-tile').first().click();assert.ok((await p.locator('#scene-title').innerText()).includes('Sistema solar'));await p.locator('#top-universe').click();assert.equal(await p.locator('.system-tile').count(),4);await p.locator('#top-graph').click();assert.equal(await p.locator('.graph-node').count(),5);await p.locator('#graph-search').fill('NOT_FOUND_SYNTHETIC');await p.locator('.graph-empty').waitFor();assert.equal(await p.evaluate(()=>document.querySelector('.ob-wrap').shadowRoot.activeElement?.id),'graph-search');await p.locator('#graph-search').fill('');await p.locator('#graph-scope').selectOption('verified');assert.equal(await p.locator('.graph-node').count(),0);}finally{await close(f);}
 });
 test('synthetic consulted source remains distinct from manual and errors create no new observation',async()=>{
- const f=await fixture();try{const p=f.page;await consult(p);await p.locator('#top-graph').click();await p.locator('#graph-scope').selectOption('verified');assert.equal(await p.locator('.graph-node').count(),3);assert.equal(await p.locator('.graph-node[data-kind=manual]').count(),1);assert.equal(await p.locator('.graph-edges line[data-kind=verified]').count(),1);assert.equal(await p.locator('.graph-edges line[data-kind=manual]').count(),1);assert.deepEqual(await p.evaluate(()=>window.fixtureReads),[{method:'GET',path:'/api/conversations/00000000-0000-4000-8000-000000000001'}]);}finally{await close(f);}
+ const f=await fixture();try{const p=f.page;await consult(p);await p.locator('#top-graph').click();await p.locator('#graph-scope').selectOption('verified');assert.equal(await p.locator('.graph-node').count(),3);assert.equal(await p.locator('.graph-node[data-kind=manual]').count(),1);assert.equal(await p.locator('.graph-edges path.graph-arc[data-kind=verified]').count(),1);assert.equal(await p.locator('.graph-edges path.graph-arc[data-kind=manual]').count(),1);assert.deepEqual(await p.evaluate(()=>window.fixtureReads),[{method:'GET',path:'/api/conversations/00000000-0000-4000-8000-000000000001'}]);}finally{await close(f);}
  const bad=await fixture();try{await bad.page.evaluate(()=>window.fixtureError=true);await bad.page.locator('details.ob-real summary').click();await bad.page.locator('input.id').fill('00000000-0000-4000-8000-000000000001');await bad.page.getByText('Consultar estado no OpenHands',{exact:true}).click();await bad.page.locator('output').filter({hasText:'desconhecido'}).waitFor();await bad.page.locator('#top-graph').click();assert.equal(await bad.page.locator('.graph-node[data-kind=verified]').count(),0);}finally{await close(bad);}
 });
 test('mobile/reduced-motion, zoom and keyboard pan are bounded and resettable',async()=>{
@@ -258,5 +258,97 @@ test('manifest and universe metrics describe a consulted conversation, not execu
   const empty=await p.locator('.graph-empty').innerText();
   assert.match(empty,/estado de uma conversa/);
   assert.doesNotMatch(empty,/consulte uma missão/i);
+ }finally{await close(f);}
+});
+test('stellar graph has accessible typed constellations and curved classified links',async()=>{
+ const f=await fixture();try{
+  const p=f.page;await p.locator('#top-graph').click();
+  assert.equal(await p.locator('#graph-map').getAttribute('data-visual'),'stellar');
+  assert.equal(await p.locator('.graph-map-index').getAttribute('aria-hidden'),'true');
+  assert.equal(await p.locator('.graph-node .graph-beacon').count(),5);
+  assert.equal(await p.locator('.graph-node[data-kind=demo]').count(),4);
+  assert.equal(await p.locator('.graph-node[data-kind=verified]').count(),0);
+  assert.equal(await p.locator('.graph-edges path.graph-arc[data-kind=demo]').count(),4);
+  const curves=await p.locator('.graph-edges path.graph-arc').evaluateAll(paths=>paths.map(el=>el.getAttribute('d')));
+  assert.ok(curves.every(path=>path.startsWith('M ')&&path.includes(' Q ')));
+  assert.equal(await p.locator('.graph-edges').getAttribute('aria-hidden'),'true');
+  assert.match(await p.locator('#scene-title').innerText(),/Grafo estelar/);
+ }finally{await close(f);}
+});
+test('stellar graph keeps verified and manual provenance distinct when a test conversation is consulted',async()=>{
+ const f=await fixture();try{
+  const p=f.page;await consult(p);await p.locator('#top-graph').click();
+  assert.equal(await p.locator('.graph-edges path.graph-arc[data-kind=verified]').count(),1);
+  assert.equal(await p.locator('.graph-edges path.graph-arc[data-kind=manual]').count(),1);
+  assert.equal(await p.locator('.graph-edges path.graph-arc[data-kind=demo]').count(),4);
+  assert.equal(await p.locator('.graph-node[data-kind=verified]').count(),2);
+  assert.equal(await p.locator('.graph-node[data-kind=manual]').count(),1);
+  const labels=await p.locator('.graph-node[data-kind=demo] small').allInnerTexts();
+  assert.deepEqual(labels,['DEMO','DEMO','DEMO','DEMO']);
+ }finally{await close(f);}
+});
+test('stellar reduced-motion disables ambient animation and preserves keyboard control on mobile',async()=>{
+ const f=await fixture({mobile:true,reduced:true});try{
+  const p=f.page;await p.locator('#rail-graph').click();
+  const visual=await p.locator('.graph-node[data-kind=demo] .graph-beacon').first().evaluate(el=>({
+   animation:getComputedStyle(el).animationName,tag:getComputedStyle(el.closest('.graph-node')).backgroundColor
+  }));
+  assert.equal(visual.animation,'none');
+  assert.ok(visual.tag.startsWith('rgb('));
+  const map=p.locator('#graph-map');
+  const style=await map.evaluate(el=>getComputedStyle(el).touchAction);
+  assert.ok(style.includes('pan-y')&&style.includes('pinch-zoom'));
+  await map.focus();await p.keyboard.press('ArrowRight');
+  assert.equal(await p.locator('#graph-surface').evaluate(el=>new DOMMatrixReadOnly(getComputedStyle(el).transform).e),20);
+ }finally{await close(f);}
+});
+test('consulted constellation nodes do not collide from 320px through desktop widths',async()=>{
+ const f=await fixture({viewport:{width:900,height:700},reduced:true});try{
+  const p=f.page;await consult(p);await p.locator('#top-graph').click();
+  for(const size of [{width:900,height:700},{width:390,height:844},{width:360,height:844},{width:350,height:844},{width:340,height:844},{width:320,height:844},{width:390,height:844}]){
+   await p.setViewportSize(size);
+   await p.waitForTimeout(320); // Wait for stellar node position transition.
+   const nodes=await p.locator('.graph-node').evaluateAll(items=>items.map(n=>{
+    const r=n.getBoundingClientRect();
+    return {label:n.textContent.trim().replace(/\s+/g,' '),x:r.x,y:r.y,right:r.right,bottom:r.bottom};
+   }));
+   assert.equal(nodes.length,8,'4 DEMO + hub + consulted source/conversation/manual nodes');
+   const overlaps=[];
+   for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+    const a=nodes[i],b=nodes[j];
+    const dx=Math.min(a.right,b.right)-Math.max(a.x,b.x);
+    const dy=Math.min(a.bottom,b.bottom)-Math.max(a.y,b.y);
+    if(dx>0.5&&dy>0.5)overlaps.push({a:a.label,b:b.label,width:+dx.toFixed(2),height:+dy.toFixed(2)});
+   }
+   assert.deepEqual(overlaps,[],'node overlap at '+size.width+'x'+size.height);
+   // Em 320–350 px, os cartões devem permanecer inteiros dentro do mapa ampliado.
+   if(size.width<=350){
+    assert.equal(await p.locator('#graph-map').getAttribute('data-layout'),'narrow-consulted');
+    const map=await p.locator('#graph-map').boundingBox();
+    assert.ok(map.height>=539,'narrow map must grow instead of shrinking labels');
+    const outside=nodes.filter(n=>n.x<map.x-1||n.right>map.x+map.width+1||n.y<map.y-1||n.bottom>map.y+map.height+1);
+    assert.deepEqual(outside,[],'no clipped nodes at '+size.width+'x'+size.height);
+   }else{
+    assert.equal(await p.locator('#graph-map').getAttribute('data-layout'),'default');
+   }
+  }
+ }finally{await close(f);}
+});
+test('graph resize within same layout preserves node DOM and keyboard focus',async()=>{
+ const f=await fixture({mobile:true,reduced:true});try{
+  const p=f.page;await p.locator('#rail-graph').click();
+  const node=p.locator('.graph-node').first();
+  const id=await node.getAttribute('data-node');
+  await node.focus();
+  await node.evaluate(el=>{el.dataset.resizeSentinel='retained';});
+  for(const size of [{width:390,height:800},{width:400,height:800},{width:390,height:844}]){
+   await p.setViewportSize(size);
+   await p.waitForTimeout(50);
+   assert.equal(await p.locator('.graph-node').first().getAttribute('data-resize-sentinel'),'retained',
+    'resize without layout transition must not destroy node DOM');
+   assert.equal(await p.evaluate(()=>document.querySelector('.ob-wrap').shadowRoot.activeElement?.dataset.node),id,
+    'resize without layout transition must retain keyboard focus');
+   assert.equal(await p.locator('#graph-map').getAttribute('data-layout'),'default');
+  }
  }finally{await close(f);}
 });

@@ -166,7 +166,7 @@ class GraphV050(unittest.TestCase):
 
     def test_manifest_v050(self):
         data = json.loads((ROOT / 'canvas-extension.json').read_text(encoding='utf-8'))
-        self.assertEqual(data['version'], '0.5.1')
+        self.assertEqual(data['version'], '0.5.2')
         self.assertIn('grafo', data['description'].lower())
 
     def test_graph_navigation_and_interaction(self):
@@ -179,7 +179,7 @@ class GraphV050(unittest.TestCase):
                          'id="graph-scope"', 'id="graph-search"', 'id="graph-map"',
                          'id="graph-surface"'):
             self.assertIn(expected, markup)
-        for expected in ('function openGraph()', 'function graphModel()',
+        for expected in ('function openGraph()', 'function graphModel(narrowConsulted=false)',
                          'function renderGraph()', 'function renderGraphPanel()',
                          'graphScope', 'graphQuery', 'graphZoom', "graphSelected"):
             self.assertIn(expected, source)
@@ -194,7 +194,8 @@ class GraphV050(unittest.TestCase):
 
     def test_grafo_nao_inventa_agentes_vinculos_ou_sucesso(self):
         source = (ROOT / 'extension.js').read_text(encoding='utf-8')
-        self.assertIn("if(verifiedMission&&validGraphIdentity(verifiedMission.graphIdentity)){", source)
+        self.assertIn("const hasConsulted=!!(verifiedMission&&validGraphIdentity(verifiedMission.graphIdentity));", source)
+        self.assertIn("if(hasConsulted){", source)
         self.assertIn("kind:'verified'", source)
         self.assertIn("kind:'manual'", source)
         self.assertIn("kind:'demo'", source)

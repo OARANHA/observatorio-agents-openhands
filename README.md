@@ -68,3 +68,9 @@ Depois de consultar manualmente um UUID via Canvas Host, a UI cria **em memória
 - Zero sincronização automática, zero histórico persistido, nenhuma credencial no JS, nenhum agente novo, nenhuma ação start/stop. Sem dados reais de clientes nem RBAC multi-tenant homologado.
 - Após reload do Canvas, **é necessário consultar o UUID novamente**. Para vinculação automática e durável, precisaríamos de inventário seguro do lado do servidor: fora deste primeiro slice.
 - PR #5 integrada; extensão 0.4.2 instalada e verificada em screenshot do Canvas. Requer autorização específica para qualquer **nova** atualização; não implica telemetria completa ou sincronização. Em caso de API incompatível, não mostrar uma lua como atividade comprovada.
+
+## V0.5.2 — candidata Grafo Estelar (não instalada)
+
+A V0.5.2 propõe uma linguagem cósmica no grafo: estrelas CSS locais, nós em órbitas de constelações e conexões SVG curvas sem alterar o significado dos dados. Os rótulos `DEMO`, fonte consultada e vínculo manual continuam explícitos. Esta candidata é preparada **somente em branch/PR draft** e requer revisão e CI; o Canvas do operador permaneceu em **V0.5.1** conforme captura fornecida (ref `5cedc0eada928fcd1f46cc50e2144d02822181be`). Não instalar a V0.5.2 sem nova autorização específica.
+
+Detalhes: [CYCLE007 — Grafo Estelar](docs/handoffs/OBS-CYCLE-007-STELLAR-GRAPH-V052.md). A integração no Canvas não é validada por screenshots do runner Chromium.

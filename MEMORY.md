@@ -534,3 +534,29 @@ Main base `e06d3b01e60d9a5503e046dc0fe2eeb269f0e403` após #42. Reuso da PR #35 
 - Reconciliado GitHub: `main` `ac9c525a7e169fe253f0f488550686491939289a` integra V0.5.1 visual/grafo; PR #43 merged, PR #35 ainda aberta e PR #7 draft. Código integrado **não é Canvas instalado**: última instalação documentada V0.4.2 em screenshot histórica, estado atual sem inspeção.
 - Provas offline do HEAD PR #43: três workflows GREEN, Chromium **19/19**, 190 Python PASS/28 skips opcionais e SDK inerte 0 operações reais; parecer Codex considerou R1–R3 resolvidos, nenhuma falha nova demonstrada. Revisão automatizada não satisfaz G11 formal.
 - Novo plano `docs/handoffs/OBS-CYCLE-006-CANVAS-VISUAL-HOMOLOGATION-PLAN.md` prepara H0 leitura do Canvas, H1 instalação desabilitada, H2 habilitação visual e H3 GET sintético somente sob **autorizações separadas**. Sem deploy, Core, VPS, LLM/agentes, merge automático ou captura de dados de clientes. G11 não provado, G12 bloqueado, P01 parcial, P02/P03 não provados.
+
+## CYCLE007 — Grafo Estelar V0.5.2 em branch (2026-10-11)
+- Canvas: operador mostrou V0.5.1 ativada em `https://canvas.wandora.com.br` com ref `5cedc0eada928fcd1f46cc50e2144d02822181be`, e screenshot do grafo com VIGIAFAST/WANDORA/ELUS/OPENHANDS LAB classificados DEMO. Essas capturas não autorizam instalação nem provam operação real.
+- V0.5.2 aprovada **para implementação em PR separada sem merge**. Redesign por CSS estelar/halos e SVG curvas deterministicamente geradas de relações **existentes**, sem dependência externa; manifesto `0.5.2`, fonte+artefato gerado e testes offline. Handoff `docs/handoffs/OBS-CYCLE-007-STELLAR-GRAPH-V052.md`. CI e screenshot do novo HEAD aguardam usuário informar green/red, sem polling.
+- Nenhuma atualização Canvas, LLM/agente, VPS/host/core. G11 não provado, G12 bloqueado, P02/P03 não provados, NO-GO operacional.
+
+## CYCLE007 — correção de teste após CI RED (2026-10-11)
+- PR #45 HEAD `7105dcf0154aa6bcc6d6677a6c7e6cbeae54b735`: CI `38179029418` RED por asserção estática obsoleta em `tests/test_contract.py:197` após extração de `hasConsulted`; DOM `38179029437` 22/22 e SDK inerte `38179029414` GREEN. Guard de identidade segue presente e é agora checado com duas asserts. Só teste/docs alterados, sem Canvas/deploy/merge. Nova CI pendente; evitar polling. G11 não provado/G12 bloqueado.
+
+## CYCLE007 — P2 colisão responsiva (2026-10-11)
+- Codex independente automatizado apontou colisão hub/VIGIAFAST a 900×700 após consulta no HEAD `73d035542e30fd256dfa16bd59498ce92ae7b46c`; geometria calculada, não Chromium local. Alteradas somente posições consultadas, sem semântica nova. Adicionado Chromium `getBoundingClientRect` para 900×700 e 390×844; esperado 23 DOM, nova CI pendente sem polling. Sem merge/Canvas/deploy. G11 não provado e G12 bloqueado.
+
+## CYCLE007 — CSS compacto após teste geométrico RED (2026-10-11)
+- O novo teste 23 Chromium em HEAD `d56b316eaaa77551851fedcbbb5687bdb087d3e9` localizou interseções de 3,89 e 5,22 px entre os cartões consultados no viewport 900×700; Graph DOM RED 22/23, CI e SDK inerte GREEN. Corrigida a densidade de cartão `verified/manual` em viewport baixo sem mexer em consulta/identidade ou no Canvas; recompilado `extension.js`; CI do novo HEAD pendente, sem polling. G11 não provado/G12 bloqueado.
+
+## CYCLE007 — mais uma correção visual mobile (2026-10-11)
+- Revisão adversarial Codex identificou colisões mínimas em 320/340 após consulta (HEAD `29675a85523b3fb1fd7d7c22c5a03daa6c6a0563`). Implementado mapa móvel estreito com 2 colunas × 4 linhas, 540px de altura e linhas SVG seguindo o modelo, sem mudança de proveniência. Teste de colisões real ampliado 320/340/350/360/390/900 e retorno a 390; 23 DOM esperados, nova CI pendente, sem polling. G11 não provado/G12 bloqueado. Canvas V0.5.1 não alterado.
+
+## CYCLE007 — RED de isolamento de graphModel e resize (2026-10-11)
+- HEAD anterior `1a5e902593e717cf5b27a2fc9dfdf5fa998aa7ee` dupla CI RED: identity contract isolado falhou em `$ is not defined`, DOM mobile computed fontSize/animationName vazios; teste geométrico em 320+ PASS. Separada decisão de layout da função pura `graphModel`, e redraw condicionado à troca de layout para preservar foco/DOM. Acrescentado teste Chromium de estabilidade de foco 390→400→390. Esperados 24 DOM no próximo SHA, ainda sem verificação de CI. Sem merge/Canvas/deploy. G11 não provado; G12 bloqueado.
+
+## CYCLE007 — arrumado teste de assinatura após RED (2026-10-11)
+- SHA anterior `dea4090c643045744b3c74b50003bb23aad7e141`: DOM 24/24 GREEN, SDK inerte GREEN, CI 38182836678 RED por teste Python/VM de `graphModel()` que não acompanhou `graphModel(narrowConsulted=false)`. Atualizados somente dois testes + docs; assert identidade fail-closed preservado e caso adicional para flag narrow. Nova CI pendente sem polling. Sem merge, Canvas, execução real de agentes ou LLM. G11 não provado, G12 bloqueado.
+
+## CYCLE007 — ajuste do wrapper TAP após CI RED (2026-10-11)
+- HEAD `cc989bbe2e7b81a7b15d0b6314ab6c11ae90a554`: CI #38184239577 RED só porque Python exigia 8 PASS contra 9 testes Node agora aprovados; DOM #38184239576 24/24 GREEN, SDK #38184239594 GREEN. Contador substituído por `# tests == # pass >= 9` e 0 fail/skip. CI do novo SHA aguardando usuário, sem polling. Issues #46–#48 preparadas mas não despachadas; G11 não provado/G12 bloqueado.

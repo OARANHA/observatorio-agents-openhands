@@ -1,4 +1,5 @@
 import pathlib
+import re
 import subprocess
 import unittest
 
@@ -10,5 +11,11 @@ class GraphIdentityContract(unittest.TestCase):
                                  'tests/graph_identity_contract.mjs'], cwd=root,
                                 capture_output=True, text=True, timeout=15)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn('# pass 8', result.stdout)
+        tests = re.search(r'^# tests (\d+)$', result.stdout, re.MULTILINE)
+        passed = re.search(r'^# pass (\d+)$', result.stdout, re.MULTILINE)
+        self.assertIsNotNone(tests, result.stdout)
+        self.assertIsNotNone(passed, result.stdout)
+        self.assertGreaterEqual(int(tests.group(1)), 9)
+        self.assertEqual(tests.group(1), passed.group(1))
+        self.assertIn('# fail 0', result.stdout)
         self.assertIn('# skipped 0', result.stdout)
