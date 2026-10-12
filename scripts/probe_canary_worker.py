@@ -16,6 +16,7 @@ from types import SimpleNamespace
 
 from canary_controls import ALLOWED, GateError, Guard, MissionCancelled, snapshot, supervise
 from canary_sdk import explorer_action, sdk_bindings, task_spec, terminal_tools
+from canary_command_scope import bind_mission_command_scope
 
 
 def assemble_inert_tools(conv_state, root, guard, approval):
@@ -83,7 +84,8 @@ def synthetic_worker() -> dict:
             workspace=SimpleNamespace(working_dir=str(root)),
             agent=SimpleNamespace(tools=[]),
         )
-        terminal, task_tool, manager = assemble_inert_tools(state, root, guard, approval)
+        scoped = bind_mission_command_scope(guard, commands=("cat AGENTS.md",), approval=approval)
+        terminal, task_tool, manager = assemble_inert_tools(state, root, guard, scoped)
         action = TerminalAction(command="cat AGENTS.md", is_input=False)
         observation = terminal.executor(action)
         if not isinstance(observation, TerminalObservation):
@@ -101,7 +103,8 @@ def synthetic_worker() -> dict:
             raise GateError("unexpected_llm_or_delegation_count")
         # Provar fail-closed: confirmação negada bloqueia globalmente terminal
         # e fronteiras LLM; não chama TaskTool.executor com a TaskAction.
-        denied = TerminalAction(command="env", is_input=False)
+        # This globally allowed public file is OUTSIDE the mission's approved subset.
+        denied = TerminalAction(command="cat team/catalog.json", is_input=False)
         try:
             manager._confirmation_handler("synthetic-task", [
                 SimpleNamespace(action=denied)
@@ -109,6 +112,8 @@ def synthetic_worker() -> dict:
             raise GateError("denial_was_accepted")
         except MissionCancelled:
             pass
+        if len(confirmations) != 1:
+            raise GateError("mission_scope_human_callback_leak")
         if not guard.cancelled:
             raise GateError("guard_not_cancelled")
         try:
