@@ -8,7 +8,7 @@ function evaluateSyntheticPage(response,authorizedRepository){
  if(response.next_page_id!==null&&response.next_page_id!==undefined&&(typeof response.next_page_id!=='string'||response.next_page_id.length>256))return null;
  const ids=new Set(),items=[];
  for(const record of response.items){
-  if(!record||typeof record!=='object'||Array.isArray(record)||!uuid.test(record.id)||typeof record.execution_status!=='string'||!record.execution_status.trim()||record.execution_status.length>128||/[\\x00-\\x1f\\x7f]/.test(record.execution_status)||record.selected_repository!==authorizedRepository||ids.has(record.id))return null;
+  if(!record||typeof record!=='object'||Array.isArray(record)||!uuid.test(record.id)||typeof record.execution_status!=='string'||!record.execution_status.trim()||record.execution_status.length>128||/[\x00-\x1f\x7f]/.test(record.execution_status)||record.selected_repository!==authorizedRepository||ids.has(record.id))return null;
   ids.add(record.id);items.push({id:record.id,status:record.execution_status});
  }
  return {items,nextPageId:response.next_page_id??null};
