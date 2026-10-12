@@ -572,3 +572,19 @@ Main base `e06d3b01e60d9a5503e046dc0fe2eeb269f0e403` após #42. Reuso da PR #35 
 ## CYCLE010 — correção visual V0.5.3 (2026-10-11, Brasília)
 
 Main reconfirmada `f9b8049d89ea6ebb8086bab1a281bf9d3bad5e91`; branch CYCLE010 existente preservada. Sobreposição reproduzida em Chromium (600×700: cabeçalho/filtros −36,19 px; filtros/mapa −23 px). Fluxo vertical existente no mobile reutilizado em todas as larguras. Manifesto/rótulo 0.5.3, extensão gerada pelo build oficial. Python 218/190 PASS/28 skips opcionais; Graph DOM 25/25 PASS; geometria em 14 resoluções com descrição normal e multilinha. CI/merge do HEAD ainda precisam de readback GitHub, sem polling. Canvas não atualizado: última evidência do operador v0.5.2/ref `08d9072240411c5c980faadaf39b0336349591ef`. PRs #49–#52 intocadas. G11 NÃO PROVADO/G12 BLOQUEADO/P02/P03 NÃO PROVADOS; NO-GO operacional. Evidências, revisão e limites: [CYCLE010](docs/handoffs/OBS-CYCLE-010-GRAPH-FLOW-V053.md).
+
+## CYCLE011-B — consolidação canônica (2026-10-12, ADM-CYCLE011B-11)
+
+**REAL NOW:** main reconciliada em `2abde4207ce6a6798520103d8ae9c98dd5b863a4` (PR #59 integrada). O histórico acima permanece válido como relato de suas respectivas datas, mas **não é estado atual**.
+
+**PROVEN EVIDENCE — PRs integradas:**
+- [PR #56](https://github.com/OARANHA/observatorio-agents-openhands/pull/56), merge `128425855a84828df96cd522e93ebd8689999e7d`: validação de GET pontual, timestamp/forma, testes adversariais DOM; CI offline no HEAD da PR. Não comprova contrato operacional multiprojeto.
+- [PR #57](https://github.com/OARANHA/observatorio-agents-openhands/pull/57), merge `295afef198f789432a1df202595da64a212db600`: inventário de APIs Cloud V1, V0, Agent Server, matriz de proveniência e testes sintéticos de contrato, com etapa própria de CI.
+- [PR #58](https://github.com/OARANHA/observatorio-agents-openhands/pull/58), merge `d9818126fe4b7ed463de1434558c38a03f5e9dfb`: confirmação estática de rota de busca no Agent Server upstream e gate de autoridade apenas hipotético/offline.
+- [PR #59](https://github.com/OARANHA/observatorio-agents-openhands/pull/59), merge `2abde4207ce6a6798520103d8ae9c98dd5b863a4`: distinção chave de sessão, cookie de workspace e RBAC por projeto; testes sintéticos de decisão e CI.
+
+**GAPS / REUSE GATE:** a rota upstream `/search` e a autenticação de sessão **não comprovam** que `host.agentServer.request` exponha listagem na versão Canvas instalada, nem que servidor imponha autorização individual por projeto. `selected_repository` é metadado, não ACL. O código do Observatório continua usando somente GET explícito por UUID; projeto manual e `local-view-not-tenant` não são RBAC. Nenhum inventário real de agentes, execução bem-sucedida ou memória persistente foi atestado.
+
+**DECISION:** CYCLE011-B concluído como **investigação estática e testes offline**, não implantação. P02 NÃO PROVADO; G11 NÃO PROVADO; G12 BLOQUEADO; NO-GO operacional. O proprietário aceita autorrevisão adversarial com JEV.1 para os incrementos offline, mas isto **não altera** o critério de revisão independente definido para liberação operacional. Sem GET real, deploy, atualização de Canvas ou merge adicional por esta consolidação.
+
+**Próximo desenho:** [handoff de decisão B-11](docs/handoffs/OBS-CYCLE-011-B11-NEXT-AUTHORITY-GATE.md). Exigir prova da versão efetiva e do contrato host + ACL no servidor antes de propor descoberta real.

@@ -363,3 +363,9 @@ ADR Proposto, dossiês e todos os handoffs anteriores.
 | ADR-0001 — App Canvas | **PROPOSTO** | Compatibilidade em Canvas instalado e segurança ainda requerem verificação autorizada |
 
 **Próximo trabalho seguro:** usar [CYCLE006 — plano de homologação visual](handoffs/OBS-CYCLE-006-CANVAS-VISUAL-HOMOLOGATION-PLAN.md) para preparar evidência minimizada; não instalar, habilitar ou executar GET na instância real sem a autorização específica H1/H2/H3, respectivamente. **NO-GO operacional continua.** PRs #7 e #35 permanecem abertas sem ação automática.
+
+## CYCLE011-B — reconciliação do gate (2026-10-12)
+
+Main de referência `2abde4207ce6a6798520103d8ae9c98dd5b863a4`; PRs #56–#59 integradas, exclusivamente leitura pontual aprimorada e investigação/testes offline de descoberta. O Agent Server **upstream** inclui busca de conversas, mas não existe prova de rota de listagem no `host.agentServer.request` do Canvas efetivamente instalado nem RBAC/isolamento por projeto. A prova de sessão e o campo `selected_repository` não satisfazem P02.
+
+**Estados preservados, sem relaxamento:** G11 NÃO PROVADO; G12 BLOQUEADO; P02 NÃO PROVADO; NO-GO operacional. Revisão adversarial com JEV.1 é instrumento consultivo para ciclos offline, não prova independente operacional. Próxima decisão em `docs/handoffs/OBS-CYCLE-011-B11-NEXT-AUTHORITY-GATE.md`. Não iniciar GET real, deploy, Canvas ou descoberta por este registro.
