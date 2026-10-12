@@ -32,3 +32,11 @@ Modelo de negação sintético em `tests/cycle011_c01_host_rbac.test.mjs` repres
 Próximo gate humano: primeiro demonstrar versão instalada e contrato documental do host; depois localizar no código servidor a política real de autorização por conversa/projeto e seus testes de revogação/escopo. Se não existir, manter NO-GO ou desenhar camada de autorização sob decisão separada (sem implementá-la nesta etapa).
 
 **G11 NÃO PROVADO · G12 BLOQUEADO · P02 NÃO PROVADO.** JEV é consultivo e não relaxa gates.
+
+## Fechamento ADM-CYCLE011C-02 — 2026-10-12
+- HEAD validado: `352435c5895ef75a202dea1686162bdd680db764`.
+- CI Observatório run `38208025194`: SUCCESS; job `contract` e etapa `CYCLE011-C01 host e ACL sintéticos (offline)`: SUCCESS.
+- Canary Worker Inert SDK run `38208025120`: SUCCESS.
+- Revisão dos três arquivos alterados: handoff, teste sintético e workflow. Nenhuma modificação de Canvas ou integração real.
+- Parecer: escopo offline apto para futura decisão de integração documental, sem comprovar versão instalada, rota disponível pelo host, ACL por conversa/projeto ou revogação.
+- **G11 NÃO PROVADO; G12 BLOQUEADO; P02 NÃO PROVADO; NO-GO operacional.** Este registro documental cria outro HEAD; a CI desse novo commit não está validada por aquelas execuções. Sem merge, GET real ou deploy.
