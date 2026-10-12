@@ -27,3 +27,15 @@ No **Canvas correto**, sem comandos remotos nem leitura de conteúdo de conversa
 - Fonte histórica de critérios V01–V12 e gates: [CYCLE006](OBS-CYCLE-006-CANVAS-VISUAL-HOMOLOGATION-PLAN.md). Para versão 0.5.2 usar o HEAD `08d907...` apenas quando H0 demonstrar necessidade e H1 for autorizado.
 
 **Próxima ação:** obter evidência autenticada H0 (screenshot sanitizado ou sessão browser explicitamente autorizada), sem deployment. Depois comparar ref instalada versus `08d9072240411c5c980faadaf39b0336349591ef` e decidir H1 separadamente.
+
+## ATUALIZAÇÃO H0 — evidência visual do próprio operador (capturas recebidas)
+
+**Momento da captura:** fornecida pelo proprietário após o merge da PR #45. **Origem:** imagens da interface Canvas nesta conversa, NÃO sessão browser aberta pelo assistente.
+
+- Tela de **Apps** em `https://canvas.wandora.com.br` mostra **Observatório de Agentes**, **Ativado**, versão **v0.5.2**, **Páginas: 1** e Ref **`08d9072240411c5c980faadaf39b0336349591ef`**, coincidente com o merge da PR #45.
+- Tela **Grafo** mostra o título **Grafo estelar · conexões com origem**, a etiqueta **CONSTELAÇÕES · V0.5.2**, quatro nós **DEMO** (VIGIAFAST, WANDORA, ELUS, OPENHANDS LAB) e o hub **APENAS DEMO**. As ligações SVG estão visíveis. Seleção visual do nó **ELUS** atualiza o painel de inspeção com **NÓ DO GRAFO · DEMO** e descrição de projeto ilustrativo.
+- Contadores na captura: **CONSULTAS OPENHANDS 00**, **PROJETOS EXEMPLO 04**, **RELAÇÕES CONFIRMADAS 00**. Isso **não prova** inventário real, autenticação de vínculo projeto–missão nem telemetria.
+- **Ponto de UX para revisão:** o fim da descrição do grafo (`relação.`) aparece encostado ou parcialmente coberto pelo conjunto de filtros, em imagens de largura desktop similar; hipótese visual P2 a reproduzir com coordenadas/viewport, não regressão funcional comprovada.
+- **H0 parcial cumprido pela evidência do operador:** identidade do App, versão, Ref e estado de habilitação comprovados **nas capturas**. **H2 observação visual parcial** (renderização/seleção/legenda), sem teste independente de teclado, touch, WebGL, leitor de tela, remount, rede ou cleanup.
+- **Ainda pendente:** versão do host Canvas, prova de rollback para a Ref anterior à atualização, inspeção do runtime por sessão autorizada, V01–V12 completos, revisor distinto e testes de acesso por projeto. Não inferir que a atualização foi executada pelo assistente: o operador apresentou o App já ativo.
+- **Decisão atualizada:** versão 0.5.2 já aparece instalada e ativada; **não clicar em Atualizar novamente** sem novo objetivo. P01 **PARCIAL**, G11 **NÃO PROVADO**, G12 **BLOQUEADO**, H3 não executado, **NO-GO operacional**. Este bloco mais recente substitui apenas as afirmações anteriores de 'instalação desconhecida', mantendo-as como registro histórico da tentativa de H0.
