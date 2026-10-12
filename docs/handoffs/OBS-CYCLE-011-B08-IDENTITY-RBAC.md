@@ -31,3 +31,10 @@ Fontes upstream (código público inspecionado em 2026-10-12):
 ## Decisão de arquitetura
 
 Reutilizar somente uma superfície oficial comprovadamente autorizada para a instalação efetiva, quando houver autorização separada. Não criar BFF, endpoints, polling, descoberta real ou mudanças no Canvas. G11 NÃO PROVADO; G12 BLOQUEADO; P02 NÃO PROVADO. Testes que acompanham este documento são **modelos de decisão sintéticos**, não testes da API real ou prova de RBAC.
+
+## Fechamento técnico ADM-CYCLE011B-09 — 2026-10-12
+- HEAD pré-fechamento `76a45250ee2c487b4d078066c786846a8fbf29ef`: CI Observatório run `38206613967` SUCCESS; Canary Worker Inert SDK run `38206613984` SUCCESS.
+- Job `contract` incluiu a etapa **Identidade e RBAC sintéticos CYCLE011-B08 (offline)** com conclusão SUCCESS, além dos contratos existentes.
+- Resultado: testes de negação de autorização inferida aprovados **somente no modelo sintético**. Chave de sessão, metadado de repositório e cookie workspace não são prova de RBAC multiprojeto.
+- Decisão: pronto para revisão de integração documental futura; **P02 NÃO PROVADO**, G11 NÃO PROVADO, G12 BLOQUEADO, NO-GO operacional.
+- Este registro gera novo commit documental e exige verificação de CI no novo HEAD antes de qualquer merge. Sem deploy, Canvas ou GET real.
