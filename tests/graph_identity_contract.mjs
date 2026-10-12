@@ -11,14 +11,14 @@ const start=src.indexOf('async function graphIdentityForObservation(');
 const identity=start<0?'':src.slice(start,src.indexOf('function validGraphIdentity(',start));
 const validation=start<0?'':src.slice(src.indexOf('function validGraphIdentity('),src.indexOf('function graphModel(narrowConsulted=false){'));
 const modelCode=src.slice(src.indexOf('function graphModel(narrowConsulted=false){'),src.indexOf('function renderGraphPanel(){'));
-const ctx=vm.createContext({crypto:webcrypto,TextEncoder,defs:Object.fromEntries(['one','two','three','four'].map(k=>[k,{name:k}])),verifiedMission:null});
+const ctx=vm.createContext({crypto:webcrypto,TextEncoder,defs:Object.fromEntries(['one','two','three','four'].map(k=>[k,{name:k}])),verifiedMission:null,verifiedMissions:[]});
 vm.runInContext(stateLabel+identity+validation+modelCode,ctx);
 const context='00000000-0000-4000-8000-000000000010',cid='00000000-0000-4000-8000-000000000001';
 async function ids(contextValue=context,conversation=cid,project='synthetic/repo'){
  assert.equal(vm.runInContext('typeof graphIdentityForObservation',ctx),'function','identity contract missing');
  ctx.args=[contextValue,conversation,project];return JSON.parse(JSON.stringify(await vm.runInContext('graphIdentityForObservation(...args)',ctx)));
 }
-function model(graphIdentity,narrow=false){ctx.verifiedMission={conversationId:cid,status:'finished',project:'synthetic/repo',graphIdentity};return JSON.parse(vm.runInContext('JSON.stringify(graphModel('+String(Boolean(narrow))+'))',ctx));}
+function model(graphIdentity,narrow=false){ctx.verifiedMission={conversationId:cid,status:'finished',project:'synthetic/repo',graphIdentity};ctx.verifiedMissions=[ctx.verifiedMission];return JSON.parse(vm.runInContext('JSON.stringify(graphModel('+String(Boolean(narrow))+'))',ctx));}
 const real=m=>m.nodes.filter(n=>!n.kind.startsWith('demo'));
  test('same context and input produce deterministic ids',async()=>assert.deepEqual(await ids(),await ids()));
  test('different conversations cannot reuse conversation or manual identities',async()=>{const a=await ids(),b=await ids(context,'00000000-0000-4000-8000-000000000002');assert.notEqual(a.mission,b.mission);assert.notEqual(a.project,b.project);assert.equal(a.source,b.source);});
