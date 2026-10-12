@@ -49,3 +49,7 @@ Fontes exatas:
 Alternativa A da ADR (reutilizar) só é candidata após provas dos Gates 1–5; B exige ADR própria e autorização explícita; C (descoberta desativada) é o comportamento seguro atual. **Não se escolhe A ou B com este inventário.**
 
 **G11 NÃO PROVADO · G12 BLOQUEADO · P02 NÃO PROVADO · NO-GO operacional.** Sem GET real, acesso à instalação, alteração Canvas, merge ou deploy por este protocolo.
+
+## Revisão adversarial JEV.1 — ADM-CYCLE011E-04
+
+O JEV.1 recomendou `block` (0,60), com `deep_review` (0,37) e confiança 0,47. Parecer consultivo, não prova de política nem autorização operacional. Decisão: bloquear execução real, preservar protocolo como plano; exigir revisão humana independente e evidência de instalação/ACL antes de qualquer promoção. Nenhuma mudança de status na ADR PROPOSTA. CI do novo HEAD não verificada.
