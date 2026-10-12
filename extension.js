@@ -13,6 +13,7 @@ const REAL_STYLE = `
 .ob-real output{display:grid;gap:5px;overflow-wrap:anywhere}
 .ob-real output p{margin:0;line-height:1.4}
 .graph-active .ob-real:not([open]){display:block;top:145px;right:18px}
+.graph-active .ob-task-list{position:relative!important;left:auto!important;bottom:auto!important;margin:14px 0;width:min(620px,100%)!important;max-height:240px}
 .graph-active .ob-real[open]{top:210px;right:18px;max-height:calc(100% - 230px);overflow:auto}
 .ob-real .moon{display:inline-block;width:15px;height:15px;border-radius:50%;background:radial-gradient(circle at 30% 30%,white,#77d5f3,#23506c);box-shadow:0 0 12px #8edafa}
 `;
@@ -169,7 +170,7 @@ function mountRealRead(stage,host,onVerified,onReset) {
     const project=get('.project').value.trim();
     output.replaceChildren();
     lastReceipt=null;copy.style.display='none';
-    onReset(); // Nova tentativa não herda observação possivelmente revogada.
+    onReset(id); // Remove somente a observação antiga deste UUID antes do novo GET.
     if(!/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(id)){say('Erro: ','UUID inválido');return;}
     if(!/^[A-Za-z0-9._-]+\/[A-Za-z0-9._-]+$/.test(project)){say('Erro: ','projeto inválido');return;}
     if(!host?.agentServer?.request){say('Indisponível: ','API de leitura do Canvas ausente');return;}
@@ -285,7 +286,7 @@ function mountObservatorio({container,host}) {
     disposeRead=mountRealRead(stage,host,async (observation,isCurrent)=>{
       const graphIdentity=await graphIdentityForObservation(observationContext,observation.conversationId,observation.project);
       if(!destroyed&&isCurrent())applyVerifiedMission({...observation,graphIdentity});
-    },()=>clearConsultedObservation());
+    },id=>forgetConsultedObservation(id));
     observer=typeof ResizeObserver==='function'?new ResizeObserver(resize):null;
     if(observer)observer.observe(wrapper);
     else window.addEventListener('resize',resize);
@@ -318,7 +319,7 @@ const defs={
  {name:'DOCUMENTAÇÃO',role:'Memória técnica',color:'#8ceab7',spectrum:['#e5fff0','#74c5a5','#205b52'],orbit:3,angle:2.3,description:'Posição visual proposta para trilhas de documentação.',tasks:['Exemplo: preparar relatório'],state:'Simulação: disponível'}
  ]}
 };
-const $=id=>shadow.getElementById(id);const systems=Object.keys(defs);let verifiedMission=null;let current=null,selected=null,zoom=1,last=0,view='universe';let reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;let slots=[];let graphScope='all',graphQuery='',graphZoom=1,graphSelected=null;let graphPan={x:0,y:0},graphDrag=null;
+const $=id=>shadow.getElementById(id);const systems=Object.keys(defs);let verifiedMission=null;let verifiedMissions=[];let current=null,selected=null,zoom=1,last=0,view='universe';let reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;let slots=[];let graphScope='all',graphQuery='',graphZoom=1,graphSelected=null;let graphPan={x:0,y:0},graphDrag=null;
 // Estados visuais somente demonstrativos. Nao inferir atividade real destas amostras.
 const visualScenarios=['idle','active','attention','error'];
 const visualLabels={idle:'CALMO',active:'ATIVIDADE',attention:'ATENÇÃO',error:'FALHA'};
@@ -351,7 +352,7 @@ function realMissionStateLabel(status){
   return 'ESTADO INFORMADO: '+status;
 }
 function clearConsultedObservation(){
-  verifiedMission=null;graphSelected=null;
+  verifiedMission=null;verifiedMissions=[];graphSelected=null;
   delete defs.observado;
   const index=systems.indexOf('observado');if(index!==-1)systems.splice(index,1);
   $('source-banner').textContent='◌ PROTÓTIPO · DADOS ILUSTRATIVOS';
@@ -359,15 +360,30 @@ function clearConsultedObservation(){
   if(view==='graph')openGraph();
   else if(view==='universe'||current==='observado')renderUniverse();
 }
+function forgetConsultedObservation(id){
+  verifiedMissions=verifiedMissions.filter(v=>v.conversationId!==id);
+  verifiedMission=verifiedMissions[0]||null;
+  graphSelected=null;
+  if(!verifiedMission){
+    delete defs.observado;
+    const index=systems.indexOf('observado');if(index!==-1)systems.splice(index,1);
+    $('source-banner').textContent='◌ PROTÓTIPO · DADOS ILUSTRATIVOS';
+  }else{
+    $('source-banner').textContent='4 SISTEMAS DEMO · '+verifiedMissions.length+' CONVERSA(S) OPENHANDS CONSULTADA(S)';
+  }
+  if(view==='graph')openGraph();
+  else if(!verifiedMission&&current==='observado')renderUniverse();
+}
 function applyVerifiedMission(observation){
   if(!observation||!/^[a-f0-9-]{36}$/.test(observation.conversationId))return;
   verifiedMission=Object.freeze({...observation});
-  $('source-banner').textContent='4 SISTEMAS DEMO · 1 CONVERSA OPENHANDS CONSULTADA';
+  verifiedMissions=[verifiedMission,...verifiedMissions.filter(v=>v.conversationId!==verifiedMission.conversationId)].slice(0,20);
+  $('source-banner').textContent='4 SISTEMAS DEMO · '+verifiedMissions.length+' CONVERSA(S) OPENHANDS CONSULTADA(S)';
   if(!defs.observado){
     defs.observado={name:'OBSERVATÓRIO',subtitle:'Projeto associado manualmente',core:'CONVERSA CONSULTADA',color:'#77dbff',sun:['#fff6de','#ffe1a1','#b15c2e'],agents:[]};
     systems.push('observado');
   }
-  openVerifiedSystem();
+  if(view==='graph')openGraph();else openVerifiedSystem();
 }
 function openVerifiedSystem(){
   if(!verifiedMission)return renderUniverse();
@@ -427,7 +443,7 @@ function validGraphIdentity(value){
 }
 function graphModel(narrowConsulted=false){
   // Posições determinísticas, sem simulação de atividade ou topologia operacional.
-  const hasConsulted=!!(verifiedMission&&validGraphIdentity(verifiedMission.graphIdentity));
+  const hasConsulted=verifiedMissions.some(v=>validGraphIdentity(v.graphIdentity));
   // Modelo puro: não acessar DOM ou window aqui; o layout vem da camada de apresentação.
   narrowConsulted=!!(narrowConsulted&&hasConsulted);
   const nodes=[
@@ -441,12 +457,17 @@ function graphModel(narrowConsulted=false){
     edges.push({from:'demo-root',to:'demo-'+key,kind:'demo'});
   });
   if(hasConsulted){
-    const ids=verifiedMission.graphIdentity;
-    nodes.push({id:ids.source,role:'source',name:'OpenHands',tag:'FONTE CONSULTADA',kind:'verified',x:narrowConsulted?75:83,y:narrowConsulted?62:19,description:'Origem: GET de conversa pela sessão autenticada do Canvas.'});
-    nodes.push({id:ids.mission,role:'mission',name:verifiedMission.title||('Conversa '+verifiedMission.conversationId.slice(0,8)),tag:realMissionStateLabel(verifiedMission.status),kind:'verified',x:narrowConsulted?25:83,y:narrowConsulted?87:49,description:'Conversa consultada pontualmente, não sucesso de tarefa ou agente comprovado.'});
-    nodes.push({id:ids.project,role:'project',name:verifiedMission.project.split('/').pop().slice(0,22),tag:'PROJETO INFORMADO',kind:'manual',x:narrowConsulted?75:83,y:narrowConsulted?87:81,description:'Associação informada pelo operador; o servidor não confirmou o vínculo.'});
-    edges.push({from:ids.source,to:ids.mission,kind:'verified'});
-    edges.push({from:ids.mission,to:ids.project,kind:'manual'});
+    const recent=verifiedMissions.filter(v=>validGraphIdentity(v.graphIdentity)).slice(0,5);
+    recent.forEach((v,i)=>{
+      const ids=v.graphIdentity;
+      const single=recent.length===1;
+      const y=single?(narrowConsulted?87:49):(23+i*16);
+      if(i===0)nodes.push({id:ids.source,role:'source',name:'OpenHands',tag:'FONTE CONSULTADA',kind:'verified',x:single?(narrowConsulted?75:83):50,y:single?(narrowConsulted?62:19):7,description:'Fonte autenticada de consulta pontual.'});
+      nodes.push({id:ids.mission,role:'mission',conversationId:v.conversationId,name:v.title||('Conversa '+v.conversationId.slice(0,8)),tag:realMissionStateLabel(v.status),kind:'verified',x:single?(narrowConsulted?25:83):34,y,description:'Estado observado em consulta pontual; não comprova sucesso.'});
+      nodes.push({id:ids.project,role:'project',conversationId:v.conversationId,name:v.project.split('/').pop().slice(0,22),tag:'PROJETO INFORMADO',kind:'manual',x:single?(narrowConsulted?75:83):77,y:single?(narrowConsulted?87:81):y,description:'Projeto informado manualmente, não autenticado pelo servidor.'});
+      edges.push({from:ids.source,to:ids.mission,kind:'verified'});
+      edges.push({from:ids.mission,to:ids.project,kind:'manual'});
+    });
   }
   return {nodes,edges,narrowConsulted};
 }
@@ -459,10 +480,10 @@ function renderGraphPanel(){
   }
   let extra='';
   if(node.role==='mission'){
-    const v=verifiedMission;
+    const v=verifiedMissions.find(x=>x.conversationId===node.conversationId);
     extra='<div class="section"><h3>FONTE DA CONVERSA</h3><p class="panel-text">'+safe(v.conversationId)+'</p><p class="panel-text">Estado: '+safe(v.status)+'</p><p class="panel-text">Observado: '+safe(v.observedAt)+'</p><p class="panel-text">Servidor: '+safe(v.updatedAt||'Não informado')+'</p></div>';
   } else if(node.role==='project'){
-    extra='<div class="section"><h3>DECLARAÇÃO MANUAL</h3><p class="panel-text">'+safe(verifiedMission.project)+'</p><p class="panel-text">Não foi validada pelo OpenHands.</p></div>';
+    extra='<div class="section"><h3>DECLARAÇÃO MANUAL</h3><p class="panel-text">'+safe((verifiedMissions.find(x=>x.conversationId===node.conversationId)||verifiedMission).project)+'</p><p class="panel-text">Não foi validada pelo OpenHands.</p></div>';
   }
   p.innerHTML='<div class="empty"><div class="panel-kicker">NÓ DO GRAFO · '+safe(node.tag)+'</div><h2>'+safe(node.name)+'</h2><p>'+safe(node.description)+'</p>'+extra+'<div class="notice">As linhas mostram somente relações explicitamente classificadas. Uma conversa concluída não garante sucesso da tarefa.</div></div>';
 }

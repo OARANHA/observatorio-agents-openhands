@@ -13,6 +13,7 @@ const REAL_STYLE = `
 .ob-real output{display:grid;gap:5px;overflow-wrap:anywhere}
 .ob-real output p{margin:0;line-height:1.4}
 .graph-active .ob-real:not([open]){display:block;top:145px;right:18px}
+.graph-active .ob-task-list{position:relative!important;left:auto!important;bottom:auto!important;margin:14px 0;width:min(620px,100%)!important;max-height:240px}
 .graph-active .ob-real[open]{top:210px;right:18px;max-height:calc(100% - 230px);overflow:auto}
 .ob-real .moon{display:inline-block;width:15px;height:15px;border-radius:50%;background:radial-gradient(circle at 30% 30%,white,#77d5f3,#23506c);box-shadow:0 0 12px #8edafa}
 `;
@@ -169,7 +170,7 @@ function mountRealRead(stage,host,onVerified,onReset) {
     const project=get('.project').value.trim();
     output.replaceChildren();
     lastReceipt=null;copy.style.display='none';
-    onReset(); // Nova tentativa não herda observação possivelmente revogada.
+    onReset(id); // Remove somente a observação antiga deste UUID antes do novo GET.
     if(!/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(id)){say('Erro: ','UUID inválido');return;}
     if(!/^[A-Za-z0-9._-]+\/[A-Za-z0-9._-]+$/.test(project)){say('Erro: ','projeto inválido');return;}
     if(!host?.agentServer?.request){say('Indisponível: ','API de leitura do Canvas ausente');return;}
@@ -285,7 +286,7 @@ function mountObservatorio({container,host}) {
     disposeRead=mountRealRead(stage,host,async (observation,isCurrent)=>{
       const graphIdentity=await graphIdentityForObservation(observationContext,observation.conversationId,observation.project);
       if(!destroyed&&isCurrent())applyVerifiedMission({...observation,graphIdentity});
-    },()=>clearConsultedObservation());
+    },id=>forgetConsultedObservation(id));
     observer=typeof ResizeObserver==='function'?new ResizeObserver(resize):null;
     if(observer)observer.observe(wrapper);
     else window.addEventListener('resize',resize);

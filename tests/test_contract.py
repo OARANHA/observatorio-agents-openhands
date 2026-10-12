@@ -198,7 +198,9 @@ class GraphV050(unittest.TestCase):
 
     def test_grafo_nao_inventa_agentes_vinculos_ou_sucesso(self):
         source = (ROOT / 'extension.js').read_text(encoding='utf-8')
-        self.assertIn("const hasConsulted=!!(verifiedMission&&validGraphIdentity(verifiedMission.graphIdentity));", source)
+        self.assertIn("const hasConsulted=verifiedMissions.some(v=>validGraphIdentity(v.graphIdentity));", source)
+        self.assertIn("verifiedMissions.filter(v=>validGraphIdentity(v.graphIdentity)).slice(0,5)", source)
+        self.assertIn("verifiedMissions=[verifiedMission,...verifiedMissions.filter", source)
         self.assertIn("if(hasConsulted){", source)
         self.assertIn("kind:'verified'", source)
         self.assertIn("kind:'manual'", source)
@@ -206,7 +208,7 @@ class GraphV050(unittest.TestCase):
         self.assertIn("kind:'demo-hub'", source)
         self.assertIn("edges.push({from:ids.source,to:ids.mission,kind:'verified'})", source)
         self.assertIn("edges.push({from:ids.mission,to:ids.project,kind:'manual'})", source)
-        self.assertIn("o servidor não confirmou o vínculo", source)
+        self.assertIn("Projeto informado manualmente, não autenticado pelo servidor.", source)
         self.assertIn("Uma conversa concluída não garante sucesso da tarefa.", source)
         self.assertNotIn("setInterval(", source)
         self.assertNotIn("fetch(", source)
