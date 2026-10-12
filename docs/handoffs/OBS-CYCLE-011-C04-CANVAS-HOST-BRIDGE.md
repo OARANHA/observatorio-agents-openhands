@@ -29,3 +29,10 @@ A revisão identifica riscos de extensão habilitada em contexto autenticado, de
 `tests/cycle011_c04_canvas_host_bridge.test.mjs` codifica invariantes **sintéticos**, independentes do runtime: método GET pontual, path exato UUID, nenhum body/header, nenhuma descoberta/listagem e autorização separada; não exerce a ponte nem implementa RBAC.
 
 **G11 NÃO PROVADO · G12 BLOQUEADO · P02 NÃO PROVADO · NO-GO operacional.** Próxima investigação, se autorizada: fingerprint **não sensível** da instalação por via documental e auditoria da política `client.request`/proxy/autorização por recurso no código da versão correspondente, sem consulta real.
+
+## Fechamento técnico adversarial ADM-CYCLE011C-05 — 2026-10-12
+- HEAD validado `0c13c2cbea9496b980c6c803fd6c2ee8b46ebe09`: CI Observatório run `38208610920` SUCCESS; Canary Worker Inert SDK run `38208610935` SUCCESS.
+- Job `contract`: a etapa `CYCLE011-C04 ponte host - gates offline` efetivamente executou com SUCCESS, juntamente com verificações de contrato anteriores.
+- Revisão adversarial: a interface host admite métodos de escrita, body e headers; a checagem de caminho relativo no service não é allowlist de endpoints, nem atesta ACL de projeto. Os testes adicionados só verificam uma política hipotética restritiva; não medem o código real do host nem as permissões instaladas.
+- Resultado: apto a uma decisão posterior de integração **somente documental/offline**; G11 NÃO PROVADO, G12 BLOQUEADO, P02 NÃO PROVADO, NO-GO operacional.
+- Este fechamento produz novo HEAD documental e os workflows acima não o validam. Sem merge, GET real ou deploy.
