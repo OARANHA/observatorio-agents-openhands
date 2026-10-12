@@ -638,7 +638,8 @@ graphMap.onpointermove=e=>{
   }else panGraph(dx,dy);
   graphDrag.x=e.clientX;graphDrag.y=e.clientY;
 };
-graphMap.onpointerup=graphMap.onpointercancel=e=>{if(graphDrag?.id===e.pointerId){if(graphDrag.moved){graphSuppressClick=true;graphSelected=graphDrag.nodeId;renderGraph();}graphDrag=null;}};
+graphMap.onpointerup=e=>{if(graphDrag?.id!==e.pointerId)return;const {nodeId,moved}=graphDrag;graphDrag=null;if(nodeId){graphSuppressClick=false;graphSelected=moved?nodeId:(graphSelected===nodeId?null:nodeId);renderGraph();}};
+graphMap.onpointercancel=e=>{if(graphDrag?.id===e.pointerId)graphDrag=null;};
 graphMap.onlostpointercapture=()=>{graphDrag=null;};
 $('scene').addEventListener('wheel',e=>{if(view==='solar'&&Math.abs(e.deltaY)>0){e.preventDefault();zoom=Math.max(.65,Math.min(1.38,zoom-e.deltaY*.0008));drawSolar()}},{passive:false});
 window.addEventListener('resize',drawSolar);initStars();renderUniverse();apply3d(true);
