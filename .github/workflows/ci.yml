@@ -39,3 +39,6 @@ jobs:
 
       - name: CYCLE011-C04 ponte host - gates offline
         run: node --test tests/cycle011_c04_canvas_host_bridge.test.mjs
+
+      - name: CYCLE011-C07 transporte e ACL sinteticos (offline)
+        run: node --test tests/cycle011_c07_transport_authority.test.mjs
