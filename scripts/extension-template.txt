@@ -13,6 +13,7 @@ const REAL_STYLE = `
 .ob-real output{display:grid;gap:5px;overflow-wrap:anywhere}
 .ob-real output p{margin:0;line-height:1.4}
 .graph-active .ob-real:not([open]){display:block;top:145px;right:18px}
+.graph-active .ob-task-list{position:relative!important;left:auto!important;bottom:auto!important;margin:14px 0;width:min(620px,100%)!important;max-height:240px}
 .graph-active .ob-real[open]{top:210px;right:18px;max-height:calc(100% - 230px);overflow:auto}
 .ob-real .moon{display:inline-block;width:15px;height:15px;border-radius:50%;background:radial-gradient(circle at 30% 30%,white,#77d5f3,#23506c);box-shadow:0 0 12px #8edafa}
 `;
