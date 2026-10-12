@@ -33,3 +33,6 @@ jobs:
 
       - name: Identidade e RBAC sintéticos CYCLE011-B08 (offline)
         run: node --test tests/cycle011_b08_identity_rbac.test.mjs
+
+      - name: CYCLE011-C01 host e ACL sintéticos (offline)
+        run: node --test tests/cycle011_c01_host_rbac.test.mjs
