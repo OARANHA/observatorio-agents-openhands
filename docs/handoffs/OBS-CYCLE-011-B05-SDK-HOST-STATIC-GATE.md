@@ -35,3 +35,10 @@ Fontes de código/documentação, verificação em 2026-10-12:
 
 **GO para documentação e experimentos offline, NO-GO para descoberta real.**
 Antes de qualquer proposta operacional: evidência da versão efetiva de host/Agent Server; contrato acessível e documentado via `host`; RBAC/projeto autenticados; decisão sobre escopo, cardinalidade, retenção e revogação. **G11 não comprovado, G12 bloqueado, P02 não comprovado.** Revisão adversarial/JEV consultivos; não alterar gates formalmente.
+
+## Fechamento técnico ADM-CYCLE011B-06 — 2026-10-12
+- No HEAD `f135db59c044c120f0be7ee959cf8d63bc9964c8`, CI Observatório run `38205999792` e Canary Worker Inert SDK run `38205999845` foram SUCCESS.
+- O job da CI confirma a execução bem-sucedida de **Gate estático de autoridade CYCLE011-B05 (offline)**, além dos contratos e do build existentes.
+- Revisão: o teste é uma função de decisão hipotética, **não** prova autorização efetiva, versão do Canvas, isolamento por repositório ou presença de rota no host.
+- Decisão: incremento documental/contratual pronto para avaliação de integração posterior; **NO-GO** para descoberta real, G11 não provado, G12 bloqueado, P02 não provado.
+- Este fechamento gera novo HEAD documental, cuja CI não deve ser confundida com a do commit anterior. Sem merge/deploy.
