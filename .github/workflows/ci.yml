@@ -42,3 +42,6 @@ jobs:
 
       - name: CYCLE011-C07 transporte e ACL sinteticos (offline)
         run: node --test tests/cycle011_c07_transport_authority.test.mjs
+
+      - name: CYCLE011-D01 ACL e revogacao sinteticos (offline)
+        run: node --test tests/cycle011_d01_revocation_acl.test.mjs
