@@ -38,3 +38,9 @@ Fontes upstream públicas (consultadas 2026-10-12):
 
 **CYCLE011-B-1: GO apenas para pesquisa e testes offline. NO-GO para integração de descoberta.**
 Antes de implementar UI/listagem real, obter: (1) contrato documentado da versão SDK/host efetiva; (2) prova de autorização servidor para múltiplos projetos; (3) escopo mínimo e política de paginação; (4) avaliação de riscos. Não confundir G11/G12 com esta trilha de produto: G11 não comprovado, G12 bloqueado, P02 não provado. Sem merge/deploy/Canvas automático.
+
+## Revisão adversarial ADM-CYCLE011B-02 — 2026-10-12
+- Verificado que CI inicialmente GREEN no HEAD `f1468e3ef513a74e05083ffc2e7c6471d85da89e` **não executava** `tests/cycle011_b_discovery_contract.test.mjs`; incluída etapa explícita em `.github/workflows/ci.yml`. GREEN anterior não cobre o novo teste.
+- Modelo de contrato sintético recebeu limites sobre `execution_status` (não vazio, <=128 e sem caracteres ASCII de controle), além de fixtures adicionais de status e paginação inválidos. **Modelo apenas**, não evidencia autorização real nem lista ativa.
+- Limitação fundamental: o parâmetro `authorizedRepository` é dado pelo teste/chamador; igualdade com `selected_repository` NÃO comprova escopo concedido por servidor nem proteção entre tenants. O teste valida *forma*, não RBAC.
+- **Critérios pendentes:** nova CI no HEAD exato; contrato do `host.agentServer` efetivo; prova de credencial/escopo; revisão adversarial sem promoção indevida a GO. G11 não comprovado, G12 bloqueado, P02 não comprovado. Sem merge/deploy.
