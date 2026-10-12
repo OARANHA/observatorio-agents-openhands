@@ -27,3 +27,6 @@ jobs:
 
       - name: Contrato sintético CYCLE011-B (offline)
         run: node --test tests/cycle011_b_discovery_contract.test.mjs
+
+      - name: Gate estático de autoridade CYCLE011-B05 (offline)
+        run: node --test tests/cycle011_b05_authority_gate.test.mjs
