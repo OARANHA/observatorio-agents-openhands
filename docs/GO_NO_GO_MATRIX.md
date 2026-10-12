@@ -384,3 +384,17 @@ Main de referência `2abde4207ce6a6798520103d8ae9c98dd5b863a4`; PRs #56–#59 in
 Pins públicos citados (Canvas 1.26.0; cliente TS/Agent Server 1.54.0) **não** demonstram versão efetiva da instalação. O helper `host.agentServer.request` aceita métodos de escrita e o transporte passa a chave de sessão; esses fatos não provam ACL por recurso. O JEV.1 recomendou bloqueio e verificação adicional para a revisão C07; o resultado GREEN da CI não supera esses limites.
 
 **Próxima decisão:** `docs/handoffs/OBS-CYCLE-011-C11-NEXT-GATE.md`. Sem GET real, Canvas, deploy ou descoberta por autorização implícita.
+
+## ADM-CYCLE011D-09 — gate decisivo de autorização por recurso (2026-10-12)
+
+As PRs #65 e #66 foram integradas à main; a prova de autorização efetiva **não** foi fornecida por esses merges. O teste booleano D01 e a fixture JS D05 não exercitam o servidor Python instalado. Portanto, não reinterpretar CI GREEN como liberação de P02.
+
+| Gate | Situação | Próxima evidência obrigatória |
+|---|---|---|
+| P02 identidade + ACL por projeto | **NÃO PROVADO** | sujeito confiável, autorização conversa/projeto, negativa de UUID cruzado, lista/paginação |
+| Revogação | **NÃO PROVADA** | invalidação real de associação e cache com testes reprodutíveis |
+| Compatibilidade instalada | **NÃO PROVADA** | versão e commit reais da instalação, sem segredos |
+| G11 revisão independente | **NÃO PROVADO** | revisão humana de segurança separada do JEV.1 |
+| G12 canário | **BLOQUEADO** | liberação específica após gates prévios |
+
+**Decisão condicional:** reutilizar mecanismos comprovados; se não existirem, especificar camada complementar somente após ADR; se persistirem lacunas, manter NO-GO. [Handoff D09](handoffs/OBS-CYCLE-011-D09-AUTHORITY-DECISION.md). Sem GET real, deploy, Canvas ou descoberta.
