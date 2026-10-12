@@ -450,3 +450,23 @@ test('invalid server timestamp is omitted while consulted source and manual proj
   assert.equal(await p.locator('.graph-node[data-kind=manual]').count(),1);
  }finally{await close(f);}
 });
+
+
+test('dragging a consulted node moves its box and redraws connected lines without issuing reads',async()=>{
+ const f=await fixture({viewport:{width:1200,height:800},reduced:true});
+ try{
+  const p=f.page;await consult(p);await p.locator('#top-graph').click();
+  const node=p.locator('.graph-node[data-kind=verified]').filter({hasText:'Conversa'}).first();
+  const id=await node.getAttribute('data-node');
+  const start=await node.boundingBox();
+  const before=await p.locator('.graph-arc[data-kind=verified]').last().getAttribute('d');
+  const reads=await p.evaluate(()=>window.fixtureReads.length);
+  await p.mouse.move(start.x+start.width/2,start.y+start.height/2);
+  await p.mouse.down();await p.mouse.move(start.x+start.width/2-90,start.y+start.height/2+55,{steps:8});await p.mouse.up();
+  const after=await p.locator('.graph-node[data-node="'+id+'"]').boundingBox();
+  assert.ok(Math.abs(after.x-start.x)>30,'node should move horizontally');
+  assert.ok(Math.abs(after.y-start.y)>20,'node should move vertically');
+  assert.notEqual(await p.locator('.graph-arc[data-kind=verified]').last().getAttribute('d'),before,'arcs must follow node');
+  assert.equal(await p.evaluate(()=>window.fixtureReads.length),reads,'drag must not call OpenHands');
+ }finally{await close(f);}
+});

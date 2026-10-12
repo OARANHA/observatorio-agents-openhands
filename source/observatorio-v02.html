@@ -234,7 +234,7 @@ const defs={
  {name:'DOCUMENTAÇÃO',role:'Memória técnica',color:'#8ceab7',spectrum:['#e5fff0','#74c5a5','#205b52'],orbit:3,angle:2.3,description:'Posição visual proposta para trilhas de documentação.',tasks:['Exemplo: preparar relatório'],state:'Simulação: disponível'}
  ]}
 };
-const $=id=>document.getElementById(id);const systems=Object.keys(defs);let verifiedMission=null;let verifiedMissions=[];let current=null,selected=null,zoom=1,last=0,view='universe';let reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;let slots=[];let graphScope='all',graphQuery='',graphZoom=1,graphSelected=null;let graphPan={x:0,y:0},graphDrag=null;
+const $=id=>document.getElementById(id);const systems=Object.keys(defs);let verifiedMission=null;let verifiedMissions=[];let current=null,selected=null,zoom=1,last=0,view='universe';let reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;let slots=[];let graphScope='all',graphQuery='',graphZoom=1,graphSelected=null;let graphPan={x:0,y:0},graphDrag=null,graphNodePositions=new Map(),graphSuppressClick=false;
 // Estados visuais somente demonstrativos. Nao inferir atividade real destas amostras.
 const visualScenarios=['idle','active','attention','error'];
 const visualLabels={idle:'CALMO',active:'ATIVIDADE',attention:'ATENÇÃO',error:'FALHA'};
@@ -412,7 +412,7 @@ function renderGraph(){
   const focusId=surface.contains(focused)?focused.dataset.node:null;
   const data=graphModel(narrowGraphViewport());
   $('graph-map').dataset.layout=data.narrowConsulted?'narrow-consulted':'default';
-  const nodes=data.nodes.filter(n=>(graphScope==='all'||(graphScope==='demo'?n.kind.startsWith('demo'):!n.kind.startsWith('demo')))&&(!graphQuery||(n.name+' '+n.tag).toLocaleLowerCase('pt-BR').includes(graphQuery)));
+  const nodes=data.nodes.map(n=>({...n,...(graphNodePositions.get(n.id)||{})})).filter(n=>(graphScope==='all'||(graphScope==='demo'?n.kind.startsWith('demo'):!n.kind.startsWith('demo')))&&(!graphQuery||(n.name+' '+n.tag).toLocaleLowerCase('pt-BR').includes(graphQuery)));
   const ids=new Set(nodes.map(n=>n.id));
   const edges=data.edges.filter(e=>ids.has(e.from)&&ids.has(e.to));
   const byId=new Map(nodes.map(n=>[n.id,n]));
@@ -432,7 +432,7 @@ function renderGraph(){
   applyGraphTransform();
   $('graph-surface').innerHTML='<svg class="graph-edges" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true">'+lines+'</svg>'+controls+(nodes.length?'':'<div class="graph-empty">Nenhum item para este filtro. Consulte o estado de uma conversa no OpenHands ou limpe a busca.</div>');
   $('graph-surface').querySelectorAll('[data-node]').forEach(button=>{
-    button.onclick=()=>{graphSelected=graphSelected===button.dataset.node?null:button.dataset.node;renderGraph();};
+    button.onclick=()=>{if(graphSuppressClick){graphSuppressClick=false;return;}graphSelected=graphSelected===button.dataset.node?null:button.dataset.node;renderGraph();};
   });
   if(focusId){
     const next=Array.from(surface.querySelectorAll('[data-node]')).find(b=>b.dataset.node===focusId);
@@ -615,18 +615,30 @@ $('mode-3d').onclick=()=>apply3d(!enabled3d);$('zoom-in').onclick=()=>{if(view==
 const graphMap=$('graph-map');
 graphMap.onkeydown=e=>{
   const delta={ArrowLeft:[-20,0],ArrowRight:[20,0],ArrowUp:[0,-20],ArrowDown:[0,20]}[e.key];
-  if(delta){e.preventDefault();panGraph(...delta);}
+  if(delta){e.preventDefault();const id=e.target.closest?.('.graph-node')?.dataset.node;if(id){const n=graphModel(narrowGraphViewport()).nodes.find(n=>n.id===id);if(n){const old=graphNodePositions.get(id)||{x:n.x,y:n.y};graphNodePositions.set(id,{x:Math.max(9,Math.min(91,old.x+delta[0]/10)),y:Math.max(10,Math.min(90,old.y+delta[1]/10))});renderGraph();}}else panGraph(...delta);}
   else if(e.key==='Escape'){e.preventDefault();graphSelected=null;renderGraph();}
 };
 graphMap.onpointerdown=e=>{
-  if(e.button!==0||!e.isPrimary||e.target.closest('.graph-node'))return;
-  graphDrag={id:e.pointerId,x:e.clientX,y:e.clientY};graphMap.setPointerCapture(e.pointerId);
+  if(e.button!==0||!e.isPrimary)return;
+  const node=e.target.closest('.graph-node');
+  graphDrag={id:e.pointerId,x:e.clientX,y:e.clientY,nodeId:node?.dataset.node||null,moved:false};graphMap.setPointerCapture(e.pointerId);
 };
 graphMap.onpointermove=e=>{
-  if(!graphDrag||e.pointerId!==graphDrag.id)return;panGraph(e.clientX-graphDrag.x,e.clientY-graphDrag.y);
-  graphDrag={id:e.pointerId,x:e.clientX,y:e.clientY};
+  if(!graphDrag||e.pointerId!==graphDrag.id)return;
+  const dx=e.clientX-graphDrag.x,dy=e.clientY-graphDrag.y;
+  if(graphDrag.nodeId){
+    const n=graphModel(narrowGraphViewport()).nodes.find(n=>n.id===graphDrag.nodeId);
+    const rect=$('graph-surface').getBoundingClientRect();
+    if(n&&rect.width>0&&rect.height>0){
+      const old=graphNodePositions.get(n.id)||{x:n.x,y:n.y};
+      graphNodePositions.set(n.id,{x:Math.max(9,Math.min(91,old.x+dx/rect.width*100)),y:Math.max(10,Math.min(90,old.y+dy/rect.height*100))});
+      if(Math.abs(dx)+Math.abs(dy)>2)graphDrag.moved=true;
+      renderGraph();
+    }
+  }else panGraph(dx,dy);
+  graphDrag.x=e.clientX;graphDrag.y=e.clientY;
 };
-graphMap.onpointerup=graphMap.onpointercancel=e=>{if(graphDrag?.id===e.pointerId)graphDrag=null;};
+graphMap.onpointerup=graphMap.onpointercancel=e=>{if(graphDrag?.id===e.pointerId){if(graphDrag.moved){graphSuppressClick=true;graphSelected=graphDrag.nodeId;renderGraph();}graphDrag=null;}};
 graphMap.onlostpointercapture=()=>{graphDrag=null;};
 $('scene').addEventListener('wheel',e=>{if(view==='solar'&&Math.abs(e.deltaY)>0){e.preventDefault();zoom=Math.max(.65,Math.min(1.38,zoom-e.deltaY*.0008));drawSolar()}},{passive:false});
 window.addEventListener('resize',drawSolar);initStars();renderUniverse();apply3d(true);
