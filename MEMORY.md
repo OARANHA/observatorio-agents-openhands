@@ -560,3 +560,7 @@ Main base `e06d3b01e60d9a5503e046dc0fe2eeb269f0e403` após #42. Reuso da PR #35 
 
 ## CYCLE007 — ajuste do wrapper TAP após CI RED (2026-10-11)
 - HEAD `cc989bbe2e7b81a7b15d0b6314ab6c11ae90a554`: CI #38184239577 RED só porque Python exigia 8 PASS contra 9 testes Node agora aprovados; DOM #38184239576 24/24 GREEN, SDK #38184239594 GREEN. Contador substituído por `# tests == # pass >= 9` e 0 fail/skip. CI do novo SHA aguardando usuário, sem polling. Issues #46–#48 preparadas mas não despachadas; G11 não provado/G12 bloqueado.
+
+## CYCLE009 — merge visual da V0.5.2, Canvas sem readback (2026-10-11)
+- PR #45 integrada à `main` em `08d9072240411c5c980faadaf39b0336349591ef`, manifesto 0.5.2. No HEAD `da924b4bc1cfc1371ce0ba3e22ccffcdde358cd9`, CI Observatório 38185587019 SUCCESS (218 testes/28 skips), Graph DOM 38185587051 24/24 SUCCESS e SDK inerte 38185587032 SUCCESS. **Somente GitHub**, sem Canvas atualizado.
+- MCP read-only `vigia-openhands-read` retornou `healthy:true`, não prova versão/ref do Canvas. Tela autenticada e rollback ainda não vistos; H0 PENDENTE. Handoff `docs/handoffs/OBS-CYCLE-009-CANVAS-H0-V052.md`; H1 instalar desabilitado, H2 habilitar visual e H3 GET requerem aprovações distintas; G11 não provado, G12 bloqueado, P01 parcial. NO-GO operacional.
