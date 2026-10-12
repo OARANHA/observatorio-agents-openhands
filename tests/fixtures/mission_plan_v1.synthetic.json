@@ -1,0 +1,26 @@
+{
+  "schema": "obs.synthetic.mission.plan.v1",
+  "classification": "synthetic",
+  "mission_id": "00000000-0000-4000-8000-000000000046",
+  "source": {
+    "repository": "OARANHA/observatorio-agents-openhands",
+    "base_sha": "5cedc0eada928fcd1f46cc50e2144d02822181be",
+    "issue": 46
+  },
+  "objective_id": "inspect_public_contracts",
+  "state": "planned",
+  "authorization": "not_granted",
+  "tools": [
+    "pwd",
+    "cat docs/PROJECT_SOURCE.md"
+  ],
+  "max_actions": 2,
+  "timeout_seconds": 60,
+  "budget_usd": null,
+  "retries": 0,
+  "evidence_id": null,
+  "redaction": "deny_private_fields",
+  "retention": "ephemeral_process_only",
+  "operational_go": false,
+  "dispatch_allowed": false
+}
