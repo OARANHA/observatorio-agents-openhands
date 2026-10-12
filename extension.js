@@ -460,10 +460,11 @@ function graphModel(narrowConsulted=false){
     const recent=verifiedMissions.filter(v=>validGraphIdentity(v.graphIdentity)).slice(0,5);
     recent.forEach((v,i)=>{
       const ids=v.graphIdentity;
-      const y=19+i*16;
-      if(i===0)nodes.push({id:ids.source,role:'source',name:'OpenHands',tag:'FONTE CONSULTADA',kind:'verified',x:70,y:8,description:'Fonte autenticada de consulta pontual.'});
-      nodes.push({id:ids.mission,role:'mission',conversationId:v.conversationId,name:v.title||('Conversa '+v.conversationId.slice(0,8)),tag:realMissionStateLabel(v.status),kind:'verified',x:narrowConsulted?35:76,y,description:'Estado observado em consulta pontual; não comprova sucesso.'});
-      nodes.push({id:ids.project,role:'project',conversationId:v.conversationId,name:v.project.split('/').pop().slice(0,22),tag:'PROJETO INFORMADO',kind:'manual',x:narrowConsulted?75:94,y,description:'Projeto informado manualmente, não autenticado pelo servidor.'});
+      const single=recent.length===1;
+      const y=single?(narrowConsulted?87:49):(23+i*16);
+      if(i===0)nodes.push({id:ids.source,role:'source',name:'OpenHands',tag:'FONTE CONSULTADA',kind:'verified',x:single?(narrowConsulted?75:83):50,y:single?(narrowConsulted?62:19):7,description:'Fonte autenticada de consulta pontual.'});
+      nodes.push({id:ids.mission,role:'mission',conversationId:v.conversationId,name:v.title||('Conversa '+v.conversationId.slice(0,8)),tag:realMissionStateLabel(v.status),kind:'verified',x:single?(narrowConsulted?25:83):34,y,description:'Estado observado em consulta pontual; não comprova sucesso.'});
+      nodes.push({id:ids.project,role:'project',conversationId:v.conversationId,name:v.project.split('/').pop().slice(0,22),tag:'PROJETO INFORMADO',kind:'manual',x:single?(narrowConsulted?75:83):77,y:single?(narrowConsulted?87:81):y,description:'Projeto informado manualmente, não autenticado pelo servidor.'});
       edges.push({from:ids.source,to:ids.mission,kind:'verified'});
       edges.push({from:ids.mission,to:ids.project,kind:'manual'});
     });
