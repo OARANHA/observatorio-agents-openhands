@@ -44,3 +44,9 @@ Antes de implementar UI/listagem real, obter: (1) contrato documentado da versã
 - Modelo de contrato sintético recebeu limites sobre `execution_status` (não vazio, <=128 e sem caracteres ASCII de controle), além de fixtures adicionais de status e paginação inválidos. **Modelo apenas**, não evidencia autorização real nem lista ativa.
 - Limitação fundamental: o parâmetro `authorizedRepository` é dado pelo teste/chamador; igualdade com `selected_repository` NÃO comprova escopo concedido por servidor nem proteção entre tenants. O teste valida *forma*, não RBAC.
 - **Critérios pendentes:** nova CI no HEAD exato; contrato do `host.agentServer` efetivo; prova de credencial/escopo; revisão adversarial sem promoção indevida a GO. G11 não comprovado, G12 bloqueado, P02 não comprovado. Sem merge/deploy.
+
+## Fechamento técnico ADM-CYCLE011B-03 — 2026-10-12
+- HEAD verificado antes deste registro: `0ca8eb895293641c1873b45f9d8b2dad82a48d57`. CI Observatório: run `38205292946` SUCCESS, com etapa **Contrato sintético CYCLE011-B (offline)** SUCCESS; Canary Worker Inert SDK run `38205292925` SUCCESS.
+- A falha anterior era a expressão regular escapada em excesso no validador de teste. O HEAD acima passou pelos workflows após correção.
+- **Decisão:** CYCLE011-B-1 tecnicamente fechado para inventário e testes offline. **NÃO** comprova autorização do host, RBAC multiprojeto ou catálogo de agentes. G11 NÃO PROVADO; G12 BLOQUEADO; P02 NÃO PROVADO; NO-GO operacional.
+- Este registro documental constitui novo commit: a CI do novo HEAD documental deverá ser tratada separadamente. Sem merge, deploy, Canvas ou GET real.
