@@ -352,3 +352,30 @@ test('graph resize within same layout preserves node DOM and keyboard focus',asy
   }
  }finally{await close(f);}
 });
+
+test('stellar graph heading, filters and map never overlap in responsive viewports',async()=>{
+ const f=await fixture({viewport:{width:900,height:700},reduced:true});try{
+  const p=f.page;await p.locator('#top-graph').click();
+  for(const size of [
+   {width:1550,height:870},{width:1440,height:900},
+   {width:1200,height:850},{width:900,height:700},
+   {width:820,height:700},{width:700,height:760},
+   {width:600,height:700},{width:581,height:700},
+   {width:580,height:844},{width:390,height:844}
+  ]){
+   await p.setViewportSize(size);
+   const layout=await p.evaluate(()=>{
+    const shadow=document.querySelector('section.ob-wrap').shadowRoot;
+    const rect=selector=>{
+     const r=shadow.querySelector(selector).getBoundingClientRect();
+     return {top:r.top,bottom:r.bottom,left:r.left,right:r.right};
+    };
+    return {description:rect('#scene-description'),tools:rect('.graph-tools'),map:rect('#graph-map')};
+   });
+   assert.ok(layout.tools.top-layout.description.bottom>=7,
+    'description overlaps filters at '+size.width+'x'+size.height+': '+JSON.stringify(layout));
+   assert.ok(layout.map.top-layout.tools.bottom>=7,
+    'filters overlap map at '+size.width+'x'+size.height+': '+JSON.stringify(layout));
+  }
+ }finally{await close(f);}
+});
