@@ -33,3 +33,13 @@ Fontes:
 Os testes de `tests/cycle011_c07_transport_authority.test.mjs` representam somente lógica sintética de falha fechada; **não instrumentam `HttpClient` real**. Exigir rastreio específico do middleware servidor/ACL, versão instalada verificável e gate humano antes de qualquer chamada real ou ampliação de escopo.
 
 **G11 NÃO PROVADO · G12 BLOQUEADO · P02 NÃO PROVADO · NO-GO operacional.**
+
+## ADM-CYCLE011C-08 — revisão adversarial aprofundada e CI (2026-10-12)
+
+- HEAD verificado `218c67cef5a9720c45a3e4c982a2983fc3bb7d7b`: **CI Observatório** run `38209275882` SUCCESS; **Canary Worker Inert SDK** run `38209275876` SUCCESS. Job `contract` confirmou a etapa `CYCLE011-C07 transporte e ACL sinteticos (offline)` como SUCCESS.
+- Nova evidência estática: `OpenHands/software-agent-sdk/clients/typescript/src/client/http-client.ts` implementa `HttpClient.request`. Para o ramo usual, o código prepara `Content-Type`, incorpora `options.headers`, acrescenta `X-Session-API-Key` quando `apiKey` existe e chama `fetch`; há caminho especial `requestWithBodyOnGet` quando GET tem `data`. **O trecho analisado não aplica ACL por projeto**, nem sua existência foi demonstrada em middleware servidor instalado. Isto não equivale a afirmar que não exista proteção em outras camadas.
+- Fonte adicional: https://github.com/OpenHands/software-agent-sdk/blob/main/clients/typescript/src/client/http-client.ts.
+- Revisão adversarial: métodos, headers e corpos propagados pela ponte são superfície ampla; permitir GET com body em outro ramo impede usar apenas o verbo GET como garantia de leitura/minimização. `selected_repository` e presença de chave não provam permissão.
+- Parecer JEV.1 original: `block` (0,43), baixa confiança (0,24), `deep_review` (0,39). **Não foi substituído por GREEN da CI**. Para qualquer operacionalização, manter bloqueio; para esta PR de documentação/teste offline, manter Draft até revisão e autorização humana distintas.
+- **Limites:** testes C07 aprovados somente no modelo sintético; não testam `HttpClient`, RBAC, proxy, instalação real, revogação ou version skew. G11 NÃO PROVADO; G12 BLOQUEADO; P02 NÃO PROVADO; NO-GO operacional.
+- Este registro gera **novo HEAD documental**; as CIs indicadas acima não validam automaticamente esse novo commit. Sem merge, GET real ou deploy.
