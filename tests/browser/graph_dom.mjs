@@ -393,3 +393,60 @@ test('stellar graph heading, filters, map, legend and metrics never overlap',asy
   assert.equal(failures.length,0,'graph regions must stay separated: '+JSON.stringify(failures));
  }finally{await close(f);}
 });
+
+
+test('adversarial malformed conversation cannot create consulted graph nodes',async()=>{
+ const invalid=[
+  {id:'00000000-0000-4000-8000-000000000099',execution_status:'finished'},
+  {id:'00000000-0000-4000-8000-000000000001'},
+  {id:'00000000-0000-4000-8000-000000000001',execution_status:'\\nfinished'},
+  {id:'00000000-0000-4000-8000-000000000001',execution_status:1}
+ ];
+ for(const item of invalid){
+  const f=await fixture();
+  try{
+   const p=f.page;
+   await p.evaluate(value=>window.fixtureObservation=value,item);
+   await p.locator('details.ob-real summary').click();
+   await p.locator('input.id').fill('00000000-0000-4000-8000-000000000001');
+   await p.getByText('Consultar estado no OpenHands',{exact:true}).click();
+   await p.locator('output').filter({hasText:'contrato não confirmado'}).waitFor();
+   await p.locator('#top-graph').click();
+   assert.equal(await p.locator('.graph-node[data-kind=verified]').count(),0);
+   assert.equal(await p.locator('.graph-node[data-kind=manual]').count(),0);
+   assert.deepEqual(await p.evaluate(()=>window.fixtureReads),[{method:'GET',path:'/api/conversations/00000000-0000-4000-8000-000000000001'}]);
+  }finally{await close(f);}
+ }
+});
+test('adversarial host denial resets prior consulted observation and exposes no private payload',async()=>{
+ const f=await fixture();
+ try{
+  const p=f.page;
+  await consult(p);
+  await p.evaluate(()=>{window.fixtureError=true;window.fixtureObservation={id:'00000000-0000-4000-8000-000000000001',execution_status:'finished',secret:'PRIVATE_CONTENT'};});
+  await p.locator('details.ob-real summary').click();
+  await p.getByText('Consultar estado no OpenHands',{exact:true}).click();
+  await p.locator('output').filter({hasText:'estado desconhecido'}).waitFor();
+  await p.locator('#top-graph').click();
+  assert.equal(await p.locator('.graph-node[data-kind=verified]').count(),0);
+  assert.equal(await p.locator('.graph-node[data-kind=manual]').count(),0);
+  assert.equal((await p.locator('section.ob-wrap').innerText()).includes('PRIVATE_CONTENT'),false);
+  assert.equal(await p.evaluate(()=>window.fixtureReads.length),2);
+ }finally{await close(f);}
+});
+test('invalid server timestamp is omitted while consulted source and manual project remain distinct',async()=>{
+ const f=await fixture();
+ try{
+  const p=f.page;
+  await p.evaluate(()=>window.fixtureObservation.updated_at='2026-02-30T00:00:00Z');
+  await consult(p);
+  await p.locator('details.ob-real summary').click();
+  const output=await p.locator('output').innerText();
+  assert.equal(output.includes('Atualizado no servidor:'),false);
+  assert.equal(output.includes('Projeto declarado:'),true);
+  assert.equal(output.includes('manual, não atestada pela API'),true);
+  await p.locator('#top-graph').click();
+  assert.equal(await p.locator('.graph-node[data-kind=verified]').count(),2);
+  assert.equal(await p.locator('.graph-node[data-kind=manual]').count(),1);
+ }finally{await close(f);}
+});
