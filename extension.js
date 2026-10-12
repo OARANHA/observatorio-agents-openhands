@@ -38,6 +38,23 @@ function validateConversationObservation(item, expectedId) {
   return {status, updatedAt};
 }
 
+function formatObservationReceipt(id, project, verified, observedAt) {
+  if (!/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(id)) return null;
+  if (!/^[A-Za-z0-9._-]+\/[A-Za-z0-9._-]+$/.test(project)) return null;
+  if (!verified || typeof verified.status !== 'string' || !verified.status.trim() ||
+      verified.status.length > 128 || /[\x00-\x1f\x7f]/.test(verified.status)) return null;
+  if (typeof observedAt !== 'string' || !Number.isFinite(Date.parse(observedAt))) return null;
+  return ['Observatório — consulta pontual autorizada',
+    'Conversa: ' + id,
+    'Estado informado pela API: ' + verified.status,
+    'Projeto declarado manualmente: ' + project,
+    'Origem: OpenHands Agent Server',
+    'Atualizado no servidor: ' + (verified.updatedAt || 'não informado'),
+    'Observado no navegador: ' + observedAt,
+    'Associação ao projeto: não verificada',
+    'Execução bem-sucedida e agente responsável: não comprovados'].join('\n');
+}
+
 function mountRealRead(stage,host,onVerified,onReset) {
   const scene=stage.querySelector('.scene-column');
   if(!scene)return ()=>{};
@@ -53,10 +70,21 @@ function mountRealRead(stage,host,onVerified,onReset) {
   let active=true;
   const GET_TIMEOUT_MS=10000; // Prazo local da interface. Sem AbortSignal do host comprovado.
   const inFlight=new Set();
+  let lastReceipt=null;
+  const copy=document.createElement('button');
+  copy.type='button';copy.textContent='Copiar ficha da última consulta';
+  copy.style.cssText='display:none;position:absolute;z-index:15;top:160px;right:18px;padding:8px;border:1px solid #7bd5ef;background:#174564;color:white;border-radius:6px;cursor:pointer';
+  scene.append(copy);
+  copy.addEventListener('click',async()=>{
+    if(!active||!lastReceipt||!navigator.clipboard?.writeText)return;
+    try {await navigator.clipboard.writeText(lastReceipt);copy.textContent='Ficha copiada';}
+    catch (_) {copy.textContent='Cópia indisponível';}
+  });
   button.addEventListener('click',async()=>{
     const id=get('.id').value.trim().toLowerCase();
     const project=get('.project').value.trim();
     output.replaceChildren();
+    lastReceipt=null;copy.style.display='none';
     onReset(); // Nova tentativa não herda observação possivelmente revogada.
     if(!/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(id)){say('Erro: ','UUID inválido');return;}
     if(!/^[A-Za-z0-9._-]+\/[A-Za-z0-9._-]+$/.test(project)){say('Erro: ','projeto inválido');return;}
@@ -94,7 +122,11 @@ function mountRealRead(stage,host,onVerified,onReset) {
       if(verified.updatedAt)say('Atualizado no servidor: ',verified.updatedAt);
       say('Observado em (hora do navegador): ',new Date().toISOString());
       say('Associação de projeto: ','manual, não atestada pela API');
-      detail.open=false; // Não encobrir o universo após consulta; reabrível pelo operador.
+      // Exportação explícita do próprio operador; sem upload ou armazenamento persistente.
+      lastReceipt=formatObservationReceipt(id,project,verified,new Date().toISOString());
+      copy.style.display=lastReceipt&&navigator.clipboard?.writeText?'block':'none';
+      copy.textContent='Copiar ficha da última consulta';
+      detail.open=false; // Preserva o fechamento da consulta.
     } catch (_error) {
       if(active){output.replaceChildren();say('Consulta: ',expired?'prazo local excedido; resposta tardia ignorada (a requisição no host pode continuar)':'indisponível/não autorizada; estado desconhecido');}
     } finally {
@@ -103,7 +135,7 @@ function mountRealRead(stage,host,onVerified,onReset) {
     }
   });
   return ()=>{
-    active=false;
+    active=false;lastReceipt=null;copy.remove();
     for(const pending of inFlight){clearTimeout(pending.timer);pending.cancel();}
     inFlight.clear();detail.remove();sheet.remove();
   };
