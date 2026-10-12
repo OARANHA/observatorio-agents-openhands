@@ -129,8 +129,11 @@ function mountRealRead(stage,host,onVerified,onReset) {
   const input=document.createElement('textarea');
   const prepare=document.createElement('button');
   prepare.type='button';prepare.textContent='Preparar UUIDs';
+  const consultAll=document.createElement('button');
+  consultAll.type='button';consultAll.textContent='Consultar lista autorizada';
+  const batchState=document.createElement('p');batchState.setAttribute('aria-live','polite');
   const choices=document.createElement('div');
-  queue.append(input,prepare,choices);
+  queue.append(input,prepare,consultAll,batchState,choices);
   prepare.addEventListener('click',()=>{
     choices.replaceChildren();
     for(const id of parseExplicitConversationIds(input.value)){
@@ -158,7 +161,7 @@ function mountRealRead(stage,host,onVerified,onReset) {
     try {await navigator.clipboard.writeText(lastReceipt);copy.textContent='Ficha copiada';}
     catch (_) {copy.textContent='Cópia indisponível';}
   });
-  button.addEventListener('click',async()=>{
+  const consultOne=async()=>{
     const id=get('.id').value.trim().toLowerCase();
     const project=get('.project').value.trim();
     output.replaceChildren();
@@ -208,11 +211,43 @@ function mountRealRead(stage,host,onVerified,onReset) {
       copy.style.display=lastReceipt&&navigator.clipboard?.writeText?'block':'none';
       copy.textContent='Copiar ficha da última consulta';
       detail.open=false; // Preserva o fechamento da consulta.
+      return true;
     } catch (_error) {
       if(active){output.replaceChildren();say('Consulta: ',expired?'prazo local excedido; resposta tardia ignorada (a requisição no host pode continuar)':'indisponível/não autorizada; estado desconhecido');}
     } finally {
       pending.valid=false;clearTimeout(pending.timer);inFlight.delete(pending);
       if(active)button.disabled=false;
+    }
+  };
+  button.addEventListener('click',()=>{if(!batchRunning&&!button.disabled)void consultOne();});
+  let batchRunning=false;
+  consultAll.addEventListener('click',async()=>{
+    if(batchRunning||!active||button.disabled)return;
+    const ids=parseExplicitConversationIds(input.value);
+    const project=get('.project').value.trim();
+    if(!ids.length||!/^[A-Za-z0-9._-]+\/[A-Za-z0-9._-]+$/.test(project)){
+      batchState.textContent='Informe UUIDs válidos e um projeto manual válido.';
+      return;
+    }
+    batchRunning=true;consultAll.disabled=true;prepare.disabled=true;
+    let completed=0;
+    try{
+      for(const id of ids){
+        if(!active)break;
+        batchState.textContent='Consulta '+(completed+1)+' de '+ids.length;
+        get('.id').value=id;
+        const ok=await consultOne(); // Reutiliza o único GET por UUID, sequencial, autorizado por clique.
+        if(!active)break;
+        if(!ok){
+          batchState.textContent='Interrompido após falha na consulta '+(completed+1)+'.';
+          return;
+        }
+        completed++;
+      }
+      if(active)batchState.textContent=completed+' de '+ids.length+' conversas consultadas; estados pontuais.';
+    }finally{
+      batchRunning=false;
+      if(active){consultAll.disabled=false;prepare.disabled=false;}
     }
   });
   return ()=>{
