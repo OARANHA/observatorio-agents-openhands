@@ -363,3 +363,11 @@ ADR Proposto, dossiês e todos os handoffs anteriores.
 | ADR-0001 — App Canvas | **PROPOSTO** | Compatibilidade em Canvas instalado e segurança ainda requerem verificação autorizada |
 
 **Próximo trabalho seguro:** usar [CYCLE006 — plano de homologação visual](handoffs/OBS-CYCLE-006-CANVAS-VISUAL-HOMOLOGATION-PLAN.md) para preparar evidência minimizada; não instalar, habilitar ou executar GET na instância real sem a autorização específica H1/H2/H3, respectivamente. **NO-GO operacional continua.** PRs #7 e #35 permanecem abertas sem ação automática.
+
+
+## CYCLE008 — complemento de pré-voo para primeiro canário (2026-10-11)
+
+- Mantidos **sem promoção** os gates operacionais G05/G06/G07/G10 PARCIAIS, G08/G09/G11 NÃO PROVADOS e G12 BLOQUEADO. Nenhuma evidência do código de teste habilita um canário real. Esta entrada acrescenta **documentação**, não prova operacional.
+- Issue #48: dossiê rastreável em `docs/handoffs/OBS-CYCLE-008-OPERATIONAL-PREFLIGHT.md`, incluindo responsáveis, teste adversarial por gate, riscos e revogação. Missão candidata única e inerte em `docs/handoffs/OBS-CYCLE-008-FIRST-REAL-MISSION.md`.
+- **Gap G07 concreto:** `ALLOWED` em `scripts/canary_controls.py` oferece mais de um comando, enquanto a missão candidata deseja somente `cat AGENTS.md`. Exigir política efetiva por missão que negue todos os outros, mesmo quando globalmente permitidos. Não inferir enforcement do subset por texto de prompt.
+- **G08/G09/G11/G12:** modelos/preços públicos não demonstram credencial e quota de conta; revisor distinto e autorização explícita para missão congelada seguem ausentes. **NO-GO**.
