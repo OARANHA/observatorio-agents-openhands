@@ -19,6 +19,12 @@ test('rejects mismatched ID, missing status, empty status and control characters
   assert.equal(validate(data,uuid),null);
  }
 });
+test('invalid calendar days and out-of-range clock or timezone are not server timestamps',()=>{
+ for(const updated_at of ['2026-02-30T00:00:00Z','2025-02-29T00:00:00Z','2026-13-01T00:00:00Z','2026-10-11T25:00:00Z','2026-10-11T00:60:00Z','2026-10-11T00:00:00+25:00']){
+  assert.equal(validate({...valid,updated_at},uuid).updatedAt,null,updated_at);
+ }
+ assert.equal(validate({...valid,updated_at:'2024-02-29T12:30:00Z'},uuid).updatedAt,'2024-02-29T12:30:00Z');
+});
 test('malformed, missing and untrusted timestamps are not displayed as server time',()=>{
  for(const updated_at of ['yesterday','2026-99-99T00:00:00Z','2026-10-11','2026-10-11T00:00:00',1,null]){
   assert.equal(validate({...valid,updated_at},uuid).updatedAt,null);
