@@ -285,7 +285,7 @@ function mountObservatorio({container,host}) {
     disposeRead=mountRealRead(stage,host,async (observation,isCurrent)=>{
       const graphIdentity=await graphIdentityForObservation(observationContext,observation.conversationId,observation.project);
       if(!destroyed&&isCurrent())applyVerifiedMission({...observation,graphIdentity});
-    },()=>clearConsultedObservation());
+    },id=>forgetConsultedObservation(id));
     observer=typeof ResizeObserver==='function'?new ResizeObserver(resize):null;
     if(observer)observer.observe(wrapper);
     else window.addEventListener('resize',resize);
@@ -358,6 +358,20 @@ function clearConsultedObservation(){
   $('real-lua').classList.add('hidden');
   if(view==='graph')openGraph();
   else if(view==='universe'||current==='observado')renderUniverse();
+}
+function forgetConsultedObservation(id){
+  verifiedMissions=verifiedMissions.filter(v=>v.conversationId!==id);
+  verifiedMission=verifiedMissions[0]||null;
+  graphSelected=null;
+  if(!verifiedMission){
+    delete defs.observado;
+    const index=systems.indexOf('observado');if(index!==-1)systems.splice(index,1);
+    $('source-banner').textContent='◌ PROTÓTIPO · DADOS ILUSTRATIVOS';
+  }else{
+    $('source-banner').textContent='4 SISTEMAS DEMO · '+verifiedMissions.length+' CONVERSA(S) OPENHANDS CONSULTADA(S)';
+  }
+  if(view==='graph')openGraph();
+  else if(!verifiedMission&&current==='observado')renderUniverse();
 }
 function applyVerifiedMission(observation){
   if(!observation||!/^[a-f0-9-]{36}$/.test(observation.conversationId))return;
@@ -446,7 +460,7 @@ function graphModel(narrowConsulted=false){
     recent.forEach((v,i)=>{
       const ids=v.graphIdentity;
       const y=19+i*16;
-      nodes.push({id:ids.source,role:'source',name:'OpenHands',tag:'FONTE CONSULTADA',kind:'verified',x:70,y:8,description:'Fonte autenticada de consulta pontual.'});
+      if(i===0)nodes.push({id:ids.source,role:'source',name:'OpenHands',tag:'FONTE CONSULTADA',kind:'verified',x:70,y:8,description:'Fonte autenticada de consulta pontual.'});
       nodes.push({id:ids.mission,role:'mission',conversationId:v.conversationId,name:v.title||('Conversa '+v.conversationId.slice(0,8)),tag:realMissionStateLabel(v.status),kind:'verified',x:narrowConsulted?35:76,y,description:'Estado observado em consulta pontual; não comprova sucesso.'});
       nodes.push({id:ids.project,role:'project',conversationId:v.conversationId,name:v.project.split('/').pop().slice(0,22),tag:'PROJETO INFORMADO',kind:'manual',x:narrowConsulted?75:94,y,description:'Projeto informado manualmente, não autenticado pelo servidor.'});
       edges.push({from:ids.source,to:ids.mission,kind:'verified'});
