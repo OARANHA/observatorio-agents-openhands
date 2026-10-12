@@ -4,12 +4,15 @@ import {readFileSync} from 'node:fs';
 import {webcrypto} from 'node:crypto';
 import vm from 'node:vm';
 const src=readFileSync(new URL('../source/observatorio-v02.html',import.meta.url),'utf8');
+const stateLabelStart=src.indexOf('function realMissionStateLabel(status){');
+assert.ok(stateLabelStart>=0,'real mission status formatter missing');
+const stateLabel=src.slice(stateLabelStart,src.indexOf('function clearConsultedObservation(){',stateLabelStart));
 const start=src.indexOf('async function graphIdentityForObservation(');
 const identity=start<0?'':src.slice(start,src.indexOf('function validGraphIdentity(',start));
 const validation=start<0?'':src.slice(src.indexOf('function validGraphIdentity('),src.indexOf('function graphModel(narrowConsulted=false){'));
 const modelCode=src.slice(src.indexOf('function graphModel(narrowConsulted=false){'),src.indexOf('function renderGraphPanel(){'));
 const ctx=vm.createContext({crypto:webcrypto,TextEncoder,defs:Object.fromEntries(['one','two','three','four'].map(k=>[k,{name:k}])),verifiedMission:null});
-vm.runInContext(identity+validation+modelCode,ctx);
+vm.runInContext(stateLabel+identity+validation+modelCode,ctx);
 const context='00000000-0000-4000-8000-000000000010',cid='00000000-0000-4000-8000-000000000001';
 async function ids(contextValue=context,conversation=cid,project='synthetic/repo'){
  assert.equal(vm.runInContext('typeof graphIdentityForObservation',ctx),'function','identity contract missing');
