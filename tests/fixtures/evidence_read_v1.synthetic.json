@@ -1,0 +1,24 @@
+{
+  "schema": "obs.synthetic.evidence.read.v1",
+  "classification": "synthetic",
+  "record_id": "00000000-0000-4000-8000-000000000047",
+  "source": {
+    "repository": "OARANHA/observatorio-agents-openhands",
+    "base_sha": "5cedc0eada928fcd1f46cc50e2144d02822181be",
+    "issue": 47
+  },
+  "provenance_kind": "CONSULTED",
+  "origin": "canvas_get_fixture",
+  "subject_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "subject_state": "finished",
+  "project_relation": "none",
+  "observed_at_utc": "2026-10-11T22:00:00Z",
+  "authorization": "not_granted",
+  "authenticity_proven": false,
+  "agent_identity_proven": false,
+  "task_success_proven": false,
+  "operational_go": false,
+  "dispatch_allowed": false,
+  "redaction": "metadata_only",
+  "retention": "ephemeral_process_only"
+}

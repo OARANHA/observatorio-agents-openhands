@@ -603,3 +603,12 @@ Main pré-consolidação96ed4a3c5ce659aa55a4841716e7623d30aaeb64.
 - **GAPS:** nenhum acesso demonstrado à instância Canvas atual neste ciclo. Última instalação em screenshot histórica: V0.4.2, ref `7212c51c38fc34cd195afb4db99ee35808e67cb5`; não tratar como estado atual. WebGL2 real, touch físico, leitor de tela, vínculo RBAC e memória persistente continuam sem homologação.
 - **REUSE GATE:** Apps nativo e contrato `host.registerPage`; nada de fork Canvas, alteração Core, nova autenticação, BFF improvisado ou implantação implícita.
 - **DECISION:** próximo incremento exclusivamente documental `docs/handoffs/OBS-CYCLE-006-CANVAS-VISUAL-HOMOLOGATION-PLAN.md`; separar H0 inspeção read-only de H1 instalação desabilitada, H2 habilitação visual e H3 GET sintético autorizado, mantendo H4 operacional bloqueado. **G11 NÃO PROVADO; G12 BLOQUEADO; P01 PARCIAL; P02/P03 NÃO PROVADOS; ADR-0001 PROPOSTO; NO-GO operacional.** Nenhuma instalação/deploy executada por esta preparação.
+
+
+## CYCLE008-B — contrato offline de evidências read-only (2026-10-11)
+
+- Base da proposta: `main` `5cedc0eada928fcd1f46cc50e2144d02822181be`. Branch independente `feat/cycle008-evidence-read-offline-v1-20261011`, Issue #47; PR #45 e PR #49 não modificadas.
+- `scripts/evidence_read_contract_v1.py` e fixtures/testes criam projeções **exclusivamente sintéticas**, fechadas por repo/SHA/issue declarado. `DEMO`, `PLANNED`, `CONSULTED`, `MANUAL`, `INFERRED` são separados; `VERIFIED` é recusado. `finished` nunca é sucesso de tarefa; vínculo de projeto manual/inferido não autentica RBAC.
+- Nove testes isolados aprovados localmente; CI da branch e revisão independente **pendentes**. Sem SDK, GET de Canvas, BFF, agente, LLM, deploy, custo ou merge. Dedupe/replay é volátil e hash não autentica origem. A fonte operacional continua não comprovada.
+- **REUSE GATE:** preservado `host.agentServer.request` atual, identidade local de grafo, `SyntheticEvidenceSession` contábil e PR #49 de planejamento inerte; módulo novo só para classificação/sanitização de metadata de fixtures. Handoff: `docs/handoffs/OBS-CYCLE-008-EVIDENCE-READ-CONTRACT.md`.
+- G05/G06/G07/G10 PARCIAIS; G08/G09/G11 NÃO PROVADOS; G12 BLOQUEADO; P01 PARCIAL; P02/P03 NÃO PROVADOS; ADR-0001 PROPOSTO. **NO-GO operacional**.
