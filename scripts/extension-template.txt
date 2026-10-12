@@ -125,7 +125,7 @@ function mountRealRead(stage,host,onVerified,onReset) {
         });
         output.append(copy);
       }
-      detail.open=false; // Não encobrir o universo após consulta; reabrível pelo operador.
+      detail.open=Boolean(lastReceipt&&typeof navigator!=='undefined'&&navigator.clipboard?.writeText); // Mantém a ação de copiar visível quando disponível.
     } catch (_error) {
       if(active){output.replaceChildren();say('Consulta: ',expired?'prazo local excedido; resposta tardia ignorada (a requisição no host pode continuar)':'indisponível/não autorizada; estado desconhecido');}
     } finally {
