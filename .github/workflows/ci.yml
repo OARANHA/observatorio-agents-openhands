@@ -24,3 +24,6 @@ jobs:
         run: python3 -m unittest discover -s tests -p 'test*.py' -v
       - name: Contrato JavaScript de leitura pontual (offline)
         run: node --test tests/point_read_validation.test.mjs
+
+      - name: Contrato sintético CYCLE011-B (offline)
+        run: node --test tests/cycle011_b_discovery_contract.test.mjs
