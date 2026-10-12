@@ -55,6 +55,19 @@ function formatObservationReceipt(id, project, verified, observedAt) {
     'Execução bem-sucedida e agente responsável: não comprovados'].join('\n');
 }
 
+function upsertObservedTask(items, task, limit=20) {
+  if (!Array.isArray(items) || !task || typeof task !== 'object' ||
+      !/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(task.id||'') ||
+      !/^[A-Za-z0-9._-]+\/[A-Za-z0-9._-]+$/.test(task.project||'') ||
+      typeof task.status!=='string' || !task.status.trim() || task.status.length>128 ||
+      /[\x00-\x1f\x7f]/.test(task.status) ||
+      typeof task.observedAt!=='string' || !Number.isFinite(Date.parse(task.observedAt))) return items;
+  const safe={id:task.id,project:task.project,status:task.status,
+    updatedAt:task.updatedAt||null,observedAt:task.observedAt};
+  // Deduplicate by conversation ID, never infer independent agents.
+  return [safe,...items.filter(x=>x.id!==safe.id)].slice(0,limit);
+}
+
 function mountRealRead(stage,host,onVerified,onReset) {
   const scene=stage.querySelector('.scene-column');
   if(!scene)return ()=>{};
@@ -65,6 +78,32 @@ function mountRealRead(stage,host,onVerified,onReset) {
     <label>Projeto associado pelo operador<input class="project" value="OARANHA/observatorio-agents-openhands" autocomplete="off"></label>
     <button type="button">Consultar estado no OpenHands</button><output aria-live="polite"></output></div>`;
   scene.append(detail);
+  // Session-only observations; never discover or refresh conversations implicitly.
+  let observedTasks=[];
+  const panel=document.createElement('section');
+  panel.className='ob-task-list';
+  panel.style.cssText='position:absolute;z-index:14;left:16px;bottom:115px;max-height:220px;overflow:auto;width:min(450px,calc(100% - 32px));padding:10px;background:#08172eee;border:1px solid #568eab;border-radius:10px;color:#e3f2ff;font-size:12px';
+  const heading=document.createElement('strong');
+  heading.textContent='Tarefas consultadas nesta sessão (0)';
+  const list=document.createElement('ol');
+  list.style.cssText='padding-left:20px;margin:8px 0;overflow-wrap:anywhere';
+  const clear=document.createElement('button');
+  clear.type='button';clear.textContent='Limpar lista';
+  panel.append(heading,list,clear);scene.append(panel);
+  const renderTasks=()=>{
+    heading.textContent='Tarefas consultadas nesta sessão ('+observedTasks.length+')';
+    list.replaceChildren();
+    if(!observedTasks.length){
+      const item=document.createElement('li');item.textContent='Nenhuma conversa consultada nesta sessão';list.append(item);
+    }
+    for(const task of observedTasks){
+      const item=document.createElement('li');
+      item.textContent=task.project+' · '+task.status+' · '+task.id+' · observado: '+task.observedAt+' (projeto manual; estado pontual, não monitoramento)';
+      list.append(item);
+    }
+  };
+  clear.addEventListener('click',()=>{observedTasks=[];renderTasks();});
+  renderTasks();
   const get=s=>detail.querySelector(s), button=get('button'), output=get('output');
   const say=(label,value)=>{const p=document.createElement('p');p.textContent=label+value;output.append(p);};
   let active=true;
@@ -123,7 +162,10 @@ function mountRealRead(stage,host,onVerified,onReset) {
       say('Observado em (hora do navegador): ',new Date().toISOString());
       say('Associação de projeto: ','manual, não atestada pela API');
       // Exportação explícita do próprio operador; sem upload ou armazenamento persistente.
-      lastReceipt=formatObservationReceipt(id,project,verified,new Date().toISOString());
+      const observedAt=new Date().toISOString();
+      lastReceipt=formatObservationReceipt(id,project,verified,observedAt);
+      observedTasks=upsertObservedTask(observedTasks,{id,project,status:verified.status,updatedAt:verified.updatedAt,observedAt});
+      renderTasks();
       copy.style.display=lastReceipt&&navigator.clipboard?.writeText?'block':'none';
       copy.textContent='Copiar ficha da última consulta';
       detail.open=false; // Preserva o fechamento da consulta.
@@ -135,7 +177,7 @@ function mountRealRead(stage,host,onVerified,onReset) {
     }
   });
   return ()=>{
-    active=false;lastReceipt=null;copy.remove();
+    active=false;lastReceipt=null;observedTasks=[];panel.remove();copy.remove();
     for(const pending of inFlight){clearTimeout(pending.timer);pending.cancel();}
     inFlight.clear();detail.remove();sheet.remove();
   };
