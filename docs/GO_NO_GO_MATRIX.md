@@ -369,3 +369,18 @@ ADR Proposto, dossiês e todos os handoffs anteriores.
 Main de referência `2abde4207ce6a6798520103d8ae9c98dd5b863a4`; PRs #56–#59 integradas, exclusivamente leitura pontual aprimorada e investigação/testes offline de descoberta. O Agent Server **upstream** inclui busca de conversas, mas não existe prova de rota de listagem no `host.agentServer.request` do Canvas efetivamente instalado nem RBAC/isolamento por projeto. A prova de sessão e o campo `selected_repository` não satisfazem P02.
 
 **Estados preservados, sem relaxamento:** G11 NÃO PROVADO; G12 BLOQUEADO; P02 NÃO PROVADO; NO-GO operacional. Revisão adversarial com JEV.1 é instrumento consultivo para ciclos offline, não prova independente operacional. Próxima decisão em `docs/handoffs/OBS-CYCLE-011-B11-NEXT-AUTHORITY-GATE.md`. Não iniciar GET real, deploy, Canvas ou descoberta por este registro.
+
+## CYCLE011-C — gate reconciliado (2026-10-12; ADM-CYCLE011C-11)
+
+`main` de referência: `dabafbc15d96311b09a5c26df2834c441edcbe82`. PRs [#61](https://github.com/OARANHA/observatorio-agents-openhands/pull/61), [#62](https://github.com/OARANHA/observatorio-agents-openhands/pull/62) e [#63](https://github.com/OARANHA/observatorio-agents-openhands/pull/63) integradas; trabalho estático/documental e testes sintéticos na CI, sem validação operacional de autorização.
+
+| Gate | Estado reconciliado | Evidência faltante |
+|---|---|---|
+| G11 — revisão independente e autorização operacional | **NÃO PROVADO** | Revisão exigida pela governança, não suprida por parecer automatizado |
+| G12 — canário real | **BLOQUEADO** | Autorizações e gates operacionais cumulativos |
+| P02 — identidade/RBAC multiprojeto | **NÃO PROVADO** | Versão instalada identificada; autorização servidor por conversa/projeto e revogação testadas |
+| Descoberta automática | **DESATIVADA / NO-GO** | Contrato host autenticado e escopo de recurso comprovados |
+
+Pins públicos citados (Canvas 1.26.0; cliente TS/Agent Server 1.54.0) **não** demonstram versão efetiva da instalação. O helper `host.agentServer.request` aceita métodos de escrita e o transporte passa a chave de sessão; esses fatos não provam ACL por recurso. O JEV.1 recomendou bloqueio e verificação adicional para a revisão C07; o resultado GREEN da CI não supera esses limites.
+
+**Próxima decisão:** `docs/handoffs/OBS-CYCLE-011-C11-NEXT-GATE.md`. Sem GET real, Canvas, deploy ou descoberta por autorização implícita.
