@@ -1,0 +1,22 @@
+# CYCLE011-A — Incremento A: validação de consulta pontual
+
+Data: 2026-10-11. Estado: implementação proposta em PR Draft; **sem prova de integração operacional**.
+
+## Decisão
+Reutilizar `host.agentServer.request({method:'GET',path:'/api/conversations/'+id})`, sem criar endpoint, BFF, registro, polling ou coleta automática.
+
+## Contrato local
+- UUID continua sujeito à validação existente antes da chamada; a resposta só pode promover observação quando `item.id === id`.
+- `execution_status` deve ser string não vazia, com no máximo 128 caracteres e sem caracteres ASCII de controle. **Não existe enum comprovado nesta etapa**: strings válidas no formato não garantem semântica operacional nem sucesso.
+- `updated_at` somente aparece quando for string ISO 8601 com data/hora, fuso explícito e data parseável. Ausente ou inválido não impede mostrar estado; não é substituído pelo horário de observação.
+- O objeto reduzido `{status, updatedAt}` impede carregar campos arbitrários para a observação.
+- A consulta continua opt-in, única por UUID, sem armazenamento persistente. O timeout local não interrompe necessariamente a requisição no host.
+- `project` continua **MANUAL**, `local-view-not-tenant` continua só identidade visual; `finished` não comprova tarefa bem-sucedida. DEMO e CONSULTADO permanecem distintos.
+
+## Testes sintéticos
+Arquivo `tests/point_read_validation.test.mjs`: metadados mínimos, ID divergente, status inválido, controles, timestamp ausente/malformado. Rodar `node --test tests/point_read_validation.test.mjs`, `node scripts/build.mjs`, `node --check extension.js`, `python3 -m unittest discover -s tests -p test_contract.py` e a suíte Chromium, se disponível.
+
+## Fora do escopo
+RBAC, listagem de conversas, inventário de agentes, relação projeto/repositório, API autenticada, eventos, retorno de tarefa, LLM, deploy e Canvas. Permissões de leitura e erros HTTP 401/403/404 dependem da interface host; a UI conserva a mensagem genérica, falhando de modo fechado.
+
+**G11 NÃO PROVADO; G12 BLOQUEADO; P02/P03 NÃO PROVADOS; NO-GO operacional.** A CI da PR requer conferência no HEAD exato quando o proprietário informar GREEN/RED.
