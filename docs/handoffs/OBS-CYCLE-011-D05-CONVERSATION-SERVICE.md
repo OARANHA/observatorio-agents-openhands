@@ -25,3 +25,12 @@ O catálogo pode conter diversas conversas dentro do mesmo armazenamento do serv
 **NO-GO para descoberta e leitura multiprojeto.** Antes de operacionalizar: pin exato da versão instalada, política servidor por recurso, isolamento do catálogo, testes de negação entre projetos/revogação e gate humano de revisão independente.
 
 **G11 NÃO PROVADO · G12 BLOQUEADO · P02 NÃO PROVADO.**
+
+## ADM-CYCLE011D-06 — revisão adversarial da fixture e CI (2026-10-12)
+
+- **HEAD avaliado:** `ec73f1ebc4ee9cf7197c101ed862247d6e7b4b91`. CI Observatório run `38216281989` **SUCCESS**; Canary Worker Inert SDK run `38216281822` **SUCCESS**. Job `contract` confirmou `CYCLE011-D05 contrato estrutural ConversationService (offline)` como SUCCESS.
+- Comparação nova com `_search_conversations` upstream: a fixture JS reproduz somente parte de filtragem por estado, ordenação descendente por `created_at` e cursor por UUID. Não implementa `_reconcile_active_records`, `_refresh_execution_statuses`, ordenação alternativa `updated_at`, nem `_conversation_info` que pode retornar `None` e alterar o preenchimento da página. Logo, **não há equivalência completa com a execução Python**.
+- A fixture deliberadamente recebe registros sintéticos dos projetos alpha/beta e não possui contexto autenticado. A exibição de itens de ambos os projetos prova somente o comportamento do **modelo sintético**; não prova vazamento do sistema instalado. Metadados de projeto na fixture não são prova de que o armazenamento real os possua no mesmo formato.
+- O JEV.1 `jev_review_completion` classificou a conclusão de autorização real como `incomplete` (probabilidade 1,00, confiança 1,00), parecer consultivo. A CI GREEN não contradiz esse resultado: ela atesta apenas execução e aprovação dos testes offline.
+- **Decisão adversarial:** evidência suficiente para documentar hipóteses de risco e lacunas, **insuficiente para comprovar RBAC, ACL ou revogação operacional**. Antes de ampliar os testes, fixar revisão de commit upstream e isolar as responsabilidades de cada camada. Manter `G11 NÃO PROVADO · G12 BLOQUEADO · P02 NÃO PROVADO · NO-GO operacional`.
+- Este registro cria um **novo HEAD**; os workflows citados acima não validam automaticamente esse novo commit. Sem merge, GET real, operações destrutivas ou deploy.
