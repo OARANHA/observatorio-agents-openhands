@@ -16,6 +16,19 @@ const REAL_STYLE = `
 .graph-active .ob-real[open]{top:210px;right:18px;max-height:calc(100% - 230px);overflow:auto}
 .ob-real .moon{display:inline-block;width:15px;height:15px;border-radius:50%;background:radial-gradient(circle at 30% 30%,white,#77d5f3,#23506c);box-shadow:0 0 12px #8edafa}
 `;
+function validateConversationObservation(item, expectedId) {
+  if (!item || typeof item !== 'object' || Array.isArray(item) || item.id !== expectedId) return null;
+  const status = item.execution_status;
+  // No server enum is established here: validate shape, not guessed status values.
+  if (typeof status !== 'string' || !status.trim() || status.length > 128 || /[\x00-\x1f\x7f]/.test(status)) return null;
+  const stamp = item.updated_at;
+  const updatedAt = typeof stamp === 'string'
+    && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$/.test(stamp)
+    && Number.isFinite(Date.parse(stamp))
+      ? stamp : null;
+  return {status, updatedAt};
+}
+
 function mountRealRead(stage,host,onVerified,onReset) {
   const scene=stage.querySelector('.scene-column');
   if(!scene)return ()=>{};
@@ -53,21 +66,23 @@ function mountRealRead(stage,host,onVerified,onReset) {
       const processing=(async()=>{
         const item=await host.agentServer.request({method:'GET',path:'/api/conversations/'+id});
         if(!current())return null;
-        if(item&&item.id===id&&typeof item.execution_status==='string'){
-          await onVerified({conversationId:id,status:item.execution_status,project,updatedAt:typeof item.updated_at==='string'?item.updated_at:null,observedAt:new Date().toISOString()},current);
+        const verified=validateConversationObservation(item,id);
+        if(verified){
+          await onVerified({conversationId:id,status:verified.status,project,updatedAt:verified.updatedAt,observedAt:new Date().toISOString()},current);
         }
         return item;
       })();
       const item=await Promise.race([processing,deadline]);
       if(!current())return;
       output.replaceChildren();
-      if(!item||item.id!==id||typeof item.execution_status!=='string'){say('Erro: ','contrato não confirmado');return;}
+      const verified=validateConversationObservation(item,id);
+      if(!verified){say('Erro: ','contrato não confirmado');return;}
       const moon=document.createElement('span');moon.className='moon';moon.setAttribute('aria-label','Lua: conversa consultada');output.append(moon);
       say('Conversa: ',id);
-      say('Estado recebido: ',item.execution_status);
+      say('Estado recebido: ',verified.status);
       say('Projeto declarado: ',project);
       say('Origem: ','OpenHands Agent Server');
-      if(typeof item.updated_at==='string')say('Atualizado no servidor: ',item.updated_at);
+      if(verified.updatedAt)say('Atualizado no servidor: ',verified.updatedAt);
       say('Observado em (hora do navegador): ',new Date().toISOString());
       say('Associação de projeto: ','manual, não atestada pela API');
       detail.open=false; // Não encobrir o universo após consulta; reabrível pelo operador.
