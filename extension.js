@@ -169,7 +169,7 @@ function mountRealRead(stage,host,onVerified,onReset) {
     const project=get('.project').value.trim();
     output.replaceChildren();
     lastReceipt=null;copy.style.display='none';
-    onReset(); // Nova tentativa não herda observação possivelmente revogada.
+    onReset(id); // Remove somente a observação antiga deste UUID antes do novo GET.
     if(!/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(id)){say('Erro: ','UUID inválido');return;}
     if(!/^[A-Za-z0-9._-]+\/[A-Za-z0-9._-]+$/.test(project)){say('Erro: ','projeto inválido');return;}
     if(!host?.agentServer?.request){say('Indisponível: ','API de leitura do Canvas ausente');return;}
