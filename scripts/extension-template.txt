@@ -211,6 +211,7 @@ function mountRealRead(stage,host,onVerified,onReset) {
       copy.style.display=lastReceipt&&navigator.clipboard?.writeText?'block':'none';
       copy.textContent='Copiar ficha da última consulta';
       detail.open=false; // Preserva o fechamento da consulta.
+      return true;
     } catch (_error) {
       if(active){output.replaceChildren();say('Consulta: ',expired?'prazo local excedido; resposta tardia ignorada (a requisição no host pode continuar)':'indisponível/não autorizada; estado desconhecido');}
     } finally {
@@ -235,9 +236,9 @@ function mountRealRead(stage,host,onVerified,onReset) {
         if(!active)break;
         batchState.textContent='Consulta '+(completed+1)+' de '+ids.length;
         get('.id').value=id;
-        await consultOne(); // Reutiliza o único GET por UUID, sequencial, autorizado por clique.
+        const ok=await consultOne(); // Reutiliza o único GET por UUID, sequencial, autorizado por clique.
         if(!active)break;
-        if(!observedTasks.some(task=>task.id===id)){
+        if(!ok){
           batchState.textContent='Interrompido após falha na consulta '+(completed+1)+'.';
           return;
         }
