@@ -399,7 +399,7 @@ test('adversarial malformed conversation cannot create consulted graph nodes',as
  const invalid=[
   {id:'00000000-0000-4000-8000-000000000099',execution_status:'finished'},
   {id:'00000000-0000-4000-8000-000000000001'},
-  {id:'00000000-0000-4000-8000-000000000001',execution_status:'\\nfinished'},
+  {id:'00000000-0000-4000-8000-000000000001',execution_status:String.fromCharCode(10)+'finished'},
   {id:'00000000-0000-4000-8000-000000000001',execution_status:1}
  ];
  for(const item of invalid){
@@ -430,7 +430,7 @@ test('adversarial host denial resets prior consulted observation and exposes no 
   await p.locator('#top-graph').click();
   assert.equal(await p.locator('.graph-node[data-kind=verified]').count(),0);
   assert.equal(await p.locator('.graph-node[data-kind=manual]').count(),0);
-  assert.equal((await p.locator('section.ob-wrap').innerText()).includes('PRIVATE_CONTENT'),false);
+  assert.equal((await p.evaluate(()=>document.querySelector('section.ob-wrap').shadowRoot.textContent)).includes('PRIVATE_CONTENT'),false);
   assert.equal(await p.evaluate(()=>window.fixtureReads.length),2);
  }finally{await close(f);}
 });
