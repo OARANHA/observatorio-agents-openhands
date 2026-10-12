@@ -20,7 +20,7 @@ test('invalid identifiers, project, status and observation time fail closed',()=
  for(const args of [
  ['invalid','org/projeto',{status:'finished'},'2026-10-12T10:01:00Z'],
  [id,'invalid',{status:'finished'},'2026-10-12T10:01:00Z'],
- [id,'org/projeto',{status:'finished\\n'},'2026-10-12T10:01:00Z'],
+ [id,'org/projeto',{status:'finished\n'},'2026-10-12T10:01:00Z'],
  [id,'org/projeto',{status:'finished'},'yesterday']
  ])assert.equal(receipt(...args),null);
 });
