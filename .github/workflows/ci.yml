@@ -22,3 +22,5 @@ jobs:
           git diff --exit-code -- extension.js
       - name: Contrato e sintaxe
         run: python3 -m unittest discover -s tests -p 'test*.py' -v
+      - name: Contrato JavaScript de leitura pontual (offline)
+        run: node --test tests/point_read_validation.test.mjs
