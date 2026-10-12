@@ -68,6 +68,13 @@ function upsertObservedTask(items, task, limit=20) {
   return [safe,...items.filter(x=>x.id!==safe.id)].slice(0,limit);
 }
 
+function parseExplicitConversationIds(raw) {
+  if (typeof raw !== 'string' || raw.length > 2048) return [];
+  const ids=raw.split(/[\s,;]+/).filter(Boolean).map(x=>x.toLowerCase());
+  if(ids.length>20 || ids.some(x=>!/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(x)))return [];
+  return [...new Set(ids)];
+}
+
 function mountRealRead(stage,host,onVerified,onReset) {
   const scene=stage.querySelector('.scene-column');
   if(!scene)return ()=>{};
@@ -104,6 +111,27 @@ function mountRealRead(stage,host,onVerified,onReset) {
   };
   clear.addEventListener('click',()=>{observedTasks=[];renderTasks();});
   renderTasks();
+  const queue=document.createElement('details');
+  queue.className='ob-uuid-queue';
+  queue.innerHTML='<summary>Fila manual de conversas</summary>';
+  scene.append(queue);
+  const input=document.createElement('textarea');
+  const prepare=document.createElement('button');
+  prepare.type='button';prepare.textContent='Preparar UUIDs';
+  const choices=document.createElement('div');
+  queue.append(input,prepare,choices);
+  prepare.addEventListener('click',()=>{
+    choices.replaceChildren();
+    for(const id of parseExplicitConversationIds(input.value)){
+      const item=document.createElement('button');
+      item.type='button';item.textContent=id;
+      item.addEventListener('click',()=>{
+        detail.querySelector('input.id').value=id;
+        detail.open=true;queue.open=false;
+      });
+      choices.append(item);
+    }
+  });
   const get=s=>detail.querySelector(s), button=get('button'), output=get('output');
   const say=(label,value)=>{const p=document.createElement('p');p.textContent=label+value;output.append(p);};
   let active=true;
@@ -177,7 +205,7 @@ function mountRealRead(stage,host,onVerified,onReset) {
     }
   });
   return ()=>{
-    active=false;lastReceipt=null;observedTasks=[];panel.remove();copy.remove();
+    active=false;lastReceipt=null;observedTasks=[];queue.remove();panel.remove();copy.remove();
     for(const pending of inFlight){clearTimeout(pending.timer);pending.cancel();}
     inFlight.clear();detail.remove();sheet.remove();
   };
