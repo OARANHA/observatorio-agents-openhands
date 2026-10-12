@@ -28,3 +28,12 @@ Fontes públicas:
 Reutilizar SDK/Agent Server apenas após comprovar autorização por recurso nas versões efetivas. `tests/cycle011_d01_revocation_acl.test.mjs` é um **modelo de decisão sintético**, não validação da API real. Sem rota nova/BFF, credencial, GET autenticado, simulação de requisição contra terceiros, merge ou deploy.
 
 **G11 NÃO PROVADO · G12 BLOQUEADO · P02 NÃO PROVADO · NO-GO operacional**.
+
+## ADM-CYCLE011D-02 — fechamento adversarial condicionado (2026-10-12)
+
+- HEAD `41420b1e239ba3521b90795b3e52fdc545c34a79`: CI Observatório run `38212100539` **SUCCESS**; Canary Worker Inert SDK run `38212100544` **SUCCESS**. O job `contract` executou com **SUCCESS** `CYCLE011-D01 ACL e revogacao sinteticos (offline)`.
+- Escopo alterado: handoff, modelo de testes Node e etapa CI. Nenhuma chamada HTTP real ou operação de exclusão.
+- **Achado adversarial:** `canRead(e)` recebe booleanos de evidência fornecidos pelo chamador. Um conjunto de valores `true` faz o modelo passar, mas **não** representa identidade autenticada nem uma decisão real de ACL. O teste de “revogação” apenas muda `membershipCurrentlyValid` para falso; não executa revogação nem prova invalidação de cache, sessão, token ou acesso posterior. Não promover esse gate sintético a RBAC real.
+- JEV.1 `jev_route_task` anterior: `block` (0,60). Revisão de conclusão nesta etapa: `incomplete` (0,88), confiança 0,82. Ambos são pareceres consultivos coerentes com **NO-GO operacional**, não um bloqueio à preservação documental dos resultados offline.
+- **Decisão:** tarefa documental e CI verificadas para o HEAD indicado, porém o **objetivo de demonstrar ACL e revogação reais continua INCOMPLETO**. Uma eventual integração documental requer decisão separada; **G11 NÃO PROVADO, G12 BLOQUEADO, P02 NÃO PROVADO**.
+- Este registro cria um novo HEAD documental: os workflows acima não validam o novo commit automaticamente. Nenhum merge, deploy, Canvas ou GET real.
