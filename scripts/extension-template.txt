@@ -189,7 +189,7 @@ function mountRealRead(stage,host,onVerified,onReset) {
         if(!current())return null;
         const verified=validateConversationObservation(item,id);
         if(verified){
-          await onVerified({conversationId:id,status:verified.status,project,updatedAt:verified.updatedAt,observedAt:new Date().toISOString()},current);
+          await onVerified({conversationId:id,status:verified.status,title:verified.title,project,updatedAt:verified.updatedAt,observedAt:new Date().toISOString()},current);
         }
         return item;
       })();
