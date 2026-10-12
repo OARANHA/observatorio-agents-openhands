@@ -45,3 +45,6 @@ jobs:
 
       - name: CYCLE011-D01 ACL e revogacao sinteticos (offline)
         run: node --test tests/cycle011_d01_revocation_acl.test.mjs
+
+      - name: CYCLE011-D05 contrato estrutural ConversationService (offline)
+        run: node --test tests/cycle011_d05_service_contract.test.mjs
