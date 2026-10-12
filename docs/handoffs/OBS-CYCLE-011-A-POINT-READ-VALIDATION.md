@@ -23,3 +23,6 @@ RBAC, listagem de conversas, inventário de agentes, relação projeto/repositó
 
 ## Correção de cobertura CI — 2026-10-12
 A execução inicial dos três workflows da PR #56 ficou GREEN no commit `f69b6e49277d1893c5d6521dad7e5cbb03d891c6`, porém a inspeção de `.github/workflows/ci.yml` provou que o novo teste JavaScript não estava na lista de comandos executados. A CI passou a executar `node --test tests/point_read_validation.test.mjs` em uma etapa específica. **O novo HEAD ainda requer resultado da CI; o GREEN anterior não valida essa alteração.** Sem polling contínuo, merge ou deploy.
+
+## Revisão adversarial da PR #56 — 2026-10-12
+Revisão própria, **não independente para G11**. Foi reproduzido offline que `Date.parse('2026-02-30T00:00:00Z')` normaliza uma data de calendário inexistente. Adicionada regressão JavaScript e validação explícita de dia do mês, ano bissexto, relógio e deslocamento UTC. Prova pontual no JS do validador: seis entradas inválidas rejeitadas e 2024-02-29 aceito; fonte e artefato gerado iguais na função alterada. **A suíte CI do novo HEAD não foi conferida.** Revisão de outras superfícies e G11 independente permanecem pendentes. Sem merge/deploy.
