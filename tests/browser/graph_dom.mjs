@@ -470,3 +470,17 @@ test('dragging a consulted node moves its box and redraws connected lines withou
   assert.equal(await p.evaluate(()=>window.fixtureReads.length),reads,'drag must not call OpenHands');
  }finally{await close(f);}
 });
+
+
+test('mouse click on consulted graph node opens corresponding inspection details after drag support',async()=>{
+ const f=await fixture({viewport:{width:1200,height:800},reduced:true});
+ try{
+  const p=f.page;await consult(p);await p.locator('#top-graph').click();
+  const node=p.locator('.graph-node[data-kind=verified]').filter({hasText:'Conversa'}).first();
+  await node.click();
+  assert.match(await p.locator('#panel-content').innerText(),/FONTE DA CONVERSA/);
+  assert.match(await p.locator('#panel-content').innerText(),/00000000-0000-4000-8000-000000000001/);
+  await node.click();
+  assert.match(await p.locator('#panel-content').innerText(),/Mapa do trabalho/);
+ }finally{await close(f);}
+});
