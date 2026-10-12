@@ -68,6 +68,13 @@ function upsertObservedTask(items, task, limit=20) {
   return [safe,...items.filter(x=>x.id!==safe.id)].slice(0,limit);
 }
 
+function parseExplicitConversationIds(raw) {
+  if (typeof raw !== 'string' || raw.length > 2048) return [];
+  const ids=raw.split(/[\s,;]+/).filter(Boolean).map(x=>x.toLowerCase());
+  if(ids.length>20 || ids.some(x=>!/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(x)))return [];
+  return [...new Set(ids)];
+}
+
 function mountRealRead(stage,host,onVerified,onReset) {
   const scene=stage.querySelector('.scene-column');
   if(!scene)return ()=>{};
