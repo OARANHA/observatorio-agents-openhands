@@ -87,15 +87,23 @@
 .graph-legend .manual:before{background:#f6c575;border-color:#f6c575}
 @media(max-width:870px){.graph-tools{top:110px;left:16px;right:16px}.graph-map{top:188px;left:8px;right:8px}.graph-node{width:115px;min-height:61px;padding:8px 5px}.graph-node strong{font-size:10px}.graph-node small{font-size:10px}.graph-legend{left:16px;right:16px}}
 @media(max-width:580px){.graph-tools{top:102px;gap:7px;padding:8px}.graph-tools input{width:120px}.graph-tools label{font-size:10px}.graph-tools select,.graph-tools input{padding:6px;font-size:10px}.graph-map{top:198px;bottom:128px}.graph-node{width:clamp(80px,23vw,92px);min-height:58px;padding:7px 4px}.graph-node strong{font-size:11px}.graph-node small{font-size:10px;letter-spacing:.02em;line-height:1.25}.graph-legend{bottom:139px;gap:8px 12px;font-size:10px;line-height:1.35}}
-/* Mobile graph uses normal flow: wrapped headings/controls cannot overlap. */
-@media(max-width:580px){
-.scene-column:has(.graph:not(.hidden)) .scene-heading{position:relative;inset:auto;margin:20px 19px 0}
+/* Graph regions share normal flow so wrapped copy/controls reserve their height. */
+.scene-column:has(.graph:not(.hidden)) .scene-heading{position:relative;inset:auto;margin:28px 34px 0 38px}
 .scene-column:has(.graph:not(.hidden)) .scene{height:auto;min-height:0}
-.graph:not(.hidden){position:relative;inset:auto;display:flex;flex-direction:column;gap:12px;padding:16px 8px}
-.graph-tools{position:relative;inset:auto}
-.graph-map{position:relative;inset:auto;height:350px;flex:none}
-.graph-legend{position:relative;inset:auto}
-.scene-column:has(.graph:not(.hidden)) .scene-bottom{position:relative;inset:auto;margin:0 9px 18px}
+.graph:not(.hidden){position:relative;inset:auto;display:flex;flex-direction:column;gap:12px;padding:16px 20px}
+.graph-tools{position:relative;inset:auto;margin:0 10px}
+.graph-map{position:relative;inset:auto;height:clamp(350px,calc(100vh - 370px),650px);flex:none}
+.graph-legend{position:relative;inset:auto;margin:0 12px}
+.scene-column:has(.graph:not(.hidden)) .scene-bottom{position:relative;inset:auto;margin:0 30px 28px}
+@media(max-width:870px){
+ .graph:not(.hidden){padding:16px 8px}
+ .graph-tools,.graph-legend{margin:0 8px}
+}
+@media(max-width:580px){
+ .scene-column:has(.graph:not(.hidden)) .scene-heading{margin:20px 19px 0}
+ .graph-tools,.graph-legend{margin:0}
+ .graph-map{height:350px}
+ .scene-column:has(.graph:not(.hidden)) .scene-bottom{margin:0 9px 18px}
 }
 @media(max-width:580px){.graph-map[data-layout="narrow-consulted"]{height:540px}}
 @media(prefers-reduced-motion:reduce){.graph-surface{transition:none}}
@@ -190,7 +198,7 @@
     <main class="scene-column"><div class="scene-heading"><div><span class="eyebrow" id="breadcrumb">NÍVEL 01 / UNIVERSO CENTRAL</span><h1 id="scene-title">Sua galáxia de operações</h1><p id="scene-description">Cada sistema solar representa um projeto. Entre em um deles para explorar seus agentes e tarefas.</p></div><div class="scene-actions"><button class="smallbutton" id="mode-3d" type="button" aria-pressed="false" title="Alternar modo 3D ou 2D">3D</button><button class="smallbutton" id="zoom-out" title="Reduzir zoom" aria-label="Reduzir zoom">−</button><button class="smallbutton" id="zoom-reset" title="Restaurar zoom" aria-label="Restaurar zoom">⌖</button><button class="smallbutton" id="zoom-in" title="Ampliar zoom" aria-label="Ampliar zoom">+</button></div></div>
     <div class="scene" id="scene"><div class="universe" id="universe" role="region" aria-label="Projetos disponíveis"></div><div class="graph hidden" id="graph" role="region" aria-label="Grafo de relações multiprojeto">
   <div class="graph-tools"><label>Exibir <select id="graph-scope" aria-label="Filtrar nós por origem"><option value="all">Todos</option><option value="verified">Consulta real</option><option value="demo">Exemplos</option></select></label><label>Buscar <input id="graph-search" type="search" placeholder="Projeto ou conversa" autocomplete="off" aria-label="Buscar nós no grafo"></label><button type="button" id="graph-open-read" title="Consultar o estado de uma conversa no OpenHands">☾ Consultar conversa</button></div>
-  <div class="graph-map" id="graph-map" data-visual="stellar" tabindex="0" aria-describedby="graph-help" aria-label="Nós e conexões entre projetos demonstrativos e conversas consultadas"><div class="graph-surface" id="graph-surface"></div><div class="graph-map-index" aria-hidden="true"><i></i> CONSTELAÇÕES · V0.5.2</div></div>
+  <div class="graph-map" id="graph-map" data-visual="stellar" tabindex="0" aria-describedby="graph-help" aria-label="Nós e conexões entre projetos demonstrativos e conversas consultadas"><div class="graph-surface" id="graph-surface"></div><div class="graph-map-index" aria-hidden="true"><i></i> CONSTELAÇÕES · V0.5.3</div></div>
   <div class="graph-legend"><span id="graph-help">Setas movem o mapa · Esc limpa a seleção</span><span class="real">Origem confirmada</span><span class="manual">Associação manual (não atestada)</span><span>Somente demonstração</span></div>
 </div><div class="solar hidden" id="solar" role="region" aria-label="Sistema solar de agentes"><div class="solar-background" id="solar-stage"><svg class="orbit-layer" id="orbits" aria-hidden="true"></svg><button class="sun" id="sun" title="Visão geral do sistema"><span class="sun-core"></span><span class="sun-label" id="sun-label">NÚCLEO<small>COORDENAÇÃO</small></span></button><div id="planets"></div><button type="button" class="real-mission-lua hidden" id="real-lua" aria-label="Abrir estado recebido da conversa"><span class="lua-globo" aria-hidden="true"></span><span class="lua-desc"><strong>CONVERSA CONSULTADA</strong><small id="real-lua-state">Estado consultado</small></span></button></div></div><div class="scene-bottom"><div class="solar-note hidden" id="solar-note">● Planetas = agentes propostos &nbsp; ● Luas/tarefas = representação conceitual</div><footer class="metrics" id="metrics"><div class="metric"><small>PROJETOS</small><strong>04</strong><span>Ambientes conceituais</span></div><div class="metric"><small>ESTRUTURA</small><strong>Multiuniverso</strong><span>Um sistema por projeto</span></div><div class="metric"><small>CONEXÃO REAL</small><strong>Não ativa</strong><span>Interface demonstrativa</span></div></footer></div></div></main>
     <aside class="rightpanel" id="rightpanel" aria-live="polite"><div class="panel-top"><span class="panel-kicker">PAINEL DE INSPEÇÃO</span><span class="panel-icon">◎</span></div><div id="panel-content"></div></aside>

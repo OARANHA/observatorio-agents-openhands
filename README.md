@@ -5,6 +5,8 @@
 **Estado atual do GitHub (verificado em 2026-10-11):** a PR [#45](https://github.com/OARANHA/observatorio-agents-openhands/pull/45) integrou o **Grafo Estelar V0.5.2** à `main` no SHA `08d9072240411c5c980faadaf39b0336349591ef`. Manifesto 0.5.2; três workflows do HEAD pré-merge aprovados (Python 218/28 skips, Chromium 24/24 e SDK inerte). **Depois da integração, o operador apresentou capturas da instância `https://canvas.wandora.com.br` mostrando o Observatório V0.5.2 ativado, Ref `08d9072240411c5c980faadaf39b0336349591ef`, página Grafo renderizada e seleção de nó DEMO ELUS.** É verificação por screenshot, não teste de rede, rollback, RBAC, memória ou agentes reais. Antes de qualquer outra mudança, seguir [CYCLE009 — evidência H0 e pendências](docs/handoffs/OBS-CYCLE-009-CANVAS-H0-V052.md).
 
 
+**Correção visual V0.5.3 — CYCLE010:** nesta candidata, cabeçalho, descrição, filtros, mapa, legenda e indicadores dividem o fluxo vertical em todas as larguras. Regressão RED → GREEN em Chromium; 25/25 DOM e 218 testes Python (190 PASS/28 skips opcionais). Manifesto/rótulo e extensão gerada sincronizados. CI e integração deste HEAD precisam de confirmação na PR; **Canvas não atualizado por esta missão**. Ver [evidências e limites CYCLE010](docs/handoffs/OBS-CYCLE-010-GRAPH-FLOW-V053.md).
+
 Extensão experimental **instalável como App do OpenHands Canvas**, reutilizando o protótipo V0.2: universo central, sistemas solares por projeto, planetas, informações de agentes, WebGL2 e fallback 2D.
 
 **Histórico V0.4.1:** dados exclusivamente demonstrativos. **V0.4.2:** agrega uma leitura pontual de estado via API autenticada do Canvas; os agentes/nomes ilustrativos permanecem DEMO e não são inventário factual.

@@ -2,7 +2,7 @@
   "schema_version": 1,
   "name": "observatorio-agentes",
   "display_name": "Observatório de Agentes",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Universo e grafo estelar com projetos DEMO e conversas OpenHands consultadas claramente distintos.",
   "entrypoint": "extension.js",
   "contributes": {

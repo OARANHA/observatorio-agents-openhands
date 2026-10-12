@@ -166,7 +166,11 @@ class GraphV050(unittest.TestCase):
 
     def test_manifest_v050(self):
         data = json.loads((ROOT / 'canvas-extension.json').read_text(encoding='utf-8'))
-        self.assertEqual(data['version'], '0.5.2')
+        self.assertEqual(data['version'], '0.5.3')
+        source = (ROOT / 'source/observatorio-v02.html').read_text(encoding='utf-8')
+        self.assertIn('CONSTELAÇÕES · V0.5.3', source)
+        generated = (ROOT / 'extension.js').read_text(encoding='utf-8')
+        self.assertIn('CONSTELAÇÕES · V0.5.3', generated)
         self.assertIn('grafo', data['description'].lower())
 
     def test_graph_navigation_and_interaction(self):

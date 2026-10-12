@@ -353,29 +353,43 @@ test('graph resize within same layout preserves node DOM and keyboard focus',asy
  }finally{await close(f);}
 });
 
-test('stellar graph heading, filters and map never overlap in responsive viewports',async()=>{
+test('stellar graph heading, filters, map, legend and metrics never overlap',async()=>{
  const f=await fixture({viewport:{width:900,height:700},reduced:true});try{
   const p=f.page;await p.locator('#top-graph').click();
+  const failures=[];
   for(const size of [
-   {width:1550,height:870},{width:1440,height:900},
-   {width:1200,height:850},{width:900,height:700},
-   {width:820,height:700},{width:700,height:760},
-   {width:600,height:700},{width:581,height:700},
-   {width:580,height:844},{width:390,height:844}
+   {width:1550,height:870},{width:1440,height:900},{width:1200,height:850},
+   {width:1024,height:768},{width:900,height:700},{width:871,height:700},
+   {width:870,height:700},{width:820,height:700},{width:700,height:760},
+   {width:600,height:700},{width:581,height:700},{width:580,height:844},
+   {width:390,height:844},{width:320,height:700}
   ]){
    await p.setViewportSize(size);
-   const layout=await p.evaluate(()=>{
-    const shadow=document.querySelector('section.ob-wrap').shadowRoot;
-    const rect=selector=>{
-     const r=shadow.querySelector(selector).getBoundingClientRect();
-     return {top:r.top,bottom:r.bottom,left:r.left,right:r.right};
-    };
-    return {description:rect('#scene-description'),tools:rect('.graph-tools'),map:rect('#graph-map')};
-   });
-   assert.ok(layout.tools.top-layout.description.bottom>=7,
-    'description overlaps filters at '+size.width+'x'+size.height+': '+JSON.stringify(layout));
-   assert.ok(layout.map.top-layout.tools.bottom>=7,
-    'filters overlap map at '+size.width+'x'+size.height+': '+JSON.stringify(layout));
+   for(const multiline of [false,true]){
+    await p.locator('#scene-description').evaluate((el,long)=>{
+     el.dataset.originalText??=el.textContent;
+     el.textContent=long?el.dataset.originalText+' '+el.dataset.originalText+' '+el.dataset.originalText:el.dataset.originalText;
+    },multiline);
+    const layout=await p.evaluate(()=>{
+     const shadow=document.querySelector('section.ob-wrap').shadowRoot;
+     const rect=selector=>{
+      const r=shadow.querySelector(selector).getBoundingClientRect();
+      return {top:r.top,bottom:r.bottom,left:r.left,right:r.right,height:r.height};
+     };
+     return {heading:rect('.scene-heading'),tools:rect('.graph-tools'),map:rect('#graph-map'),legend:rect('.graph-legend'),metrics:rect('#metrics')};
+    });
+    for(const [above,below] of [['heading','tools'],['tools','map'],['map','legend'],['legend','metrics']]){
+     const gap=layout[below].top-layout[above].bottom;
+     if(gap<7)failures.push({viewport:size,multiline,above,below,gap,layout});
+    }
+    assert.ok(layout.map.height>=300,'map keeps usable height at '+size.width);
+    assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'no horizontal overflow');
+    assert.equal(await p.locator('#metrics .metric').count(),3);
+    for(const metric of await p.locator('#metrics .metric').all())assert.ok(await metric.isVisible(),'metric stays visible');
+    if([1550,600,581,390,320].includes(size.width))await p.screenshot({path:artifacts+'/cycle010-'+size.width+(multiline?'-multiline':'')+'.png',fullPage:true});
+    if(size.width===1550&&!multiline){await p.locator('#metrics').scrollIntoViewIfNeeded();await p.locator('#metrics').screenshot({path:artifacts+'/cycle010-metrics.png'});}
+   }
   }
+  assert.equal(failures.length,0,'graph regions must stay separated: '+JSON.stringify(failures));
  }finally{await close(f);}
 });

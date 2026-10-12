@@ -47,3 +47,8 @@ Mudanças via PR e testes; implantação Canvas somente com autorização. Não 
 - Código e CI offline de V0.5.1 estão na `main` desde `ac9c525a7e169fe253f0f488550686491939289a`; última instalação Canvas documentada é V0.4.2, e a instalação atual precisa de confirmação pelo operador.
 - `docs/handoffs/OBS-CYCLE-006-CANVAS-VISUAL-HOMOLOGATION-PLAN.md` separa inspeção H0, instalação desabilitada H1, habilitação visual H2, GET sintético H3 e gates operacionais H4.
 - O runtime do Canvas, os dados autorizados e o risco de JavaScript no contexto autenticado continuam sujeitos a decisão humana distinta. G11 NÃO PROVADO, G12 BLOQUEADO, P02/P03 NÃO PROVADOS; nenhum deploy autorizado por este documento.
+
+
+## CYCLE010 — disposição visual V0.5.3
+
+A candidata usa fluxo normal para cabeçalho, filtros, mapa, legenda e indicadores do Grafo em desktop/mobile. Reutiliza o layout móvel existente e preserva identidade, handlers, Shadow DOM e contrato de leitura. Build e template oficiais inalterados; sem API/dependência/operador novo. Testes e status de integração em [CYCLE010](handoffs/OBS-CYCLE-010-GRAPH-FLOW-V053.md); nenhuma instalação Canvas comprovada por esta alteração.
