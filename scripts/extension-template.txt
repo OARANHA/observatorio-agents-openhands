@@ -35,7 +35,8 @@ function validateConversationObservation(item, expectedId) {
       if (month>=1&&month<=12&&day>=1&&day<=days[month-1]&&hours<=23&&minutes<=59&&seconds<=59&&offsetValid&&Number.isFinite(Date.parse(stamp))) updatedAt=stamp;
     }
   }
-  return {status, updatedAt};
+  const title=typeof item.title==='string'&&item.title.trim()&&item.title.length<=160&&!/[\x00-\x1f\x7f]/.test(item.title)?item.title.trim():null;
+  return {status, updatedAt, title};
 }
 
 function formatObservationReceipt(id, project, verified, observedAt) {
@@ -47,6 +48,7 @@ function formatObservationReceipt(id, project, verified, observedAt) {
   return ['Observatório — consulta pontual autorizada',
     'Conversa: ' + id,
     'Estado informado pela API: ' + verified.status,
+    'Título informado pela API: ' + (verified.title || 'não informado'),
     'Projeto declarado manualmente: ' + project,
     'Origem: OpenHands Agent Server',
     'Atualizado no servidor: ' + (verified.updatedAt || 'não informado'),
@@ -63,6 +65,7 @@ function upsertObservedTask(items, task, limit=20) {
       /[\x00-\x1f\x7f]/.test(task.status) ||
       typeof task.observedAt!=='string' || !Number.isFinite(Date.parse(task.observedAt))) return items;
   const safe={id:task.id,project:task.project,status:task.status,
+    title:typeof task.title==='string'&&task.title.length<=160&&!/[\x00-\x1f\x7f]/.test(task.title)?task.title:null,
     updatedAt:task.updatedAt||null,observedAt:task.observedAt};
   // Deduplicate by conversation ID, never infer independent agents.
   return [safe,...items.filter(x=>x.id!==safe.id)].slice(0,limit);
@@ -105,7 +108,7 @@ function mountRealRead(stage,host,onVerified,onReset) {
     }
     for(const task of observedTasks){
       const item=document.createElement('li');
-      item.textContent=task.project+' · '+task.status+' · '+task.id+' · observado: '+task.observedAt+' (projeto manual; estado pontual, não monitoramento)';
+      item.textContent=(task.title?task.title+' · ':'')+task.project+' · '+task.status+' · '+task.id+' · observado: '+task.observedAt+' (projeto manual; estado pontual, não monitoramento)';
       const refresh=document.createElement('button');
       refresh.type='button';
       refresh.textContent='Reconsultar agora';
@@ -198,6 +201,7 @@ function mountRealRead(stage,host,onVerified,onReset) {
       const moon=document.createElement('span');moon.className='moon';moon.setAttribute('aria-label','Lua: conversa consultada');output.append(moon);
       say('Conversa: ',id);
       say('Estado recebido: ',verified.status);
+      if(verified.title)say('Título recebido: ',verified.title);
       say('Projeto declarado: ',project);
       say('Origem: ','OpenHands Agent Server');
       if(verified.updatedAt)say('Atualizado no servidor: ',verified.updatedAt);
@@ -206,7 +210,7 @@ function mountRealRead(stage,host,onVerified,onReset) {
       // Exportação explícita do próprio operador; sem upload ou armazenamento persistente.
       const observedAt=new Date().toISOString();
       lastReceipt=formatObservationReceipt(id,project,verified,observedAt);
-      observedTasks=upsertObservedTask(observedTasks,{id,project,status:verified.status,updatedAt:verified.updatedAt,observedAt});
+      observedTasks=upsertObservedTask(observedTasks,{id,project,status:verified.status,title:verified.title,updatedAt:verified.updatedAt,observedAt});
       renderTasks();
       copy.style.display=lastReceipt&&navigator.clipboard?.writeText?'block':'none';
       copy.textContent='Copiar ficha da última consulta';
