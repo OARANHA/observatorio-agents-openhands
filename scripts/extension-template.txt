@@ -286,7 +286,7 @@ function mountObservatorio({container,host}) {
     disposeRead=mountRealRead(stage,host,async (observation,isCurrent)=>{
       const graphIdentity=await graphIdentityForObservation(observationContext,observation.conversationId,observation.project);
       if(!destroyed&&isCurrent())applyVerifiedMission({...observation,graphIdentity});
-    },()=>clearConsultedObservation());
+    },id=>forgetConsultedObservation(id));
     observer=typeof ResizeObserver==='function'?new ResizeObserver(resize):null;
     if(observer)observer.observe(wrapper);
     else window.addEventListener('resize',resize);
