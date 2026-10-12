@@ -603,3 +603,10 @@ Main pré-consolidação96ed4a3c5ce659aa55a4841716e7623d30aaeb64.
 - **GAPS:** nenhum acesso demonstrado à instância Canvas atual neste ciclo. Última instalação em screenshot histórica: V0.4.2, ref `7212c51c38fc34cd195afb4db99ee35808e67cb5`; não tratar como estado atual. WebGL2 real, touch físico, leitor de tela, vínculo RBAC e memória persistente continuam sem homologação.
 - **REUSE GATE:** Apps nativo e contrato `host.registerPage`; nada de fork Canvas, alteração Core, nova autenticação, BFF improvisado ou implantação implícita.
 - **DECISION:** próximo incremento exclusivamente documental `docs/handoffs/OBS-CYCLE-006-CANVAS-VISUAL-HOMOLOGATION-PLAN.md`; separar H0 inspeção read-only de H1 instalação desabilitada, H2 habilitação visual e H3 GET sintético autorizado, mantendo H4 operacional bloqueado. **G11 NÃO PROVADO; G12 BLOQUEADO; P01 PARCIAL; P02/P03 NÃO PROVADOS; ADR-0001 PROPOSTO; NO-GO operacional.** Nenhuma instalação/deploy executada por esta preparação.
+
+
+## CYCLE008-C/D — pré-voo e missão única preparada (2026-10-11)
+
+- Branch independente `docs/cycle008-operational-preflight-first-mission-20261011` sobre `main` `5cedc0eada928fcd1f46cc50e2144d02822181be`, Issue #48. Dossiê `docs/handoffs/OBS-CYCLE-008-OPERATIONAL-PREFLIGHT.md` mapeia G05–G12 com evidência real no código versus gaps; `docs/handoffs/OBS-CYCLE-008-FIRST-REAL-MISSION.md` congela **proposta** de uma leitura pública `cat AGENTS.md` via `code-explorer`, sem execução, sem modelo/credencial/tarifa/custo efetivo.
+- Achado: allowlist global em `scripts/canary_controls.py` autoriza mais comandos do que o subset pretendido da missão. G07 exige prova adversarial de restrição **por missão** antes de despacho; mock/CI não a substitui. REUSE GATE preserva Guard, supervisor, sandbox, SDK/TaskManager/TaskToolSet, orçamento Decimal e evidências sintéticas existentes.
+- Nenhum teste novo de agente, SDK, egress real ou isolamento foi executado para este documento; PR/CI e revisão independente ainda pendentes. G05/G06/G07/G10 PARCIAIS; G08/G09/G11 NÃO PROVADOS; G12 BLOQUEADO; P02/P03 NÃO PROVADOS; ADR-0001 PROPOSTO. **NO-GO operacional**.
