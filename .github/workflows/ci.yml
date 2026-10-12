@@ -36,3 +36,6 @@ jobs:
 
       - name: CYCLE011-C01 host e ACL sintéticos (offline)
         run: node --test tests/cycle011_c01_host_rbac.test.mjs
+
+      - name: CYCLE011-C04 ponte host - gates offline
+        run: node --test tests/cycle011_c04_canvas_host_bridge.test.mjs
