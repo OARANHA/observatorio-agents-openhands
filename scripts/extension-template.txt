@@ -22,10 +22,19 @@ function validateConversationObservation(item, expectedId) {
   // No server enum is established here: validate shape, not guessed status values.
   if (typeof status !== 'string' || !status.trim() || status.length > 128 || /[\x00-\x1f\x7f]/.test(status)) return null;
   const stamp = item.updated_at;
-  const updatedAt = typeof stamp === 'string'
-    && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$/.test(stamp)
-    && Number.isFinite(Date.parse(stamp))
-      ? stamp : null;
+  let updatedAt = null;
+  if (typeof stamp === 'string') {
+    const parts = stamp.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{1,6})?(Z|[+-]\d{2}:\d{2})$/);
+    if (parts) {
+      const year=Number(parts[1]),month=Number(parts[2]),day=Number(parts[3]);
+      const hours=Number(parts[4]),minutes=Number(parts[5]),seconds=Number(parts[6]);
+      const leap=year%4===0&&(year%100!==0||year%400===0);
+      const days=[31,leap?29:28,31,30,31,30,31,31,30,31,30,31];
+      const offset=parts[7];
+      const offsetValid=offset==='Z'||(Number(offset.slice(1,3))<=23&&Number(offset.slice(4,6))<=59);
+      if (month>=1&&month<=12&&day>=1&&day<=days[month-1]&&hours<=23&&minutes<=59&&seconds<=59&&offsetValid&&Number.isFinite(Date.parse(stamp))) updatedAt=stamp;
+    }
+  }
   return {status, updatedAt};
 }
 
