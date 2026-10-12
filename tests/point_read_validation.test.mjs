@@ -34,7 +34,7 @@ test('malformed, missing and untrusted timestamps are not displayed as server ti
 
 test('accepts API title only within safe limits; ignores malformed or oversized titles',()=>{
  assert.equal(validate({...valid,title:'Missão autorizada'},uuid).title,'Missão autorizada');
- for(const title of ['',42,'x'.repeat(161),'texto\\ninjetado']){
+ for(const title of ['',42,'x'.repeat(161),'texto\ninjetado']){
   assert.equal(validate({...valid,title},uuid).title,null);
  }
 });
